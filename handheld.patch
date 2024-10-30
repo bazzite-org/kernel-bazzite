@@ -62350,7 +62350,7 @@ https://gitlab.freedesktop.org/drm/amd/-/issues/3704
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-index e32161f6b67a..07bd038f17b1 100644
+index e32161f6b67a..e40bf487259b 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
 @@ -179,8 +179,12 @@ void amdgpu_bo_placement_from_domain(struct amdgpu_bo *abo, u32 domain)
@@ -62362,7 +62362,7 @@ index e32161f6b67a..07bd038f17b1 100644
 +		 * on, only apply to dGPU cards that actually benefit.
  		 */
 -		if (domain & abo->preferred_domains & AMDGPU_GEM_DOMAIN_VRAM)
-+		if (!adev->gmc.xgmi.connected_to_cpu && !adev->gmc.is_app_apu &&
++		if (!(adev->flags & AMD_IS_APU) &&
 +		    domain & abo->preferred_domains & AMDGPU_GEM_DOMAIN_VRAM)
  			places[c].flags |= TTM_PL_FLAG_FALLBACK;
  		c++;
