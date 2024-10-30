@@ -10906,36 +10906,33 @@ Date: Sat, 26 Oct 2024 17:34:05 +0200
 Subject: hwmon: (oxp-sensors) Add charge threshold and bypass to X1 models
 
 ---
- Documentation/ABI/testing/sysfs-class-power |   8 +-
- drivers/hwmon/oxp-sensors.c                 | 210 +++++++++++++++++++-
- 2 files changed, 212 insertions(+), 6 deletions(-)
+ Documentation/ABI/testing/sysfs-class-power |   5 +-
+ drivers/hwmon/oxp-sensors.c                 | 206 +++++++++++++++++++-
+ 2 files changed, 205 insertions(+), 6 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-class-power b/Documentation/ABI/testing/sysfs-class-power
-index 7c81f0a25a48..e2bb87184bea 100644
+index 7c81f0a25a48..85b765df0d45 100644
 --- a/Documentation/ABI/testing/sysfs-class-power
 +++ b/Documentation/ABI/testing/sysfs-class-power
-@@ -387,13 +387,17 @@ Description:
+@@ -387,13 +387,14 @@ Description:
  		charging rate in order to prolong the battery health. "Bypass"
  		means the charger bypasses the charging path around the
  		integrated converter allowing for a "smart" wall adaptor to
 -		perform the power conversion externally.
-+		perform the power conversion externally. In addition, certain
-+		devices may allow for enabling bypass automatically only when 
-+		the device is awake ("BypassAwake"), awake and asleep 
-+		("BypassAsleep"), or always/undefined ("Bypass").
++		perform the power conversion externally. Certain devices
++		may enable bypass only when the device is awake ("BypassS0").
  
  		Access: Read, Write
  
  		Valid values:
  			      "Unknown", "N/A", "Trickle", "Fast", "Standard",
 -			      "Adaptive", "Custom", "Long Life", "Bypass"
-+			      "Adaptive", "Custom", "Long Life",
-+				  "Bypass", "BypassAwake", "BypassAsleep"
++			      "Adaptive", "Custom", "Long Life", "Bypass", "BypassS0"
  
  What:		/sys/class/power_supply/<supply_name>/charge_term_current
  Date:		July 2014
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index b6d06370469d..19845117091e 100644
+index b6d06370469d..281bf54a0a18 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -27,6 +27,8 @@
@@ -10947,43 +10944,39 @@ index b6d06370469d..19845117091e 100644
  /* Handle ACPI lock mechanism */
  static u32 oxp_mutex;
  
-@@ -89,6 +91,35 @@ static enum oxp_board board;
+@@ -89,6 +91,31 @@ static enum oxp_board board;
  
  #define OXP_TURBO_RETURN_VAL           0x00 /* Common return val */
  
 +#define OXP_X1_CHARGE_LIMIT_REG      0xA3 /* X1 charge limit (%) */
 +#define OXP_X1_CHARGE_BYPASS_REG     0xA4 /* X1 bypass charging */
 +
-+#define OXP_X1_CHARGE_BYPASS_MASK_AWAKE 0x01
-+#define OXP_X1_CHARGE_BYPASS_MASK_SLEEP 0x02 /* Asleep and Off might be swapped */
-+#define OXP_X1_CHARGE_BYPASS_MASK_OFF   0x08
++#define OXP_X1_CHARGE_BYPASS_MASK_S0 0x01
++#define OXP_X1_CHARGE_BYPASS_MASK_S3S5 0x0A /* Cannot control S3, S5 individually. */
 +
 +enum charge_type_value_index {
 +	CT_OFF,
-+	CT_AWAKE,
-+	CT_ASLEEP,
-+	CT_ALWAYS,
++	CT_S0,
++	CT_S5,
 +};
 +
 +static u8 charge_type_values_x1[] = {
 +	[CT_OFF] = 0x00,
-+	[CT_AWAKE] = OXP_X1_CHARGE_BYPASS_MASK_AWAKE,
-+	[CT_ASLEEP] = OXP_X1_CHARGE_BYPASS_MASK_AWAKE | OXP_X1_CHARGE_BYPASS_MASK_SLEEP,
-+	[CT_ALWAYS] = OXP_X1_CHARGE_BYPASS_MASK_AWAKE | OXP_X1_CHARGE_BYPASS_MASK_SLEEP | OXP_X1_CHARGE_BYPASS_MASK_OFF,
++	[CT_S0] = OXP_X1_CHARGE_BYPASS_MASK_S0,
++	[CT_S5] = OXP_X1_CHARGE_BYPASS_MASK_S0 | OXP_X1_CHARGE_BYPASS_MASK_S3S5,
 +};
 +
 +static const char * const charge_type_strings[] = {
 +	[CT_OFF] = "Standard",
-+	[CT_AWAKE] = "BypassAwake",
-+	[CT_ASLEEP] = "BypassAsleep",
-+	[CT_ALWAYS] = "Bypass",
++	[CT_S0] = "BypassS0",
++	[CT_S5] = "Bypass",
 +};
 +
 +
  static const struct dmi_system_id dmi_table[] = {
  	{
  		.matches = {
-@@ -380,6 +411,172 @@ static ssize_t tt_toggle_show(struct device *dev,
+@@ -380,6 +407,172 @@ static ssize_t tt_toggle_show(struct device *dev,
  
  static DEVICE_ATTR_RW(tt_toggle);
  
@@ -11156,7 +11149,7 @@ index b6d06370469d..19845117091e 100644
  /* PWM enable/disable functions */
  static int oxp_pwm_enable(void)
  {
-@@ -623,18 +820,18 @@ static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
+@@ -623,18 +816,18 @@ static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
  	NULL,
  };
  
@@ -11179,7 +11172,7 @@ index b6d06370469d..19845117091e 100644
  	NULL
  };
  
-@@ -693,6 +890,9 @@ static int __init oxp_platform_init(void)
+@@ -693,6 +886,9 @@ static int __init oxp_platform_init(void)
  		platform_create_bundle(&oxp_platform_driver,
  				       oxp_platform_probe, NULL, 0, NULL, 0);
  
@@ -11189,7 +11182,7 @@ index b6d06370469d..19845117091e 100644
  	return PTR_ERR_OR_ZERO(oxp_platform_device);
  }
  
-@@ -700,6 +900,8 @@ static void __exit oxp_platform_exit(void)
+@@ -700,6 +896,8 @@ static void __exit oxp_platform_exit(void)
  {
  	platform_device_unregister(oxp_platform_device);
  	platform_driver_unregister(&oxp_platform_driver);
@@ -11212,12 +11205,12 @@ Subject: hwmon: (oxp-sensors) Add turbo led support (partial; for X1)
  1 file changed, 62 insertions(+)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index 19845117091e..fbe88dd59e87 100644
+index 281bf54a0a18..282389f9375d 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
-@@ -98,6 +98,11 @@ static enum oxp_board board;
- #define OXP_X1_CHARGE_BYPASS_MASK_SLEEP 0x02 /* Asleep and Off might be swapped */
- #define OXP_X1_CHARGE_BYPASS_MASK_OFF   0x08
+@@ -97,6 +97,11 @@ static enum oxp_board board;
+ #define OXP_X1_CHARGE_BYPASS_MASK_S0 0x01
+ #define OXP_X1_CHARGE_BYPASS_MASK_S3S5 0x0A /* Cannot control S3, S5 individually. */
  
 +#define OXP_X1_TURBO_LED_REG           0x57 /* X1 Turbo LED */
 +
@@ -11226,8 +11219,8 @@ index 19845117091e..fbe88dd59e87 100644
 +
  enum charge_type_value_index {
  	CT_OFF,
- 	CT_AWAKE,
-@@ -411,6 +416,62 @@ static ssize_t tt_toggle_show(struct device *dev,
+ 	CT_S0,
+@@ -407,6 +412,62 @@ static ssize_t tt_toggle_show(struct device *dev,
  
  static DEVICE_ATTR_RW(tt_toggle);
  
@@ -11290,7 +11283,7 @@ index 19845117091e..fbe88dd59e87 100644
  /* Callbacks for turbo toggle attribute */
  static bool charge_control_supported(void)
  {
-@@ -822,6 +883,7 @@ static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
+@@ -818,6 +879,7 @@ static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
  
  static struct attribute *oxp_turbo_attrs[] = {
  	&dev_attr_tt_toggle.attr,
@@ -62345,34 +62338,35 @@ index 000000000000..cbdc716e9dd0
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
-Date: Mon, 21 Oct 2024 19:29:25 +0200
-Subject: Revert "drm/amdgpu: use GTT only as fallback for VRAM|GTT"
+Date: Wed, 30 Oct 2024 20:06:07 +0100
+Subject: drm/amdgpu: apply GTT only as fallback for VRAM|GTT only to dGPUs
 
-This reverts commit 216c1282dde38ca87ebdf1ccacee5a0682901574.
+Fixes issue caused by 216c1282dde38ca87ebdf1ccacee5a0682901574.
 
-Most promising suspect for the AutoUMA regression, see:
+Which causes a crash when AutoUMA is used, see:
 https://gitlab.freedesktop.org/drm/amd/-/issues/3704
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_object.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-index e32161f6b67a..53b488312e49 100644
+index e32161f6b67a..07bd038f17b1 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-@@ -176,12 +176,6 @@ void amdgpu_bo_placement_from_domain(struct amdgpu_bo *abo, u32 domain)
- 			abo->flags & AMDGPU_GEM_CREATE_PREEMPTIBLE ?
- 			AMDGPU_PL_PREEMPT : TTM_PL_TT;
- 		places[c].flags = 0;
--		/*
--		 * When GTT is just an alternative to VRAM make sure that we
--		 * only use it as fallback and still try to fill up VRAM first.
--		 */
+@@ -179,8 +179,12 @@ void amdgpu_bo_placement_from_domain(struct amdgpu_bo *abo, u32 domain)
+ 		/*
+ 		 * When GTT is just an alternative to VRAM make sure that we
+ 		 * only use it as fallback and still try to fill up VRAM first.
++		 * 
++		 * APUs really hate doing this and will crash when AutoUMA is 
++		 * on, only apply to dGPU cards that actually benefit.
+ 		 */
 -		if (domain & abo->preferred_domains & AMDGPU_GEM_DOMAIN_VRAM)
--			places[c].flags |= TTM_PL_FLAG_FALLBACK;
++		if (!adev->gmc.xgmi.connected_to_cpu && !adev->gmc.is_app_apu &&
++		    domain & abo->preferred_domains & AMDGPU_GEM_DOMAIN_VRAM)
+ 			places[c].flags |= TTM_PL_FLAG_FALLBACK;
  		c++;
  	}
- 
 -- 
 2.47.0
 
