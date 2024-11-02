@@ -2,6 +2,15 @@ name: Build Bazzite Kernel
 
 on:
   workflow_dispatch:
+    inputs:
+      # promote:
+      #   description: 'Promote after build'
+      #   type: boolean
+      #   default: true
+      arm:
+        description: 'Build arm version'
+        type: boolean
+        default: false
   release:
     types: [published]
 
@@ -10,13 +19,13 @@ permissions:
 
 jobs:
   build_kernel:
-    runs-on: ubuntu-24.04
+    runs-on: ${{ github.event.inputs.arm == 'true' && 'ARM64' || 'ubuntu-24.04' }}
     environment: prod
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64]
-        fedora_version: [40, 41]
+        arch: ${{ github.event.inputs.arm == 'true' && "[aarch64]" || "[x86_64]" }}
+        fedora_version: [41]
 
     steps:
       - name: Maximize build space
@@ -76,7 +85,7 @@ jobs:
           compression-level: 7
       
       - name: Convert to Arch
-        if: matrix.arch == 'x86_64' && matrix.fedora_version == 41
+        if: matrix.arch == 'x86_64' # && matrix.fedora_version == 41
         run: |
           # Grab kernel ver from the log
           KERNEL_VER=$(ls -a | grep .build | head -n 1 | sed 's/.build-//' | sed 's/.log//')
@@ -91,7 +100,7 @@ jobs:
 
       - name: Upload Kernel arch package to action
         uses: actions/upload-artifact@v4
-        if: matrix.arch == 'x86_64' && matrix.fedora_version == 41
+        if: matrix.arch == 'x86_64' # && matrix.fedora_version == 41
         with:
           name: linux-f${{ matrix.fedora_version}}-arch
           path: |
