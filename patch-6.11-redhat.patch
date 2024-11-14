@@ -29,7 +29,6 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
  drivers/iommu/iommu.c                              |  22 ++
- drivers/net/wireless/realtek/rtw89/pci.c           |  48 +++-
  drivers/pci/quirks.c                               |  24 ++
  drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
@@ -45,10 +44,10 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 47 files changed, 1020 insertions(+), 240 deletions(-)
+ 46 files changed, 979 insertions(+), 233 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 318a5d60088e0..11471699fb194 100644
+index b8641dde171ff..0f03b97ae87f2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -126,7 +125,7 @@ index 84c08b46519da..c281697142b1a 100644
  			reg = <0x40000000 0x100>;
  			interrupt-controller;
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 89b331575ed49..1934eeb898044 100644
+index 402ae0297993c..bdfabc559adc6 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1366,7 +1366,7 @@ endchoice
@@ -1706,90 +1705,6 @@ index ed6c5cb60c5ae..70cb770b78bb3 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
-diff --git a/drivers/net/wireless/realtek/rtw89/pci.c b/drivers/net/wireless/realtek/rtw89/pci.c
-index 02afeb3acce46..5aef7fa378788 100644
---- a/drivers/net/wireless/realtek/rtw89/pci.c
-+++ b/drivers/net/wireless/realtek/rtw89/pci.c
-@@ -3026,24 +3026,54 @@ static void rtw89_pci_declaim_device(struct rtw89_dev *rtwdev,
- 	pci_disable_device(pdev);
- }
- 
--static void rtw89_pci_cfg_dac(struct rtw89_dev *rtwdev)
-+static bool rtw89_pci_chip_is_manual_dac(struct rtw89_dev *rtwdev)
- {
--	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
- 	const struct rtw89_chip_info *chip = rtwdev->chip;
- 
--	if (!rtwpci->enable_dac)
--		return;
--
- 	switch (chip->chip_id) {
- 	case RTL8852A:
- 	case RTL8852B:
- 	case RTL8851B:
- 	case RTL8852BT:
--		break;
-+		return true;
- 	default:
--		return;
-+		return false;
-+	}
-+}
-+
-+static bool rtw89_pci_is_dac_compatible_bridge(struct rtw89_dev *rtwdev)
-+{
-+	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
-+	struct pci_dev *bridge = pci_upstream_bridge(rtwpci->pdev);
-+
-+	if (!rtw89_pci_chip_is_manual_dac(rtwdev))
-+		return true;
-+
-+	if (!bridge)
-+		return false;
-+
-+	switch (bridge->vendor) {
-+	case PCI_VENDOR_ID_INTEL:
-+		return true;
-+	case PCI_VENDOR_ID_ASMEDIA:
-+		if (bridge->device == 0x2806)
-+			return true;
-+		break;
- 	}
- 
-+	return false;
-+}
-+
-+static void rtw89_pci_cfg_dac(struct rtw89_dev *rtwdev)
-+{
-+	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
-+
-+	if (!rtwpci->enable_dac)
-+		return;
-+
-+	if (!rtw89_pci_chip_is_manual_dac(rtwdev))
-+		return;
-+
- 	rtw89_pci_config_byte_set(rtwdev, RTW89_PCIE_L1_CTRL, RTW89_PCIE_BIT_EN_64BITS);
- }
- 
-@@ -3061,6 +3091,9 @@ static int rtw89_pci_setup_mapping(struct rtw89_dev *rtwdev,
- 		goto err;
- 	}
- 
-+	if (!rtw89_pci_is_dac_compatible_bridge(rtwdev))
-+		goto no_dac;
-+
- 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(36));
- 	if (!ret) {
- 		rtwpci->enable_dac = true;
-@@ -3073,6 +3106,7 @@ static int rtw89_pci_setup_mapping(struct rtw89_dev *rtwdev,
- 			goto err_release_regions;
- 		}
- 	}
-+no_dac:
- 
- 	resource_len = pci_resource_len(pdev, bar_id);
- 	rtwpci->mmap = pci_iomap(pdev, bar_id, resource_len);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index dccb60c1d9cc3..c7ec62f076c31 100644
 --- a/drivers/pci/quirks.c
