@@ -1,4 +1,96 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Fri, 15 Nov 2024 20:54:57 +0100
+Subject: [NA] add dev tools
+
+---
+ .gitignore   |  4 ++++
+ sync-arch.sh | 20 ++++++++++++++++++++
+ sync.sh      | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 54 insertions(+)
+ create mode 100755 sync-arch.sh
+ create mode 100755 sync.sh
+
+diff --git a/.gitignore b/.gitignore
+index 8cd8290c6c93..9c64f0bcd8ac 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -188,3 +188,7 @@ sphinx_*/
+ 
+ # Rust analyzer configuration
+ /rust-project.json
++
++# Bazzite Dev stuff
++cert.der
++key.*
+\ No newline at end of file
+diff --git a/sync-arch.sh b/sync-arch.sh
+new file mode 100755
+index 000000000000..dd2e678fdcbd
+--- /dev/null
++++ b/sync-arch.sh
+@@ -0,0 +1,20 @@
++# if [ -z "$1" ]; then
++#     echo "Usage: $0 <host>"
++#     exit 1
++# fi
++
++HOST=tbx
++USER=${USER:-dev}
++
++set -e
++rm -rf linux-*
++
++time PATH="/usr/lib/ccache/bin:$PATH" CCACHE_DIR=$(pwd)/../cache CCACHE_FILECLONE=1 CCACHE_MAXSIZE=30G make pacman-pkg -j 14
++scp linux-*.pkg.tar.zst $HOST:/tmp
++
++ssh $HOST /bin/bash << EOF
++    yay --noconfirm -U /tmp/linux-upstream-6* /tmp/linux-upstream-headers-6*
++    rm -rf /tmp/linux-upstream-6* /tmp/linux-upstream-headers-6*
++    sudo reboot
++EOF
++
+diff --git a/sync.sh b/sync.sh
+new file mode 100755
+index 000000000000..de610a8bc34b
+--- /dev/null
++++ b/sync.sh
+@@ -0,0 +1,30 @@
++if [ -z "$1" ]; then
++    echo "Usage: $0 <host>"
++    exit 1
++fi
++
++HOST=$1
++USER=${USER:-bazzite}
++
++# openssl req -new -x509 -newkey rsa:2048 -keyout "key.pem" \
++#         -outform DER -out "cert.der" -nodes -days 36500 \
++#         -subj "/CN=antheas/"
++# openssl x509 -in cert.der -inform DER -outform PEM -out key.cert.pem
++
++# scp cert.der $host:/tmp/cert.der
++# sudo mokutil --import "/tmp/cert.der"
++
++make binrpm-pkg -j $(nproc)
++# sudo sbsign --key key.pem --cert key.cert.pem ./arch/x86/boot/bzImage --output vmlinuz
++
++# scp vmlinuz $HOST:/tmp/vmlinuz
++
++# ssh $HOST /bin/bash << EOF
++#     sudo cp /tmp/vmlinuz /boot/vmlinuz
++#     sed -E 's#linux /ostree/.+\$#linux /vmlinuz#g' \
++#         /boot/loader/entries/ostree-2.conf | \
++#         sed -E 's#^title #title Kernel Swap of #g' | \
++#         sed -E 's#^version \\d#version 200#g' | \
++#         sudo tee /boot/loader/entries/ostree-100.conf
++#     sudo reboot
++# EOF
+-- 
+2.47.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Sat, 12 Oct 2024 19:02:51 +0200
 Subject: [BEGIN] workaround for i915
@@ -35294,7 +35386,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 71 insertions(+)
 
 diff --git a/kernel/power/main.c b/kernel/power/main.c
-index a9e0693aaf69..cc0348c052fe 100644
+index a9e0693aaf69..0c8307f0d0e3 100644
 --- a/kernel/power/main.c
 +++ b/kernel/power/main.c
 @@ -746,6 +746,76 @@ static ssize_t state_store(struct kobject *kobj, struct kobj_attribute *attr,
@@ -35354,7 +35446,7 @@ index a9e0693aaf69..cc0348c052fe 100644
 +			return state;
 +	}
 +
-+	return PM_STANDBY_ACTIVE;
++	return PM_STANDBY_MAX;
 +}
 +
 +static ssize_t standby_store(struct kobject *kobj, struct kobj_attribute *attr,
@@ -35396,14 +35488,14 @@ Subject: [TEMPORARY] Add s2idle delays for MSI Claw
  1 file changed, 13 insertions(+)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index b3242fa77be6..b8d3df14a538 100644
+index b3242fa77be6..0fe2c9cf2d04 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
 @@ -112,6 +112,13 @@ static const struct s2idle_delay_quirks rog_ally_quirks = {
  	.delay_sleep_entry = 150,
  };
  
-+static const struct platform_s2idle_quirks msi_claw_quirks = {
++static const struct s2idle_delay_quirks msi_claw_quirks = {
 +	.delay_display_off = 500,
 +	.delay_sleep_entry = 500,
 +	.delay_sleep_exit = 200,
