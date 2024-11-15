@@ -34267,12 +34267,12 @@ notifications outside of the suspend/resume path.
 Co-developed-by: Mario Limonciello <mario.limonciello@amd.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- include/linux/suspend.h |  5 +++++
+ include/linux/suspend.h |  2 ++
  kernel/power/suspend.c  | 10 ++++++++++
- 2 files changed, 15 insertions(+)
+ 2 files changed, 12 insertions(+)
 
 diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index da6ebca3ff77..82d567a59399 100644
+index da6ebca3ff77..57c083754e8b 100644
 --- a/include/linux/suspend.h
 +++ b/include/linux/suspend.h
 @@ -132,6 +132,7 @@ struct platform_suspend_ops {
@@ -34291,30 +34291,20 @@ index da6ebca3ff77..82d567a59399 100644
  };
  
  #ifdef CONFIG_SUSPEND
-@@ -160,6 +162,9 @@ extern unsigned int pm_suspend_global_flags;
- #define PM_SUSPEND_FLAG_FW_RESUME	BIT(1)
- #define PM_SUSPEND_FLAG_NO_PLATFORM	BIT(2)
- 
-+int platform_standby_display_off(void);
-+int platform_standby_display_on(void);
-+
- static inline void pm_suspend_clear_flags(void)
- {
- 	pm_suspend_global_flags = 0;
 diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index 09f8397bae15..0cc8da5b7acf 100644
+index 09f8397bae15..cded6b9b439b 100644
 --- a/kernel/power/suspend.c
 +++ b/kernel/power/suspend.c
 @@ -254,6 +254,16 @@ static bool sleep_state_supported(suspend_state_t state)
  	       (valid_state(state) && !cxl_mem_active());
  }
  
-+int platform_standby_display_off(void)
++static int platform_standby_display_off(void)
 +{
 +	return s2idle_ops && s2idle_ops->display_off ? s2idle_ops->display_off() : 0;
 +}
 +
-+int platform_standby_display_on(void)
++static int platform_standby_display_on(void)
 +{
 +	return s2idle_ops && s2idle_ops->display_on ? s2idle_ops->display_on() : 0;
 +}
@@ -34347,12 +34337,12 @@ this power state without suspending the device.
 Suggested-by: Mario Limonciello <mario.limonciello@amd.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- include/linux/suspend.h |  4 ++++
+ include/linux/suspend.h |  2 ++
  kernel/power/suspend.c  | 10 ++++++++++
- 2 files changed, 14 insertions(+)
+ 2 files changed, 12 insertions(+)
 
 diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index 82d567a59399..a84c47dbf73a 100644
+index 57c083754e8b..733dffb09b28 100644
 --- a/include/linux/suspend.h
 +++ b/include/linux/suspend.h
 @@ -133,6 +133,7 @@ struct platform_suspend_ops {
@@ -34371,34 +34361,25 @@ index 82d567a59399..a84c47dbf73a 100644
  	int (*display_on)(void);
  };
  
-@@ -163,6 +165,8 @@ extern unsigned int pm_suspend_global_flags;
- #define PM_SUSPEND_FLAG_NO_PLATFORM	BIT(2)
- 
- int platform_standby_display_off(void);
-+int platform_standby_sleep_entry(void);
-+int platform_standby_sleep_exit(void);
- int platform_standby_display_on(void);
- 
- static inline void pm_suspend_clear_flags(void)
 diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index 0cc8da5b7acf..dfce16ed8b0c 100644
+index cded6b9b439b..3f4bbefa9b82 100644
 --- a/kernel/power/suspend.c
 +++ b/kernel/power/suspend.c
-@@ -259,6 +259,16 @@ int platform_standby_display_off(void)
+@@ -259,6 +259,16 @@ static int platform_standby_display_off(void)
  	return s2idle_ops && s2idle_ops->display_off ? s2idle_ops->display_off() : 0;
  }
  
-+int platform_standby_sleep_entry(void)
++static int platform_standby_sleep_entry(void)
 +{
 +	return s2idle_ops && s2idle_ops->sleep_entry ? s2idle_ops->sleep_entry() : 0;
 +}
 +
-+int platform_standby_sleep_exit(void)
++static int platform_standby_sleep_exit(void)
 +{
 +	return s2idle_ops && s2idle_ops->sleep_exit ? s2idle_ops->sleep_exit() : 0;
 +}
 +
- int platform_standby_display_on(void)
+ static int platform_standby_display_on(void)
  {
  	return s2idle_ops && s2idle_ops->display_on ? s2idle_ops->display_on() : 0;
 -- 
@@ -34418,12 +34399,12 @@ can be used to restore PLx while still remaining in the sleep state.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- include/linux/suspend.h | 2 ++
+ include/linux/suspend.h | 1 +
  kernel/power/suspend.c  | 7 +++++++
- 2 files changed, 9 insertions(+)
+ 2 files changed, 8 insertions(+)
 
 diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index a84c47dbf73a..f9fb69a74d63 100644
+index 733dffb09b28..01ee64321cda 100644
 --- a/include/linux/suspend.h
 +++ b/include/linux/suspend.h
 @@ -142,6 +142,7 @@ struct platform_s2idle_ops {
@@ -34434,30 +34415,22 @@ index a84c47dbf73a..f9fb69a74d63 100644
  	int (*sleep_exit)(void);
  	int (*display_on)(void);
  };
-@@ -166,6 +167,7 @@ extern unsigned int pm_suspend_global_flags;
- 
- int platform_standby_display_off(void);
- int platform_standby_sleep_entry(void);
-+int platform_standby_turn_on_display(void);
- int platform_standby_sleep_exit(void);
- int platform_standby_display_on(void);
- 
 diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index dfce16ed8b0c..af7208265e54 100644
+index 3f4bbefa9b82..a42e8514ee7a 100644
 --- a/kernel/power/suspend.c
 +++ b/kernel/power/suspend.c
-@@ -264,6 +264,13 @@ int platform_standby_sleep_entry(void)
+@@ -264,6 +264,13 @@ static int platform_standby_sleep_entry(void)
  	return s2idle_ops && s2idle_ops->sleep_entry ? s2idle_ops->sleep_entry() : 0;
  }
  
-+int platform_standby_turn_on_display(void)
++static int platform_standby_turn_on_display(void)
 +{
 +	return s2idle_ops && s2idle_ops->turn_on_display ?
 +		       s2idle_ops->turn_on_display() :
 +		       0;
 +}
 +
- int platform_standby_sleep_exit(void)
+ static int platform_standby_sleep_exit(void)
  {
  	return s2idle_ops && s2idle_ops->sleep_exit ? s2idle_ops->sleep_exit() : 0;
 -- 
@@ -34481,7 +34454,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  3 files changed, 110 insertions(+)
 
 diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index f9fb69a74d63..048c957ae82e 100644
+index 01ee64321cda..8c5f3f71185f 100644
 --- a/include/linux/suspend.h
 +++ b/include/linux/suspend.h
 @@ -40,6 +40,15 @@ typedef int __bitwise suspend_state_t;
@@ -34500,7 +34473,7 @@ index f9fb69a74d63..048c957ae82e 100644
  /**
   * struct platform_suspend_ops - Callbacks for managing platform dependent
   *	system sleep states.
-@@ -287,6 +296,8 @@ extern void arch_suspend_enable_irqs(void);
+@@ -281,6 +290,8 @@ extern void arch_suspend_enable_irqs(void);
  
  extern int pm_suspend(suspend_state_t state);
  extern bool sync_on_suspend_enabled;
@@ -34522,7 +34495,7 @@ index de0e6b1077f2..4ee067cd0d4d 100644
  extern int suspend_devices_and_enter(suspend_state_t state);
  #else /* !CONFIG_SUSPEND */
 diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index af7208265e54..2d8f101ac28d 100644
+index a42e8514ee7a..546f8be79b98 100644
 --- a/kernel/power/suspend.c
 +++ b/kernel/power/suspend.c
 @@ -45,12 +45,21 @@ static const char * const mem_sleep_labels[] = {
@@ -34547,9 +34520,42 @@ index af7208265e54..2d8f101ac28d 100644
  unsigned int pm_suspend_global_flags;
  EXPORT_SYMBOL_GPL(pm_suspend_global_flags);
  
-@@ -73,6 +82,80 @@ bool pm_suspend_default_s2idle(void)
+@@ -73,6 +82,15 @@ bool pm_suspend_default_s2idle(void)
  }
  EXPORT_SYMBOL_GPL(pm_suspend_default_s2idle);
+ 
++int pm_standby_current_state(void)
++{
++	unsigned int sleep_flags = lock_system_sleep();
++	int state = standby_current;
++	unlock_system_sleep(sleep_flags);
++	return state;
++}
++EXPORT_SYMBOL_GPL(pm_standby_current_state);
++
+ void s2idle_set_ops(const struct platform_s2idle_ops *ops)
+ {
+ 	unsigned int sleep_flags;
+@@ -188,6 +206,16 @@ void __init pm_states_init(void)
+ 	 * initialize mem_sleep_states[] accordingly here.
+ 	 */
+ 	mem_sleep_states[PM_SUSPEND_TO_IDLE] = mem_sleep_labels[PM_SUSPEND_TO_IDLE];
++	/* All systems support the "active" state. */
++	standby_states[PM_STANDBY_ACTIVE] = standby_labels[PM_STANDBY_ACTIVE];
++	/* 
++	 * Not all systems support these states, where they will have increased
++	 * power consumption. If deemed necessary, they should be gated to not
++	 * mislead userspace.
++	 */
++	standby_states[PM_STANDBY_SCREEN_OFF] = standby_labels[PM_STANDBY_SCREEN_OFF];
++	standby_states[PM_STANDBY_SLEEP] = standby_labels[PM_STANDBY_SLEEP];
++	standby_states[PM_STANDBY_SLEEP_WAKE] = standby_labels[PM_STANDBY_SLEEP_WAKE];
+ }
+ 
+ static int __init mem_sleep_default_setup(char *str)
+@@ -354,6 +382,71 @@ static bool platform_suspend_again(suspend_state_t state)
+ 		suspend_ops->suspend_again() : false;
+ }
  
 +static int _s2idle_standby_transition(standby_state_t state)
 +{
@@ -34616,35 +34622,9 @@ index af7208265e54..2d8f101ac28d 100644
 +}
 +EXPORT_SYMBOL_GPL(pm_standby_transition);
 +
-+int pm_standby_current_state(void)
-+{
-+	unsigned int sleep_flags = lock_system_sleep();
-+	int state = standby_current;
-+	unlock_system_sleep(sleep_flags);
-+	return state;
-+}
-+EXPORT_SYMBOL_GPL(pm_standby_current_state);
-+
- void s2idle_set_ops(const struct platform_s2idle_ops *ops)
- {
- 	unsigned int sleep_flags;
-@@ -188,6 +271,16 @@ void __init pm_states_init(void)
- 	 * initialize mem_sleep_states[] accordingly here.
- 	 */
- 	mem_sleep_states[PM_SUSPEND_TO_IDLE] = mem_sleep_labels[PM_SUSPEND_TO_IDLE];
-+	/* All systems support the "active" state. */
-+	standby_states[PM_STANDBY_ACTIVE] = standby_labels[PM_STANDBY_ACTIVE];
-+	/* 
-+	 * Not all systems support these states, where they will have increased
-+	 * power consumption. If deemed necessary, they should be gated to not
-+	 * mislead userspace.
-+	 */
-+	standby_states[PM_STANDBY_SCREEN_OFF] = standby_labels[PM_STANDBY_SCREEN_OFF];
-+	standby_states[PM_STANDBY_SLEEP] = standby_labels[PM_STANDBY_SLEEP];
-+	standby_states[PM_STANDBY_SLEEP_WAKE] = standby_labels[PM_STANDBY_SLEEP_WAKE];
- }
- 
- static int __init mem_sleep_default_setup(char *str)
+ #ifdef CONFIG_PM_DEBUG
+ static unsigned int pm_test_delay = 5;
+ module_param(pm_test_delay, uint, 0644);
 @@ -601,6 +694,9 @@ static int enter_state(suspend_state_t state)
  	if (!mutex_trylock(&system_transition_mutex))
  		return -EBUSY;
@@ -35059,11 +35039,11 @@ its power limit (PLx) while it is in the Sleep state, this might lengthen
 the suspend sequence in an undesirable manner. Implement this callback,
 which corresponds to Modern Standby Firmware notification (_DSM) 9.
 ---
- drivers/acpi/x86/s2idle.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/acpi/x86/s2idle.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index 6ff5e34c016e..eb5cec756ca8 100644
+index 6ff5e34c016e..f132b8c013b5 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
 @@ -45,6 +45,7 @@ static const struct acpi_device_id lps0_device_ids[] = {
@@ -35074,7 +35054,16 @@ index 6ff5e34c016e..eb5cec756ca8 100644
  
  /* AMD */
  #define ACPI_LPS0_DSM_UUID_AMD      "e3f32452-febc-43ce-9039-932122d37721"
-@@ -589,6 +590,29 @@ static int acpi_s2idle_sleep_entry(void)
+@@ -375,6 +376,8 @@ static const char *acpi_sleep_dsm_state_to_str(unsigned int state)
+ 			return "lps0 sleep entry";
+ 		case ACPI_LPS0_SLEEP_EXIT:
+ 			return "lps0 sleep exit";
++		case ACPI_LPS0_TURN_ON_DISPLAY:
++			return "lps0 turn on display";
+ 		}
+ 	} else {
+ 		switch (state) {
+@@ -589,6 +592,29 @@ static int acpi_s2idle_sleep_entry(void)
  	return 0;
  }
  
@@ -35104,7 +35093,7 @@ index 6ff5e34c016e..eb5cec756ca8 100644
  static int acpi_s2idle_sleep_exit(void)
  {
  	if (!lps0_device_handle || sleep_no_lps0 || lps0_dsm_func_mask_microsoft <= 0)
-@@ -714,6 +738,7 @@ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
+@@ -714,6 +740,7 @@ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
  	.restore_early = acpi_s2idle_restore_early,
  	.restore = acpi_s2idle_restore,
  	.end = acpi_s2idle_end,
@@ -35133,7 +35122,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 54 insertions(+)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index eb5cec756ca8..b3242fa77be6 100644
+index f132b8c013b5..b9c5559af1b4 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
 @@ -18,6 +18,7 @@
@@ -35193,7 +35182,7 @@ index eb5cec756ca8..b3242fa77be6 100644
  
  #define for_each_lpi_constraint(entry)						\
  	for (int i = 0;								\
-@@ -564,6 +602,9 @@ static int acpi_s2idle_display_off(void)
+@@ -566,6 +604,9 @@ static int acpi_s2idle_display_off(void)
  		acpi_sleep_run_lps0_dsm(ACPI_LPS0_DISPLAY_OFF,
  				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
  
@@ -35203,7 +35192,7 @@ index eb5cec756ca8..b3242fa77be6 100644
  	acpi_scan_lock_release();
  
  	return 0;
-@@ -585,6 +626,9 @@ static int acpi_s2idle_sleep_entry(void)
+@@ -587,6 +628,9 @@ static int acpi_s2idle_sleep_entry(void)
  		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SLEEP_ENTRY,
  				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
  
@@ -35213,7 +35202,7 @@ index eb5cec756ca8..b3242fa77be6 100644
  	acpi_scan_lock_release();
  
  	return 0;
-@@ -625,6 +669,9 @@ static int acpi_s2idle_sleep_exit(void)
+@@ -627,6 +671,9 @@ static int acpi_s2idle_sleep_exit(void)
  	acpi_scan_lock_acquire();
  
  	/* Modern Standby Sleep Exit */
@@ -35223,7 +35212,7 @@ index eb5cec756ca8..b3242fa77be6 100644
  	if (lps0_dsm_func_mask_microsoft > 0)
  		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SLEEP_EXIT,
  				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
-@@ -646,6 +693,9 @@ static int acpi_s2idle_display_on(void)
+@@ -648,6 +695,9 @@ static int acpi_s2idle_display_on(void)
  	acpi_scan_lock_acquire();
  
  	/* Display on */
@@ -35233,7 +35222,7 @@ index eb5cec756ca8..b3242fa77be6 100644
  	if (lps0_dsm_func_mask_microsoft > 0)
  		acpi_sleep_run_lps0_dsm(ACPI_LPS0_DISPLAY_ON,
  				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
-@@ -758,6 +808,10 @@ int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg)
+@@ -760,6 +810,10 @@ int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg)
  
  	sleep_flags = lock_system_sleep();
  	list_add(&arg->list_node, &lps0_s2idle_devops_head);
@@ -35488,7 +35477,7 @@ Subject: [TEMPORARY] Add s2idle delays for MSI Claw
  1 file changed, 13 insertions(+)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index b3242fa77be6..0fe2c9cf2d04 100644
+index b9c5559af1b4..8b8f19a1fda6 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
 @@ -112,6 +112,13 @@ static const struct s2idle_delay_quirks rog_ally_quirks = {
