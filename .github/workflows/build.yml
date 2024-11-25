@@ -55,8 +55,8 @@ jobs:
         run: |
           FEDORA_VERSION="${{ matrix.fedora_version }}"
           ARCH="${{ matrix.arch }}"
-          sudo podman run --rm -v $(pwd):/workspace \
-            --env CCACHE_DISABLE=${{ startsWith(github.ref, 'refs/tags/') && 'true' || '' }} \
+          DISABLE_ARG="${{ startsWith(github.ref, 'refs/tags/') && '--env CCACHE_DISABLE=true' || '' }}"
+          sudo podman run --rm -v $(pwd):/workspace $DISABLE_ARG \
             --env CCACHE_DIR=/workspace/ccache \
             --env CCACHE_MAXSIZE=5G \
             --env CCACHE_COMPRESS=1 \
