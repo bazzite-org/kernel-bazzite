@@ -35,7 +35,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ccache
-          key: ccache-${{ matrix.arch }}
+          key: ccache-${{ matrix.arch }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ matrix.arch }}
 
       - name: Create Build Environment
         run: |
@@ -128,4 +130,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ccache
-          key: ccache-${{ matrix.arch }}
+          key: ccache-${{ matrix.arch }}-${{ github.sha }}
