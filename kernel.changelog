@@ -1,3 +1,8 @@
+* Fri Nov 22 2024 Augusto Caringi <acaringi@redhat.com> [6.11.10-0]
+- Remove F39 from release_targets as we near EOL (Justin M. Forbes)
+- Linux v6.11.10
+Resolves: 
+
 * Sun Nov 17 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.11.9-0]
 - Linux v6.11.9
 Resolves: 
