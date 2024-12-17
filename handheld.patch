@@ -10930,14 +10930,14 @@ Subject: drm/panel-orientation-quirks: add OneXPlayer X1, X1 Mini, F1Pro
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- .../gpu/drm/drm_panel_orientation_quirks.c    | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ .../gpu/drm/drm_panel_orientation_quirks.c    | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 0830cae9a4d0..13ef20e8af1e 100644
+index 0830cae9a4d0..bf11801ddba9 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -426,6 +426,30 @@ static const struct dmi_system_id orientation_data[] = {
+@@ -426,6 +426,36 @@ static const struct dmi_system_id orientation_data[] = {
  		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
  		},
  		.driver_data = (void *)&lcd1600x2560_leftside_up,
@@ -10963,6 +10963,12 @@ index 0830cae9a4d0..13ef20e8af1e 100644
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
 +		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1Pro"),
++		},
++		.driver_data = (void *)&lcd1080x1920_leftside_up,
++	}, {	/* OneXPlayer OneXFly F1 Pro (OLED) LE Red variant */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1 EVA-02"),
 +		},
 +		.driver_data = (void *)&lcd1080x1920_leftside_up,
  	}, {	/* OrangePi Neo */
@@ -11610,7 +11616,7 @@ Signed-off-by: Joaquín Ignacio Aramendía <samsagax@gmail.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 13ef20e8af1e..753fe54de9a9 100644
+index bf11801ddba9..218ee04601cc 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -184,6 +184,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -11654,7 +11660,7 @@ Signed-off-by: Joaquín Ignacio Aramendía <samsagax@gmail.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 753fe54de9a9..097b5a3b8255 100644
+index 218ee04601cc..49b8a457a0c7 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -202,6 +202,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -11698,7 +11704,7 @@ Signed-off-by: Joaquín Ignacio Aramendía <samsagax@gmail.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 097b5a3b8255..d300c507d4ae 100644
+index 49b8a457a0c7..bf27cbbbc94b 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -208,6 +208,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -11728,7 +11734,7 @@ Subject: drm: panel-orientation-quirks: Add Aya Neo 2S orientation quirk
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index d300c507d4ae..049570d5b0d9 100644
+index bf27cbbbc94b..bc585e82ec42 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -190,6 +190,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -11758,7 +11764,7 @@ Subject: drm: panel-orientation-quirks: Add AYANEO FLIP DS quirk
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 049570d5b0d9..7e954a6c0812 100644
+index bc585e82ec42..e994b1422399 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -196,6 +196,12 @@ static const struct dmi_system_id orientation_data[] = {
