@@ -87,7 +87,7 @@ index 000000000000..de610a8bc34b
 +#     sudo reboot
 +# EOF
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -99,7 +99,7 @@ getting stuck during async page flips on Nvidia PRIME systems
 Link: https://gitlab.freedesktop.org/xorg/xserver/-/issues/24
 Link: https://gitlab.freedesktop.org/xorg/driver/xf86-video-intel/-/issues/208
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -151,7 +151,7 @@ index 29b56d53a340..d15a123cf051 100644
  
  static struct intel_quirk intel_quirks[] = {
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -222,7 +222,7 @@ index 687f3a9039bb..840ea9cf7dbc 100644
  	void *pxp;
  #endif
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -232,7 +232,7 @@ Subject: [BEGIN] Gamescope Framerate fixups by Valve
 
 also fixes https://gitlab.freedesktop.org/drm/amd/-/issues/2733
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -267,7 +267,7 @@ index ad3a3aa72b51..987c873ce040 100644
  						 to_dm_connector_state(connector->state),
  						 NULL);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -400,7 +400,7 @@ index 271765e2e9f2..75a0d849f42a 100644
  	 * @fb_modifiers_not_supported:
  	 *
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -444,7 +444,7 @@ index 35a45f416528..987c873ce040 100644
  	state = kzalloc(sizeof(*state), GFP_KERNEL);
  	if (!state)
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -489,7 +489,7 @@ index 987c873ce040..7258e46212b0 100644
  
  	/*
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -541,7 +541,7 @@ index 9be87b532517..93a8bdb2504d 100644
  	if (!dm_crtc_state->stream)
  		return 0;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -550,7 +550,7 @@ Date: Sat, 12 Oct 2024 20:36:57 +0200
 Subject: [BEGIN] linux-surface patches
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -588,7 +588,7 @@ index b5c79f43359b..a1bbedd989e4 100644
  	.long	0				# SizeOfStackReserve
  	.long	0				# SizeOfStackCommit
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -664,7 +664,7 @@ index e35829d36039..6d54eb03b63d 100644
  __setup("nohibernate", nohibernate_setup);
 +__setup("lockdown_hibernate", lockdown_hibernate_setup);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -765,7 +765,7 @@ index e4c3492a0c28..0b930c91bccb 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -932,7 +932,7 @@ index d6ff964aec5b..5d30ae39d65e 100644
  void mwifiex_initialize_quirks(struct pcie_service_card *card);
  int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1088,7 +1088,7 @@ index 5d30ae39d65e..c14eb56eb911 100644
  void mwifiex_initialize_quirks(struct pcie_service_card *card);
  int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1166,7 +1166,7 @@ index 202d43563e0b..7fee67e629b7 100644
  	    (id->driver_info & BTUSB_MEDIATEK)) {
  		hdev->setup = btusb_mtk_setup;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1287,7 +1287,7 @@ index b3294287bce1..2936fdae823c 100644
  		snprintf(filename, sizeof(filename), "%s/%s/%s",
  			 dir, ar->board_name, file);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1327,7 +1327,7 @@ index 6589635f8ba3..a1df48a434e2 100644
  
  	{MEI_PCI_DEVICE(MEI_DEV_ID_TGP_LP, MEI_ME_PCH15_CFG)},
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -1354,7 +1354,7 @@ Patchset: ipts
  1 file changed, 29 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index a167d59101ae..f18d5635d2f6 100644
+index cc23cfcdeb2d..c010aebe6cc1 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
 @@ -40,6 +40,11 @@
@@ -1404,7 +1404,7 @@ index a167d59101ae..f18d5635d2f6 100644
  	check_tylersburg_isoch();
  
  	/*
-@@ -4649,6 +4662,18 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
+@@ -4651,6 +4664,18 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
  	disable_igfx_iommu = 1;
  }
  
@@ -1423,7 +1423,7 @@ index a167d59101ae..f18d5635d2f6 100644
  /* G4x/GM45 integrated gfx dmar support is totally busted. */
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
-@@ -4684,6 +4709,10 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
+@@ -4686,6 +4711,10 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
  
@@ -1435,7 +1435,7 @@ index a167d59101ae..f18d5635d2f6 100644
  {
  	if (risky_device(dev))
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4531,7 +4531,7 @@ index 000000000000..1f966b8b32c4
 +
 +#endif /* IPTS_THREAD_H */
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -4573,7 +4573,7 @@ index 7a6d188e3bea..0179baee4596 100644
  	 * DMA alias provides us with a PCI device and alias.  The only case
  	 * where the it will return an alias on a different bus than the
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7304,7 +7304,7 @@ index 000000000000..aec320d4e945
 +int ithc_reset(struct ithc *ithc);
 +
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7416,7 +7416,7 @@ index 14ae0cfc325e..6197c5252d2a 100644
  		dev_warn(&adapter->dev, "protocol 0x%02x not supported for client 0x%02x\n",
  			 accessor_type, client->addr);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7614,7 +7614,7 @@ index 000000000000..68db237734a1
 +MODULE_DESCRIPTION("Discrete GPU Power-Switch for Surface Book 1");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7692,7 +7692,7 @@ index 5c5d407fe965..4e1bfe90e730 100644
  
  /*
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7764,7 +7764,7 @@ index 2755601f979c..4240c98ca226 100644
  
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7805,7 +7805,7 @@ index 13171454f959..a83beefd25f3 100644
  	{ USB_DEVICE(0x046a, 0x0023), .driver_info = USB_QUIRK_RESET_RESUME },
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -7844,7 +7844,7 @@ Patchset: surface-typecover
  1 file changed, 98 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index e936019d21fe..b2080e6c38d9 100644
+index e936019d21fe..08fee06fb5fc 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -34,7 +34,10 @@
@@ -7891,14 +7891,14 @@ index e936019d21fe..b2080e6c38d9 100644
  };
  
  static void mt_post_parse_default_settings(struct mt_device *td,
-@@ -213,6 +222,7 @@ static void mt_post_parse(struct mt_device *td, struct mt_application *app);
+@@ -212,6 +221,7 @@ static void mt_post_parse(struct mt_device *td, struct mt_application *app);
+ #define MT_CLS_GOOGLE				0x0111
  #define MT_CLS_RAZER_BLADE_STEALTH		0x0112
  #define MT_CLS_SMART_TECH			0x0113
- #define MT_CLS_SIS				0x0457
 +#define MT_CLS_WIN_8_MS_SURFACE_TYPE_COVER	0x0114
+ #define MT_CLS_SIS				0x0457
  
  #define MT_DEFAULT_MAXCONTACT	10
- #define MT_MAX_MAXCONTACT	250
 @@ -402,6 +412,16 @@ static const struct mt_class mt_classes[] = {
  			MT_QUIRK_ALWAYS_VALID |
  			MT_QUIRK_CONTACT_CNT_ACCURATE,
@@ -8041,7 +8041,7 @@ index e936019d21fe..b2080e6c38d9 100644
  	{ .driver_data = MT_CLS_GOOGLE,
  		HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, USB_VENDOR_ID_GOOGLE,
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8072,7 +8072,7 @@ Patchset: surface-typecover
  1 file changed, 122 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index b2080e6c38d9..af39bdc108c8 100644
+index 08fee06fb5fc..f6664049f46d 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -77,6 +77,7 @@ MODULE_LICENSE("GPL");
@@ -8340,7 +8340,7 @@ index b2080e6c38d9..af39bdc108c8 100644
  	unregister_pm_notifier(&td->pm_notifier);
  	del_timer_sync(&td->release_timer);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8438,7 +8438,7 @@ index 4e77c4230c0a..a4b0e6ef6cfe 100644
  	atomic_t	enable_cnt;	/* pci_enable_device has been called */
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8490,7 +8490,7 @@ index 62fd4004db31..103fc4468262 100644
  		.ident = "Surface Book 1",
  		.matches = {
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8567,7 +8567,7 @@ index 52917b177122..6cde03b88351 100644
  	 * Do not enumerate devices with enumeration_by_parent flag set as
  	 * they will be enumerated by their respective parents.
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8596,7 +8596,7 @@ Patchset: cameras
  1 file changed, 30 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index f18d5635d2f6..361f4c178efb 100644
+index c010aebe6cc1..42b342184d56 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
 @@ -45,6 +45,13 @@
@@ -8648,7 +8648,7 @@ index f18d5635d2f6..361f4c178efb 100644
  	if (!dmar_map_ipts)
  		iommu_identity_mapping |= IDENTMAP_IPTS;
  
-@@ -4662,6 +4677,18 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
+@@ -4664,6 +4679,18 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
  	disable_igfx_iommu = 1;
  }
  
@@ -8667,7 +8667,7 @@ index f18d5635d2f6..361f4c178efb 100644
  static void quirk_iommu_ipts(struct pci_dev *dev)
  {
  	if (!IS_IPTS(dev))
-@@ -4709,6 +4736,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
+@@ -4711,6 +4738,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
  
@@ -8678,7 +8678,7 @@ index f18d5635d2f6..361f4c178efb 100644
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x9D3E, quirk_iommu_ipts);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x34E4, quirk_iommu_ipts);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8716,7 +8716,7 @@ index 1e107fd49f82..e3e1696e7f0e 100644
  
  	return 0;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8773,7 +8773,7 @@ index 3de463c3d13b..0a012eeed30a 100644
  					    agpio, func, polarity);
  	if (ret)
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8813,7 +8813,7 @@ index 30f61e04ecaf..9c1292ca8552 100644
  				     V4L2_CID_TEST_PATTERN,
  				     ARRAY_SIZE(ov7251_test_pattern_menu) - 1,
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8864,7 +8864,7 @@ index f19c8adf2c61..923ed1b5ab8b 100644
  	if (ret < 0)
  		goto out_cleanup;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8906,7 +8906,7 @@ index e3e1696e7f0e..423dc555093f 100644
  		for (i = 0; i < board_data->n_gpiod_lookups; i++)
  			gpiod_add_lookup_table(board_data->tps68470_gpio_lookup_tables[i]);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -8948,7 +8948,7 @@ index 7807fa329db0..2d2abb25b944 100644
 +
  #endif /* __LINUX_MFD_TPS68470_H */
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9200,7 +9200,7 @@ index 000000000000..35aeb5db89c8
 +MODULE_DESCRIPTION("LED driver for TPS68470 PMIC");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9233,7 +9233,7 @@ index c626ed845928..0094cfda57ea 100644
  	cci_write(dw9719->regmap, DW9719_CONTROL, 1, &ret);
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9300,7 +9300,7 @@ index 4efecac49863..88377bb0d137 100644
  	mp_config_acpi_legacy_irqs();
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9342,7 +9342,7 @@ index 88377bb0d137..c58f26918b17 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9453,7 +9453,7 @@ index b831cb8e53dc..78bd0f926505 100644
  		ret = sysfs_create_group(&dev->kobj, &acpi_tad_dc_attr_group);
  		if (ret)
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9462,7 +9462,7 @@ Date: Sat, 12 Oct 2024 19:04:14 +0200
 Subject: [BEGIN] ROG Ally fixes
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9488,7 +9488,7 @@ index 1218a3b449a8..ae8e837eb568 100644
  	"ROG CROSSHAIR X670E GENE",
  	"ROG CROSSHAIR X670E HERO",
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9637,7 +9637,7 @@ index 370d847517f9..a4f2ac1ddd90 100644
  	if (ret) {
  		dev_err(tas_priv->dev, "dspfw load %s error\n",
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9670,7 +9670,7 @@ index a4b47319ad8e..331129d2f034 100644
  	    USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD),
  	  QUIRK_ROG_CLAYMORE_II_KEYBOARD },
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9750,7 +9750,7 @@ index 61d2314834e7..0b6ccd930ec8 100644
  	{ "CSC3551", "104318D3", generic_dsd_config },
  	{ "CSC3551", "10431A63", missing_speaker_id_gpio2 },
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9759,13 +9759,19 @@ Date: Sat, 12 Oct 2024 19:29:58 +0200
 Subject: [BEGIN] OneXPlayer Handheld patches
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <git@antheas.dev>
 Date: Wed, 2 Oct 2024 22:01:14 +0200
-Subject: drm/panel-orientation-quirks: add OneXPlayer X1, X1 Mini, F1Pro
+Subject: drm: panel-orientation-quirks: Add OneXPlayer X1, X1 Mini, F1Pro
+
+The X1 line-up features a 10.8 2k portrait LCD panel. X1 Mini has a
+similar 2k panel, at 8.8 inches. Finally, the F1 Pro has a 1080p
+OLED portrait panel and comes in both a normal and an EVA Limited
+Edition red version. The red version happens to not have the F1 Pro
+in its name.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
@@ -9773,7 +9779,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 30 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 4a73821b81f6..cd96e98742aa 100644
+index 4a73821b81f6..866bd2bb8ac9 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -443,6 +443,36 @@ static const struct dmi_system_id orientation_data[] = {
@@ -9792,7 +9798,7 @@ index 4a73821b81f6..cd96e98742aa 100644
 +		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER X1 i"),
 +		},
 +		.driver_data = (void *)&lcd1600x2560_leftside_up,
-+	}, {	/* OneXPlayer X1 Intel */
++	}, {	/* OneXPlayer X1 mini (AMD) */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
 +		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER X1 mini"),
@@ -9814,7 +9820,7 @@ index 4a73821b81f6..cd96e98742aa 100644
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9853,7 +9859,7 @@ index fda9dce3da99..e52fb045096a 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -9913,7 +9919,7 @@ index 83730d931824..c184bde0e07b 100644
  		.matches = {
  			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -10323,7 +10329,7 @@ index c184bde0e07b..43ec655dc8db 100644
  
  MODULE_DEVICE_TABLE(dmi, dmi_table);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -10421,7 +10427,7 @@ index 43ec655dc8db..ccbfcd1bb48e 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -10430,7 +10436,7 @@ Date: Tue, 22 Oct 2024 18:00:46 +0200
 Subject: [BEGIN] General Handheld Audio/Display Patches
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -10443,7 +10449,7 @@ Subject: drm: panel-orientation-quirks: Add Aya Neo 2S orientation quirk
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index cd96e98742aa..9a7edd635f25 100644
+index 866bd2bb8ac9..57d048e89890 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -190,6 +190,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -10460,7 +10466,7 @@ index cd96e98742aa..9a7edd635f25 100644
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYADEVICE"),
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -10473,7 +10479,7 @@ Subject: drm: panel-orientation-quirks: Add AYANEO FLIP DS quirk
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index 9a7edd635f25..c080ce8d48a1 100644
+index 57d048e89890..b6b4ff27c8ac 100644
 --- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
 +++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
 @@ -196,6 +196,12 @@ static const struct dmi_system_id orientation_data[] = {
@@ -10490,7 +10496,41 @@ index 9a7edd635f25..c080ce8d48a1 100644
  		.matches = {
  		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "AYADEVICE"),
 -- 
-2.47.0
+2.47.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Sun, 22 Dec 2024 18:04:42 +0100
+Subject: drm: panel-orientation-quirks: Add Zotac Gaming Zone
+
+The Zotac Gaming Zone handheld features a 1080p portrait OLED screen.
+Add the rotation to the panel orientation quirks.
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index b6b4ff27c8ac..a44209be1dc2 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -485,6 +485,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1 EVA-02"),
+ 		},
+ 		.driver_data = (void *)&lcd1080x1920_leftside_up,
++	}, {	/* Zotac Gaming Zone (OLED) */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ZOTAC"),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ZOTAC GAMING ZONE"),
++		},
++		.driver_data = (void *)&lcd1080x1920_leftside_up,
+ 	}, {	/* OrangePi Neo */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "OrangePi"),
+-- 
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -30845,7 +30885,7 @@ index 000000000000..27baeb96ce7c
 +
 +#endif
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -30934,7 +30974,7 @@ index 710f9b6109de..2fa221aa9c9f 100644
  
  	INIT_DELAYED_WORK(&aw87xxx->fw_load_work, aw87xxx_fw_load_work_routine);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -30948,7 +30988,7 @@ Co-developed-by: linh1987
  1 file changed, 10 insertions(+)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 973671e0cdb0..509ee8a6e589 100644
+index 192fc75b51e6..08029fcf5f4a 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
 @@ -7535,6 +7535,7 @@ enum {
@@ -30973,7 +31013,7 @@ index 973671e0cdb0..509ee8a6e589 100644
  	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -10963,6 +10971,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -10964,6 +10972,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x2782, 0x1705, "MEDION E15433", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
  	SND_PCI_QUIRK(0x2782, 0x4900, "MEDION E15443", ALC233_FIXUP_MEDION_MTL_SPK),
@@ -30981,7 +31021,7 @@ index 973671e0cdb0..509ee8a6e589 100644
  	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
  	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
  	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
-@@ -11086,6 +11095,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
+@@ -11087,6 +11096,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK, .name = "asus-zenbook"},
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A, .name = "asus-zenbook-ux31a"},
  	{.id = ALC269VB_FIXUP_ORDISSIMO_EVE2, .name = "ordissimo"},
@@ -30990,7 +31030,7 @@ index 973671e0cdb0..509ee8a6e589 100644
  	{.id = ALC283_FIXUP_INT_MIC, .name = "alc283-int-mic"},
  	{.id = ALC290_FIXUP_MONO_SPEAKERS_HSJACK, .name = "mono-speakers"},
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -31005,7 +31045,7 @@ Co-developed-by: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
  1 file changed, 50 insertions(+), 1 deletion(-)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 509ee8a6e589..a13b1d793cb2 100644
+index 08029fcf5f4a..9ed42a146b06 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
 @@ -6717,6 +6717,20 @@ static void alc294_gx502_toggle_output(struct hda_codec *codec,
@@ -31084,7 +31124,7 @@ index 509ee8a6e589..a13b1d793cb2 100644
  	[ALC299_FIXUP_PREDATOR_SPK] = {
  		.type = HDA_FIXUP_PINS,
  		.v.pins = (const struct hda_pintbl[]) {
-@@ -10970,8 +11018,9 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -10971,8 +11019,9 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x2782, 0x1701, "Infinix Y4 Max", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1705, "MEDION E15433", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
@@ -31096,7 +31136,7 @@ index 509ee8a6e589..a13b1d793cb2 100644
  	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
  	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -31105,7 +31145,7 @@ Date: Sat, 12 Oct 2024 19:33:24 +0200
 Subject: [BEGIN] Steam Deck fixes
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -31292,7 +31332,7 @@ index 000000000000..0e504b3c2796
 +MODULE_DESCRIPTION("Steam Deck EC MFD core driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -31577,7 +31617,7 @@ index 000000000000..fab9e9460bd4
 +MODULE_DESCRIPTION("Steam Deck EC sensors driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -31706,7 +31746,7 @@ index 000000000000..686500b8de73
 +MODULE_DESCRIPTION("Steam Deck LEDs driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -31937,7 +31977,7 @@ index 000000000000..74f190adc8ea
 +MODULE_DESCRIPTION("Steam Deck extcon driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32046,7 +32086,7 @@ index fab9e9460bd4..9d0a5471b181 100644
  		dev_err(dev, "Failed to register HWMON device");
  		return PTR_ERR(hwmon);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32169,7 +32209,7 @@ index 0e504b3c2796..a60fa7db9141 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32178,7 +32218,7 @@ Date: Sat, 12 Oct 2024 19:38:52 +0200
 Subject: [BEGIN] Steam Deck OLED fixes
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32420,7 +32460,7 @@ index 8982b909c821..5810959a72fb 100644
  			      struct wmi_pno_scan_req  *pno_scan);
  int ath11k_wmi_wow_del_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32693,7 +32733,7 @@ index 99986090b4a6..e259be44ce8f 100644
  
  	return 0;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32736,7 +32776,7 @@ index 60f15a9ba7a5..c3da48c213d4 100644
  
  	/* TODO: DYNAMIC_VALIDATION needs to be implemented */
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32827,7 +32867,7 @@ index 7258e46212b0..4dac39694368 100644
  				 max - min);
  }
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32845,7 +32885,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 45 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 4dac39694368..2ab7cdd83614 100644
+index 4dac39694368..53d1ddeda6ba 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -4519,11 +4519,45 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
@@ -32880,14 +32920,14 @@ index 4dac39694368..2ab7cdd83614 100644
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
 +		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1Pro"),
 +		},
-+		.driver_data = (void *)16,
++		.driver_data = (void *)24,
 +	},
 +	{	/* F1 Pro Limited Edition */
 +		.matches = {
 +		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK"),
 +		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONEXPLAYER F1 EVA-02"),
 +		},
-+		.driver_data = (void *)16,
++		.driver_data = (void *)24,
 +	},
 +	{}
 +};
@@ -32917,7 +32957,7 @@ index 4dac39694368..2ab7cdd83614 100644
  
  			printk(KERN_NOTICE"VLV OVERRIDE backlight range: %d %d\n",
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -32968,7 +33008,7 @@ index b3d17cfc54a4..3b4fbc24ec91 100644
  /*
   * Synopsys USB 3.x host HAPS platform has a class code of
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33013,7 +33053,7 @@ Signed-off-by: Joshua Ashton <joshua@froggi.es>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 2ab7cdd83614..76023c0739c3 100644
+index 53d1ddeda6ba..fab9a787a40c 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -467,7 +467,7 @@ static void dm_pflip_high_irq(void *interrupt_params)
@@ -33049,7 +33089,7 @@ index 2ab7cdd83614..76023c0739c3 100644
  	bool pflip_present = false;
  	bool dirty_rects_changed = false;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33067,7 +33107,7 @@ Should also improve latency/stutter on internal display potentially too.
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 76023c0739c3..19179b90b0ba 100644
+index fab9a787a40c..85612e059452 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -467,7 +467,7 @@ static void dm_pflip_high_irq(void *interrupt_params)
@@ -33094,7 +33134,7 @@ index 76023c0739c3..19179b90b0ba 100644
  				spin_lock_irqsave(&adev_to_drm(adev)->event_lock, flags);
  				mod_freesync_handle_v_update(
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33103,7 +33143,7 @@ Date: Sat, 12 Oct 2024 19:14:10 +0200
 Subject: [BEGIN] Modern Suspend patchset
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33173,7 +33213,7 @@ index 09f8397bae15..cded6b9b439b 100644
  {
  	return state != PM_SUSPEND_TO_IDLE && suspend_ops->prepare ?
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33243,7 +33283,7 @@ index cded6b9b439b..3f4bbefa9b82 100644
  {
  	return s2idle_ops && s2idle_ops->display_on ? s2idle_ops->display_on() : 0;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33294,7 +33334,7 @@ index 3f4bbefa9b82..a42e8514ee7a 100644
  {
  	return s2idle_ops && s2idle_ops->sleep_exit ? s2idle_ops->sleep_exit() : 0;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33518,7 +33558,7 @@ index a42e8514ee7a..8d78aa2ccfcf 100644
  	return error;
  }
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33620,7 +33660,7 @@ index dd0b40b9bbe8..ab8c38bf90b0 100644
  }
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33752,7 +33792,7 @@ index ab8c38bf90b0..6cea3d9af9bd 100644
  
  void __init acpi_s2idle_setup(void)
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33820,7 +33860,7 @@ index 6cea3d9af9bd..3c072888cdaf 100644
  	}
  }
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -33942,7 +33982,7 @@ index 3c072888cdaf..52c0e79be78a 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34021,7 +34061,7 @@ index 52c0e79be78a..6e07e1a7b08f 100644
  	.display_on = acpi_s2idle_display_on,
  };
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34155,7 +34195,7 @@ index 6e07e1a7b08f..eb42bdd2c348 100644
  
  	return 0;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34276,7 +34316,7 @@ index 1101e5b2488e..a94d8fc79287 100644
  
  /* Registration ***************************************************************/
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34385,7 +34425,7 @@ index 6254814d4817..fcaffdee53ff 100644
  #ifdef CONFIG_PM_AUTOSLEEP
  	&autosleep_attr.attr,
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34547,7 +34587,7 @@ index 1a1924d71006..411775fae4ac 100644
 +   standby-states
     suspend-flows
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34591,7 +34631,7 @@ index eb42bdd2c348..4bace84d2044 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34600,7 +34640,7 @@ Date: Sat, 2 Nov 2024 17:45:04 +0100
 Subject: [BEGIN] Batocera Qualcomm patches
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34628,7 +34668,7 @@ index 045100c94352..3af3313b635e 100644
  #define CAPTURE_MAX_NUM_PERIODS     8
  #define CAPTURE_MAX_PERIOD_SIZE     4096
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -34681,7 +34721,7 @@ index 630f4eff20bf..c4ab889237e1 100644
  				pins = "gpio52", "gpio53", "gpio54", "gpio55";
  				function = "qup17";
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -35062,7 +35102,7 @@ index 000000000000..3d4c0d36077d
 +MODULE_DESCRIPTION("DRM driver for CH13726A DSI panels");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -35370,7 +35410,7 @@ index 000000000000..eeddcf5df569
 +MODULE_AUTHOR("Molly Sophia <mollysophia379@gmail.com>");
 +MODULE_AUTHOR("BigfootACA <bigfoot@classfun.cn>");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -36362,7 +36402,7 @@ index 000000000000..4f93adacb5e5
 +MODULE_DESCRIPTION("Qualcomm SMB5 Charger Driver");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -37780,7 +37820,7 @@ index 000000000000..a3b164994fe4
 +MODULE_LICENSE("GPL v2");
 \ No newline at end of file
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -37843,7 +37883,7 @@ index 3f7b0b6a1d10..d0cfe6361954 100644
  				reg = <ADC5_CHG_TEMP>;
  				qcom,pre-scaling = <1 1>;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -37875,7 +37915,7 @@ index d0cfe6361954..42ef21238f18 100644
  			compatible = "qcom,spmi-adc5";
  			reg = <0x3100>;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -39321,7 +39361,7 @@ index 000000000000..63d0dda470f0
 +	};
 +};
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -39405,7 +39445,7 @@ index 3d4c0d36077d..0af26b65bca6 100644
  MODULE_DEVICE_TABLE(of, ch13726a_of_match);
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -39768,7 +39808,7 @@ index 000000000000..cef5a80477c0
 +MODULE_DESCRIPTION("PWM driver for HEROIC HTR3212");
 +MODULE_LICENSE("GPL");
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -39873,7 +39913,7 @@ index 7b20553ccdb5..e16b61d4c11a 100644
  		pins = "gpio39";
  		function = "gpio";
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -39983,7 +40023,7 @@ index eeddcf5df569..5145e2423171 100644
 +MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
 +MODULE_ALIAS("platform:" DRIVER_NAME);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40014,7 +40054,7 @@ index e16b61d4c11a..e0f49e8e75cd 100644
  		enable-gpios = <&tlmm 111 GPIO_ACTIVE_HIGH>;
  		pinctrl-0 = <&mcu_en_default>;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40054,7 +40094,7 @@ index 16f144cbc0c9..8ff496082902 100644
  
  	crtc = conn_state->crtc;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40095,7 +40135,7 @@ index 63d0dda470f0..f71065573acd 100644
  };
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40122,7 +40162,7 @@ index e52fb045096a..371d8f892414 100644
  		USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO),
  	  HID_BATTERY_QUIRK_PERCENT | HID_BATTERY_QUIRK_FEATURE },
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40135,7 +40175,7 @@ TKG is from [1] and BORE is from [2].
 [1]: https://github.com/Frogging-Family/linux-tkg/blob/master/linux-tkg-patches/6.11/0012-misc-additions.patch
 [2]: https://github.com/firelzrd/bore-scheduler/tree/main/patches
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40172,7 +40212,7 @@ index e0bbf0c6345d..5d229e2781c7 100644
  #if IS_ENABLED(CONFIG_HID_MAYFLASH)
  	{ HID_USB_DEVICE(USB_VENDOR_ID_DRAGONRISE, USB_DEVICE_ID_DRAGONRISE_PS3) },
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40209,7 +40249,7 @@ index 2561b215432a..1f6f291af340 100644
  	select CPU_FREQ_GOV_PERFORMANCE
  	help
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40246,7 +40286,7 @@ index bd9f095d69fa..5fc4aa6b6b67 100644
  	help
  	  This value can be used to select the number of bits to use to
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40280,7 +40320,7 @@ index df17e79c45c7..e454488c1a31 100644
 +
  endmenu
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 19179b90b0ba..005072121a55 100644
+index 85612e059452..6bda4880d63a 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -4501,7 +4501,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
@@ -40368,7 +40408,7 @@ index 495e3cd70426..704a48209657 100644
  #endif
  	/* Create (reset) the plane state */
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40396,7 +40436,7 @@ index 0c0b9aa44dfa..84f26f568135 100644
  			case IP_VERSION(11, 0, 7):
  			case IP_VERSION(11, 0, 11):
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -40485,7 +40525,7 @@ index a3df782fa687..940d8f514341 100644
  		if (!IS_ERR(pd))
  			goto put_device;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -41434,7 +41474,7 @@ index c03b3d7b320e..bbe2f77aa42d 100644
  #ifdef CONFIG_SCHED_DEBUG
  extern int sysctl_resched_latency_warn_ms;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -41443,7 +41483,7 @@ Date: Sat, 12 Oct 2024 19:23:29 +0200
 Subject: [BEGIN] General and Temporary Patches
 
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -41950,7 +41990,7 @@ index 000000000000..d7bc238e16da
 +module_exit(unload_acpi_call);
 \ No newline at end of file
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42103,7 +42143,7 @@ index c9e677e3af1d..84d4fa142830 100644
  #define UI_BEGIN_FF_UPLOAD	_IOWR(UINPUT_IOCTL_BASE, 200, struct uinput_ff_upload)
  #define UI_END_FF_UPLOAD	_IOW(UINPUT_IOCTL_BASE, 201, struct uinput_ff_upload)
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42152,7 +42192,7 @@ index 9deb91970d4d..5db16c20bd17 100644
  		}
  		if ((rdev->pdev->revision == 0xC3) ||
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42186,7 +42226,7 @@ index dd3c6dcb47ae..b10696b25a76 100644
  EXPORT_SYMBOL(pci_rebar_get_possible_sizes);
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42322,7 +42362,7 @@ index 831fa4a12159..aec5c5ab9e64 100644
  	/*
  	 * Modern (>=Nehalem) Intel systems use ACPI via intel_idle,
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42433,7 +42473,7 @@ index 4b97f38f3fcf..3b338b556ecb 100644
  {
  	return -EINVAL;
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42536,7 +42576,7 @@ index 84f26f568135..0d8843a27193 100644
  			"New power limit (%d) is out of range [%d,%d]\n",
  			limit, smu->min_power_limit, smu->max_power_limit);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42795,7 +42835,7 @@ index b8324ea05b20..f6f57d7d73d4 100644
  		struct usb_host_interface *intf,
  		struct usb_endpoint_descriptor *epd);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42823,7 +42863,7 @@ index 1468fb11e39d..52f48be5fc55 100644
  #define DS4_OUTPUT_HWCTL_HID		0x80
  
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -42897,7 +42937,7 @@ index e5a6f3e7c75b..fa10cd4be7a6 100644
  
  static struct pci_device_id pciidlist[] = {
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49041,7 +49081,7 @@ index 000000000000..cbdc716e9dd0
 +
 +module_exit(legion_exit);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49064,7 +49104,7 @@ d09009bc80d9d0d812b988888c40cd86e52eaf1e respectively.
  3 files changed, 417 deletions(-)
 
 diff --git a/drivers/bluetooth/btmtk.c b/drivers/bluetooth/btmtk.c
-index 480e4adba9fa..3be814f5f206 100644
+index 85e99641eaae..ac139f8d9b3d 100644
 --- a/drivers/bluetooth/btmtk.c
 +++ b/drivers/bluetooth/btmtk.c
 @@ -22,9 +22,6 @@
@@ -49077,7 +49117,7 @@ index 480e4adba9fa..3be814f5f206 100644
  struct btmtk_patch_header {
  	u8 datetime[16];
  	u8 platform[4];
-@@ -967,308 +964,6 @@ int btmtk_usb_recv_acl(struct hci_dev *hdev, struct sk_buff *skb)
+@@ -971,308 +968,6 @@ int btmtk_usb_recv_acl(struct hci_dev *hdev, struct sk_buff *skb)
  }
  EXPORT_SYMBOL_GPL(btmtk_usb_recv_acl);
  
@@ -49386,7 +49426,7 @@ index 480e4adba9fa..3be814f5f206 100644
  int btmtk_usb_setup(struct hci_dev *hdev)
  {
  	struct btmtk_data *btmtk_data = hci_get_priv(hdev);
-@@ -1370,12 +1065,6 @@ int btmtk_usb_setup(struct hci_dev *hdev)
+@@ -1374,12 +1069,6 @@ int btmtk_usb_setup(struct hci_dev *hdev)
  		hci_set_msft_opcode(hdev, 0xFD30);
  		hci_set_aosp_capable(hdev);
  
@@ -49592,7 +49632,7 @@ index 7fee67e629b7..197066a1304e 100644
  
  	if (id->driver_info & BTUSB_SWAVE) {
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49602,7 +49642,7 @@ Subject: [BEGIN] Hibernate fix for AMDGPU
 
 Closes: https://gitlab.freedesktop.org/drm/amd/-/issues/3781
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49640,7 +49680,7 @@ index 51904906545e..cef805736d59 100644
  
  	ret = amdgpu_ttm_evict_resources(adev, TTM_PL_VRAM);
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49759,7 +49799,7 @@ index cef805736d59..c173bdf7cd71 100644
   * amdgpu_device_prepare - prepare for device suspend
   *
 -- 
-2.47.0
+2.47.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
@@ -49768,5 +49808,5 @@ Date: Fri, 25 Oct 2024 09:54:28 +0200
 Subject: [BEGIN] 6.13 Cherry picks
 
 -- 
-2.47.0
+2.47.1
 
