@@ -146,3 +146,6 @@ CONFIG_BATTERY_QCOM_FG=m
 # from batoceran, ignore for now # CONFIG_DRM_RZG2L_MIPI_DSI is not set
 # from batoceran, ignore for now # CONFIG_DRM_RZG2L_DU is not set
 # from batoceran, ignore for now # CONFIG_DRM_TEGRA is not set
+
+# From Valve: Disable simple-framebuffer to fix logo regression
+# CONFIG_SYSFB_SIMPLEFB is not set
