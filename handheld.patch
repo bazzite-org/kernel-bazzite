@@ -45118,3 +45118,57 @@ index 7cde5733b9ca..02b9d0b49092 100644
 -- 
 2.47.1
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Mon, 6 Jan 2025 11:01:07 +0100
+Subject: tmp: add sleep entry
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/acpi/x86/s2idle.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+index f62bf2f42832..3435514e5bb0 100644
+--- a/drivers/acpi/x86/s2idle.c
++++ b/drivers/acpi/x86/s2idle.c
+@@ -140,6 +140,7 @@ static const struct s2idle_delay_quirks rog_ally_quirks = {
+  * and the EC, the only solution is to power down the device (S4S5).
+  */
+ static const struct s2idle_delay_quirks overheat_quirks = {
++	.delay_sleep_entry = 250,
+ 	.delay_sleep_exit = 500,
+ };
+ 
+@@ -904,8 +905,16 @@ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
+ 
+ void __init acpi_s2idle_setup(void)
+ {
++	unsigned int sleep_flags;
++
+ 	acpi_scan_add_handler(&lps0_handler);
+ 	s2idle_set_ops(&acpi_s2idle_ops_lps0);
++
++	sleep_flags = lock_system_sleep();
++	const struct dmi_system_id *s2idle_sysid =
++		dmi_first_match(s2idle_delay_quirks);
++	delay_quirks = s2idle_sysid ? s2idle_sysid->driver_data : NULL;
++	unlock_system_sleep(sleep_flags);
+ }
+ 
+ int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg)
+@@ -917,10 +926,6 @@ int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg)
+ 
+ 	sleep_flags = lock_system_sleep();
+ 	list_add(&arg->list_node, &lps0_s2idle_devops_head);
+-	const struct dmi_system_id *s2idle_sysid = dmi_first_match(
+-		s2idle_delay_quirks
+-	);
+-	delay_quirks = s2idle_sysid ? s2idle_sysid->driver_data : NULL;
+ 	unlock_system_sleep(sleep_flags);
+ 
+ 	return 0;
+-- 
+2.47.1
+
