@@ -39,7 +39,6 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +--
  drivers/iommu/iommu.c                              |  22 +
- drivers/net/wireless/realtek/rtl8xxxu/core.c       |  20 +
  drivers/pci/quirks.c                               |  24 +
  drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
@@ -48,6 +47,7 @@
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ init/main.c                                        |   6 +-
  kernel/module/signing.c                            |   9 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -55,10 +55,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
  tools/tracing/rtla/src/utils.c                     |  32 +-
- 57 files changed, 3004 insertions(+), 262 deletions(-)
+ 57 files changed, 2986 insertions(+), 266 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 7cf8f11975f8..e0828ec6bee7 100644
+index 9e6246e733eb..d9fe5187333c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -3959,85 +3959,6 @@ index 83c8e617a2c5..27f9b4517095 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index f95898f68d68..4ce0c05c5129 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-@@ -8147,6 +8147,8 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x817e, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x8186, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x818a, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x317f, 0xff, 0xff, 0xff),
-@@ -8157,12 +8159,18 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x050d, 0x1102, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x050d, 0x11f2, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x06f8, 0xe033, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x07b8, 0x8188, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x07b8, 0x8189, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9041, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9043, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x0b05, 0x17ba, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x1e1e, 0xff, 0xff, 0xff),
-@@ -8179,6 +8187,10 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x13d3, 0x3357, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x13d3, 0x3358, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x13d3, 0x3359, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x330b, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x2019, 0x4902, 0xff, 0xff, 0xff),
-@@ -8193,6 +8205,8 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x4856, 0x0091, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x9846, 0x9041, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0xcdab, 0x8010, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x04f2, 0xaff7, 0xff, 0xff, 0xff),
-@@ -8218,6 +8232,8 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x0586, 0x341f, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x06f8, 0xe033, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x06f8, 0xe035, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x0b05, 0x17ab, 0xff, 0xff, 0xff),
-@@ -8226,6 +8242,8 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x0df6, 0x0070, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x0df6, 0x0077, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x0789, 0x016d, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x07aa, 0x0056, 0xff, 0xff, 0xff),
-@@ -8248,6 +8266,8 @@ static const struct usb_device_id dev_table[] = {
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x330a, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
-+{USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x330d, 0xff, 0xff, 0xff),
-+	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x2019, 0xab2b, 0xff, 0xff, 0xff),
- 	.driver_info = (unsigned long)&rtl8192cu_fops},
- {USB_DEVICE_AND_INTERFACE_INFO(0x20f4, 0x624d, 0xff, 0xff, 0xff),
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 8103bc24a54e..ea629c78fa7c 100644
 --- a/drivers/pci/quirks.c
@@ -4273,6 +4194,31 @@ index 2ec8f3014757..7273b2b8b23b 100644
  static inline int lsm_fill_user_ctx(struct lsm_ctx __user *uctx,
  				    u32 *uctx_len, void *val, size_t val_len,
  				    u64 id, u64 flags)
+diff --git a/init/main.c b/init/main.c
+index c4778edae797..206acdde51f5 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -922,11 +922,8 @@ void start_kernel(void)
+ 	boot_cpu_init();
+ 	page_address_init();
+ 	pr_notice("%s", linux_banner);
+-	setup_arch(&command_line);
+-	/* Static keys and static calls are needed by LSMs */
+-	jump_label_init();
+-	static_call_init();
+ 	early_security_init();
++	setup_arch(&command_line);
+ 	setup_boot_config();
+ 	setup_command_line(command_line);
+ 	setup_nr_cpu_ids();
+@@ -937,6 +934,7 @@ void start_kernel(void)
+ 
+ 	pr_notice("Kernel command line: %s\n", saved_command_line);
+ 	/* parameters may set static keys */
++	jump_label_init();
+ 	parse_early_param();
+ 	after_dashes = parse_args("Booting kernel",
+ 				  static_command_line, __start___param,
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
 index a2ff4242e623..f0d2be1ee4f1 100644
 --- a/kernel/module/signing.c

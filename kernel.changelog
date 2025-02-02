@@ -1,3 +1,8 @@
+* Sat Feb 01 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.12.12-0]
+- Revert "init/main.c: Initialize early LSMs after arch code, static keys and calls." (Justin M. Forbes)
+- Linux v6.12.12
+Resolves: 
+
 * Thu Jan 23 2025 Augusto Caringi <acaringi@redhat.com> [6.12.11-0]
 - Linux v6.12.11
 Resolves: 

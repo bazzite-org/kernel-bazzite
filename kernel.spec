@@ -160,18 +160,18 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 %define buildid .bazzite
 # define buildid .local
-%define specrpmversion 6.12.11
-%define specversion 6.12.11
+%define specrpmversion 6.12.12
+%define specversion 6.12.12
 %define patchversion 6.12
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.12.11
+%define tarfile_release 6.12.12
 # This is needed to do merge window version magic
 %define patchlevel 12
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 206%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.12.11
+%define kabiversion 6.12.12
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -4154,6 +4154,10 @@ fi\
 #
 #
 %changelog
+* Sat Feb 01 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.12.12-0]
+- Revert "init/main.c: Initialize early LSMs after arch code, static keys and calls." (Justin M. Forbes)
+- Linux v6.12.12
+
 * Thu Jan 23 2025 Augusto Caringi <acaringi@redhat.com> [6.12.11-0]
 - Linux v6.12.11
 

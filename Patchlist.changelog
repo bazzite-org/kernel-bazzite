@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/32bcbd3a01f3693778efa32201859259cbac0161
+ 32bcbd3a01f3693778efa32201859259cbac0161 Revert "init/main.c: Initialize early LSMs after arch code, static keys and calls."
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/a6f946b225152d6db15b0d632730b07edb03d7d5
  a6f946b225152d6db15b0d632730b07edb03d7d5 x86/cpu: Add Lunar Lake to list of CPUs with a broken MONITOR  implementation
 
