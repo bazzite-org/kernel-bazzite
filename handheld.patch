@@ -46905,6 +46905,56 @@ index ba1a38d355a4..5bfd118d6233 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Tue, 4 Feb 2025 20:54:42 +0100
+Subject: acpi/x86: s2idle: allow adding a delay before suspend sequence
+
+Some devices that draw a lot of power before sleep might have trouble
+with a fast transition to sleep which can cause their APU to enter
+an invalid state. Add a bit of delay after freezing userspace which
+to allow power draw to lower before beginning the suspend sequence.
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/acpi/x86/s2idle.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+index 5bfd118d6233..c3e02f7c06c7 100644
+--- a/drivers/acpi/x86/s2idle.c
++++ b/drivers/acpi/x86/s2idle.c
+@@ -100,6 +100,7 @@ struct s2idle_delay_quirks {
+ 	int delay_sleep_entry;
+ 	int delay_sleep_exit;
+ 	int delay_display_on;
++	int delay_begin;
+ 	bool wake_on_ac;
+ };
+ 
+@@ -120,6 +121,7 @@ static const struct s2idle_delay_quirks rog_ally_quirks = {
+ };
+ 
+ static const struct s2idle_delay_quirks legion_go_s_quirks = {
++	.delay_begin = 500,
+ 	.wake_on_ac = true,
+ };
+ 
+@@ -780,6 +782,10 @@ static int acpi_s2idle_begin_wrap(void)
+ 	/* capture AC adapter state */
+ 	lps0_ac_state = power_supply_is_system_supplied();
+ 
++	/* Add a bit of delay to let TDP come down after userspace freeze */
++	if (delay_quirks && delay_quirks->delay_begin)
++		msleep(delay_quirks->delay_begin);
++
+ 	return acpi_s2idle_begin();
+ }
+ 
+-- 
+2.48.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
 Date: Fri, 15 Nov 2024 20:52:34 +0100
 Subject: [TEMPORARY] Add s2idle delays for MSI Claw
 
@@ -46913,10 +46963,10 @@ Subject: [TEMPORARY] Add s2idle delays for MSI Claw
  1 file changed, 14 insertions(+)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index 5bfd118d6233..27f9e1941a86 100644
+index c3e02f7c06c7..e7a3dc3c5c7d 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
-@@ -123,6 +123,13 @@ static const struct s2idle_delay_quirks legion_go_s_quirks = {
+@@ -125,6 +125,13 @@ static const struct s2idle_delay_quirks legion_go_s_quirks = {
  	.wake_on_ac = true,
  };
  
@@ -46930,7 +46980,7 @@ index 5bfd118d6233..27f9e1941a86 100644
  static const struct dmi_system_id s2idle_delay_quirks[] = {
  	/* ROG Ally */
  	{
-@@ -162,6 +169,13 @@ static const struct dmi_system_id s2idle_delay_quirks[] = {
+@@ -164,6 +171,13 @@ static const struct dmi_system_id s2idle_delay_quirks[] = {
  		},
  		.driver_data = (void *)&legion_go_s_quirks
  	},
@@ -47074,10 +47124,11 @@ From: Antheas Kapenekakis <lkml@antheas.dev>
 Date: Sat, 25 Jan 2025 16:49:52 +0100
 Subject: PM: hibernate: Enter s2idle sleep state before hibernation
 
-Windows enters the s2idle sleep state before hibernation to pulse the
-suspend light and turn off auxiliaries prior to hibernation. These
-auxiliaries are 1) not used to maintain the swap of the system and
-2) can misbehave during the wake-ups in hibernation.
+Windows enters the s2idle screen_off state before hibernation, which
+turns off e.g., the keyboard light and in some devices pulses the
+suspend light. It may also turn off auxiliaries prior to hibernation.
+These auxiliaries are 1) not used to maintain the swap of the system
+and 2) can misbehave during the wake-ups in hibernation.
 
 One example is the OneXPlayer X1 controller, which will have its
 vibration motor stuck on, if it is not first deactivated by entering
@@ -47085,11 +47136,11 @@ the sleep state.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- kernel/power/hibernate.c | 29 ++++++++++++++++++++++++++++-
- 1 file changed, 28 insertions(+), 1 deletion(-)
+ kernel/power/hibernate.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
-index 6d54eb03b63d..180e00997852 100644
+index 6d54eb03b63d..d4558f5aec47 100644
 --- a/kernel/power/hibernate.c
 +++ b/kernel/power/hibernate.c
 @@ -739,6 +739,10 @@ int hibernate(void)
@@ -47103,20 +47154,21 @@ index 6d54eb03b63d..180e00997852 100644
  
  	if (!hibernation_available()) {
  		pm_pr_dbg("Hibernation not available.\n");
-@@ -764,6 +768,12 @@ int hibernate(void)
+@@ -764,6 +768,13 @@ int hibernate(void)
  	}
  
  	pr_info("hibernation entry\n");
 +
 +#if CONFIG_SUSPEND
++	/* Correct state to enter hibernation is screen_off. */ 
 +	previous_standby = pm_standby_state();
-+	pm_standby_transition(PM_STANDBY_SLEEP, false);
++	pm_standby_transition(PM_STANDBY_SCREEN_OFF, false);
 +#endif
 +
  	pm_prepare_console();
  	error = pm_notifier_call_chain_robust(PM_HIBERNATION_PREPARE, PM_POST_HIBERNATION);
  	if (error)
-@@ -814,8 +824,10 @@ int hibernate(void)
+@@ -814,8 +825,10 @@ int hibernate(void)
  		if (!error) {
  			if (hibernation_mode == HIBERNATION_TEST_RESUME)
  				snapshot_test = true;
@@ -47128,18 +47180,16 @@ index 6d54eb03b63d..180e00997852 100644
  		}
  		in_suspend = 0;
  		pm_restore_gfp_mask();
-@@ -840,6 +852,21 @@ int hibernate(void)
+@@ -840,6 +853,19 @@ int hibernate(void)
   Exit:
  	pm_notifier_call_chain(PM_POST_HIBERNATION);
   Restore:
 +#if CONFIG_SUSPEND
 +	/*
-+	 * If we powered down, current standby state will be active but
++	 * If we powered down, system will restore to the active state but
 +	 * the suspend module will remember the previous state so we need
-+	 * to sync it. After hibernation, standby state will always be active.
-+	 * 
-+	 * If the hibernation fails or we performed a snapshot test, we need
-+	 * to restore the user's standby state.
++	 * to sync it. If the hibernation fails or we performed a snapshot
++	 * test, we need to restore userspace's standby state.
 +	 */
 +	if (powered_down)
 +		pm_standby_transition(PM_STANDBY_ACTIVE, true);
