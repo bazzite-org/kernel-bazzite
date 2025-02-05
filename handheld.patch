@@ -46840,81 +46840,90 @@ index 2d097d020e3b..ba1a38d355a4 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Fri, 31 Jan 2025 17:05:49 +0100
-Subject: acpi/x86: s2idle: Add AC/DC burst wakeup support
+Date: Tue, 4 Feb 2025 20:54:42 +0100
+Subject: acpi/x86: s2idle: allow adding a delay before suspend sequence
 
-According to Microsoft, when a power capable dock/charger is
-attached/detached to the device, the SOC is expected to wake up.
-Further, when the event is a connection to AC, the display of the
-system is expected to turn on for five seconds.
+Some devices that draw a lot of power before sleep might have trouble
+with a fast transition to sleep which can cause their APU to enter
+an invalid state. Add a bit of delay after freezing userspace which
+to allow power draw to lower before beginning the suspend sequence.
 
-The absence of this feature causes issues with the Ally and the Legion
-Go S. So, let's start nice and slow by quirking those two. The Go S
-will overheat badly by waking up its CPU when connected to a charger,
-and the Ally will remain in prochot once the system wakes up.
-
-Add the ability for s2idle to wake up the system from sleep on adapter
-changes and add it to the delay quirk table.
-
-Co-developed-by: Mario Limonciello <mario.limonciello@amd.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- drivers/acpi/x86/s2idle.c | 65 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 64 insertions(+), 1 deletion(-)
+ drivers/acpi/x86/s2idle.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index ba1a38d355a4..5bfd118d6233 100644
+index ba1a38d355a4..307b71e467c8 100644
 --- a/drivers/acpi/x86/s2idle.c
 +++ b/drivers/acpi/x86/s2idle.c
-@@ -19,6 +19,7 @@
- #include <linux/device.h>
- #include <linux/dmi.h>
- #include <linux/delay.h>
-+#include <linux/power_supply.h>
- #include <linux/suspend.h>
- 
- #include "../sleep.h"
-@@ -55,6 +56,7 @@ static const struct acpi_device_id lps0_device_ids[] = {
- #define ACPI_LPS0_DISPLAY_OFF_AMD   4
- #define ACPI_LPS0_DISPLAY_ON_AMD    5
- 
-+static struct acpi_device *lps0_device;
- static acpi_handle lps0_device_handle;
- static guid_t lps0_dsm_guid;
- static int lps0_dsm_func_mask;
-@@ -64,6 +66,7 @@ static int lps0_dsm_func_mask_microsoft;
- static int lps0_dsm_state;
- static bool lps0_dsm_in_display_off;
- static bool lps0_dsm_in_sleep;
-+static int lps0_ac_state;
- 
- /* Device constraint entry structure */
- struct lpi_device_info {
-@@ -97,6 +100,7 @@ struct s2idle_delay_quirks {
+@@ -97,6 +97,7 @@ struct s2idle_delay_quirks {
  	int delay_sleep_entry;
  	int delay_sleep_exit;
  	int delay_display_on;
-+	bool wake_on_ac;
++	int delay_begin;
  };
  
  /*
-@@ -112,9 +116,15 @@ struct s2idle_delay_quirks {
- static const struct s2idle_delay_quirks rog_ally_quirks = {
- 	.delay_display_off = 350,
+@@ -114,6 +115,10 @@ static const struct s2idle_delay_quirks rog_ally_quirks = {
  	.delay_sleep_entry = 150,
-+	.wake_on_ac = true,
-+};
-+
-+static const struct s2idle_delay_quirks legion_go_s_quirks = {
-+	.wake_on_ac = true,
  };
  
++static const struct s2idle_delay_quirks legion_go_s_quirks = {
++	.delay_begin = 500,
++};
++
  static const struct dmi_system_id s2idle_delay_quirks[] = {
-+	/* ROG Ally */
  	{
  		.matches = {
- 			DMI_MATCH(DMI_BOARD_NAME, "RC71L"),
-@@ -127,6 +137,31 @@ static const struct dmi_system_id s2idle_delay_quirks[] = {
+@@ -724,6 +729,15 @@ static int acpi_s2idle_display_on(void)
+ 	return 0;
+ }
+ 
++static int acpi_s2idle_begin_wrap(void)
++{
++	/* Add a bit of delay to let TDP come down after userspace freeze */
++	if (delay_quirks && delay_quirks->delay_begin)
++		msleep(delay_quirks->delay_begin);
++
++	return acpi_s2idle_begin();
++}
++
+ int acpi_s2idle_prepare_late(void)
+ {
+ 	struct acpi_s2idle_dev_ops *handler;
+-- 
+2.48.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Fri, 15 Nov 2024 20:52:34 +0100
+Subject: [TEMPORARY] Add s2idle delays for MSI Claw
+
+---
+ drivers/acpi/x86/s2idle.c | 39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+index 307b71e467c8..ff89eba37246 100644
+--- a/drivers/acpi/x86/s2idle.c
++++ b/drivers/acpi/x86/s2idle.c
+@@ -119,6 +119,13 @@ static const struct s2idle_delay_quirks legion_go_s_quirks = {
+ 	.delay_begin = 500,
+ };
+ 
++static const struct s2idle_delay_quirks msi_claw_quirks = {
++	.delay_display_off = 500,
++	.delay_sleep_entry = 500,
++	.delay_sleep_exit = 200,
++	.delay_display_on = 200,
++};
++
+ static const struct dmi_system_id s2idle_delay_quirks[] = {
+ 	{
+ 		.matches = {
+@@ -132,6 +139,38 @@ static const struct dmi_system_id s2idle_delay_quirks[] = {
  		},
  		.driver_data = (void *)&rog_ally_quirks
  	},
@@ -46943,166 +46952,6 @@ index ba1a38d355a4..5bfd118d6233 100644
 +		},
 +		.driver_data = (void *)&legion_go_s_quirks
 +	},
- 	{}
- };
- 
-@@ -554,6 +589,8 @@ static int lps0_device_attach(struct acpi_device *adev,
- 		return 0; //function evaluation failed
- 
- 	lps0_device_handle = adev->handle;
-+	lps0_device = adev;
-+	device_set_wakeup_capable(&adev->dev, true);
- 
- 	if (acpi_s2idle_vendor_amd())
- 		lpi_device_get_constraints_amd();
-@@ -582,6 +619,8 @@ static int lps0_device_attach(struct acpi_device *adev,
- 	const struct dmi_system_id *s2idle_sysid =
- 		dmi_first_match(s2idle_delay_quirks);
- 	delay_quirks = s2idle_sysid ? s2idle_sysid->driver_data : NULL;
-+	if (delay_quirks && delay_quirks->wake_on_ac)
-+		device_set_wakeup_enable(&lps0_device->dev, true);
- 	unlock_system_sleep(sleep_flags);
- 
- 	return 0;
-@@ -724,6 +763,26 @@ static int acpi_s2idle_display_on(void)
- 	return 0;
- }
- 
-+static void acpi_s2idle_check_ac(void)
-+{
-+	/* if configured, wake system from AC adapter changes */
-+	if (device_may_wakeup(&lps0_device->dev) &&
-+	    power_supply_is_system_supplied() != lps0_ac_state) {
-+		if (pm_debug_messages_on)
-+			acpi_handle_info(lps0_device_handle,
-+					 "AC adapter state changed\n");
-+		acpi_pm_wakeup_event(&lps0_device->dev);
-+	}
-+}
-+
-+static int acpi_s2idle_begin_wrap(void)
-+{
-+	/* capture AC adapter state */
-+	lps0_ac_state = power_supply_is_system_supplied();
-+
-+	return acpi_s2idle_begin();
-+}
-+
- int acpi_s2idle_prepare_late(void)
- {
- 	struct acpi_s2idle_dev_ops *handler;
-@@ -734,6 +793,8 @@ int acpi_s2idle_prepare_late(void)
- 	if (pm_debug_messages_on)
- 		lpi_check_constraints();
- 
-+	acpi_s2idle_check_ac();
-+
- 	/* LPS0 entry */
- 	if (lps0_dsm_func_mask > 0 && acpi_s2idle_vendor_amd())
- 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_ENTRY_AMD,
-@@ -766,6 +827,8 @@ void acpi_s2idle_check(void)
- 		if (handler->check)
- 			handler->check();
- 	}
-+
-+	acpi_s2idle_check_ac();
- }
- 
- void acpi_s2idle_restore_early(void)
-@@ -794,7 +857,7 @@ void acpi_s2idle_restore_early(void)
- static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
- 	.display_off = acpi_s2idle_display_off,
- 	.sleep_entry = acpi_s2idle_sleep_entry,
--	.begin = acpi_s2idle_begin,
-+	.begin = acpi_s2idle_begin_wrap,
- 	.prepare = acpi_s2idle_prepare,
- 	.prepare_late = acpi_s2idle_prepare_late,
- 	.check = acpi_s2idle_check,
--- 
-2.48.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Tue, 4 Feb 2025 20:54:42 +0100
-Subject: acpi/x86: s2idle: allow adding a delay before suspend sequence
-
-Some devices that draw a lot of power before sleep might have trouble
-with a fast transition to sleep which can cause their APU to enter
-an invalid state. Add a bit of delay after freezing userspace which
-to allow power draw to lower before beginning the suspend sequence.
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- drivers/acpi/x86/s2idle.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index 5bfd118d6233..c3e02f7c06c7 100644
---- a/drivers/acpi/x86/s2idle.c
-+++ b/drivers/acpi/x86/s2idle.c
-@@ -100,6 +100,7 @@ struct s2idle_delay_quirks {
- 	int delay_sleep_entry;
- 	int delay_sleep_exit;
- 	int delay_display_on;
-+	int delay_begin;
- 	bool wake_on_ac;
- };
- 
-@@ -120,6 +121,7 @@ static const struct s2idle_delay_quirks rog_ally_quirks = {
- };
- 
- static const struct s2idle_delay_quirks legion_go_s_quirks = {
-+	.delay_begin = 500,
- 	.wake_on_ac = true,
- };
- 
-@@ -780,6 +782,10 @@ static int acpi_s2idle_begin_wrap(void)
- 	/* capture AC adapter state */
- 	lps0_ac_state = power_supply_is_system_supplied();
- 
-+	/* Add a bit of delay to let TDP come down after userspace freeze */
-+	if (delay_quirks && delay_quirks->delay_begin)
-+		msleep(delay_quirks->delay_begin);
-+
- 	return acpi_s2idle_begin();
- }
- 
--- 
-2.48.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Fri, 15 Nov 2024 20:52:34 +0100
-Subject: [TEMPORARY] Add s2idle delays for MSI Claw
-
----
- drivers/acpi/x86/s2idle.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-index c3e02f7c06c7..e7a3dc3c5c7d 100644
---- a/drivers/acpi/x86/s2idle.c
-+++ b/drivers/acpi/x86/s2idle.c
-@@ -125,6 +125,13 @@ static const struct s2idle_delay_quirks legion_go_s_quirks = {
- 	.wake_on_ac = true,
- };
- 
-+static const struct s2idle_delay_quirks msi_claw_quirks = {
-+	.delay_display_off = 500,
-+	.delay_sleep_entry = 500,
-+	.delay_sleep_exit = 200,
-+	.delay_display_on = 200,
-+};
-+
- static const struct dmi_system_id s2idle_delay_quirks[] = {
- 	/* ROG Ally */
- 	{
-@@ -164,6 +171,13 @@ static const struct dmi_system_id s2idle_delay_quirks[] = {
- 		},
- 		.driver_data = (void *)&legion_go_s_quirks
- 	},
 +	/* MSI Claw */
 +	{
 +		.matches = {
@@ -47445,109 +47294,78 @@ index 6254814d4817..cb894b39e4ba 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Tue, 7 Jan 2025 22:15:15 +0100
-Subject: [HACK] ACPI: s2idle: Trigger _WAK as part of exiting s2idle
+Date: Wed, 5 Feb 2025 22:16:28 +0100
+Subject: ACPI: EC: Run EC Queries during s2idle wakeups
 
-Certain OneXPlayer and GPD devices contain a hibernation feature where
-the EC wakes up the device and pretends to overheat, causing Windows to
-hibernate. This is a three part process, where after the device enters
-S2idle through calling any _DSM callback (e.g., Sleep Entry, LPS0
-Entry), they begin a counter that measures how much battery is drained.
-Once it is at 5%, the EC of the device wakes it up if its in LPS0 by
-pressing the powerbutton, and once it is in Modern Standby again, it
-triggers the overheat event.
-
-For some reason, this notification is missed in Linux after wake-up.
-So call _WAK when exiting s2idle, which sets OSFG to 1 and has the
-EC resend overheat notification by triggering Query 0x58.
-
-The three OXP devices have no side effects, they only set OSFG. For
-GPD, we do S3, which has also sets some other variables.
+Currently, we enter EC GPE processing with EC queries disabled. This
+means that the kernel "eats" EC queries that happen during s2idle,
+such as battery alarms. This can cause aberrant behavior in devices,
+which may range from stuck EVT interrupts, broken AC/DC switching
+behavior, stuck PROCHOT, etc.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- drivers/acpi/sleep.c | 59 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 59 insertions(+)
+ drivers/acpi/ec.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index c8ee8e42b0f6..7671f3140145 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -810,8 +810,56 @@ bool acpi_s2idle_wake(void)
- 	return false;
- }
- 
-+static const struct dmi_system_id dmi_table_wak[] = {
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER X1 A"),
-+		},
-+		.driver_data = (void *)ACPI_STATE_S0,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER X1 i"),
-+		},
-+		.driver_data = (void *)ACPI_STATE_S0,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER X1Pro"),
-+		},
-+		.driver_data = (void *)ACPI_STATE_S0,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
-+			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER X1 mini"),
-+		},
-+		.driver_data = (void *)ACPI_STATE_S0,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "GPD"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "G1619-04"),
-+		},
-+		.driver_data = (void *)ACPI_STATE_S3,
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "GPD"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "G1619-05"),
-+		},
-+		.driver_data = (void *)ACPI_STATE_S3,
-+	},
-+	{} /* Terminating entry */
-+};
-+
- void acpi_s2idle_restore(void)
+diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
+index 25399f6dde7e..4503aaac2770 100644
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -2142,6 +2142,7 @@ static bool acpi_ec_work_in_progress(struct acpi_ec *ec)
+ bool acpi_ec_dispatch_gpe(void)
  {
-+	const struct dmi_system_id *wak_entry;
+ 	bool work_in_progress = false;
++	bool wake_pending = false;
+ 
+ 	if (!first_ec)
+ 		return acpi_any_gpe_status_set(U32_MAX);
+@@ -2163,6 +2164,12 @@ bool acpi_ec_dispatch_gpe(void)
+ 	 */
+ 	pm_system_cancel_wakeup();
+ 
++handle_ec:
++	/*
++	 * Start query processing to handle Queries stemming from GPEs
++	 */
++	acpi_ec_leave_noirq(first_ec);
 +
  	/*
- 	 * Drain pending events before restoring the working-state configuration
- 	 * of GPEs.
-@@ -825,6 +873,17 @@ void acpi_s2idle_restore(void)
- 	acpi_enable_all_runtime_gpes();
+ 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
+ 	 * to allow the caller to process events properly after that.
+@@ -2178,8 +2185,10 @@ bool acpi_ec_dispatch_gpe(void)
  
- 	acpi_disable_wakeup_devices(ACPI_STATE_S0);
-+	wak_entry = dmi_first_match(dmi_table_wak);
-+	if (wak_entry) {
-+		/*
-+		 * Force _WAK to run so that OSFG is set to 1 and the EC
-+		 * re-enumerates. GPD Win Max 2 needs to exit S3 which also has
-+		 * other side effects. OXP devices run the outer loop with s0.
-+		 */
-+		pr_info("Executing _WAK for state S%d\n",
-+			(u8)(uintptr_t) wak_entry->driver_data);
-+		acpi_leave_sleep_state((u8)(uintptr_t) wak_entry->driver_data);
+ 	spin_unlock_irq(&first_ec->lock);
+ 
+-	if (!work_in_progress)
++	if (!work_in_progress) {
++		acpi_ec_enter_noirq(first_ec);
+ 		return false;
 +	}
  
- 	if (acpi_sci_irq_valid()) {
- 		acpi_ec_set_gpe_wake_mask(ACPI_GPE_DISABLE);
+ 	pm_pr_dbg("ACPI EC GPE dispatched\n");
+ 
+@@ -2194,7 +2203,19 @@ bool acpi_ec_dispatch_gpe(void)
+ 		work_in_progress = acpi_ec_work_in_progress(first_ec);
+ 
+ 		spin_unlock_irq(&first_ec->lock);
+-	} while (work_in_progress && !pm_wakeup_pending());
++
++		wake_pending = pm_wakeup_pending();
++	} while (work_in_progress && !wake_pending);
++
++	acpi_ec_enter_noirq(first_ec);
++	/*
++	 * Here, there is a race condition. We disable IRQ but there is a
++	 * change more work came in as we disabled them. Therefore, perform 
++	 * the check again.
++	 */
++	work_in_progress = acpi_ec_work_in_progress(first_ec);
++	if (work_in_progress && !wake_pending)
++		goto handle_ec;
+ 
+ 	return false;
+ }
 -- 
 2.48.0
 
@@ -48176,59 +47994,6 @@ index 000000000000..4e6b3e0c383c
 +# Pretty print the changes to the file $1 or 0000-akmods.patch if it is not provided
 +git format-patch --stdout --zero-commit -k $HASH > ${1:-0000-akmods.patch}
 \ No newline at end of file
--- 
-2.48.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 2 Feb 2025 10:38:18 +0100
-Subject: [TMP] remove EC wakeups from legion go s
-
-Let's try to deal with the sporadic wake-ups by disabling listening to
-them altogether.
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- drivers/acpi/ec.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index 25399f6dde7e..64f130865679 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2301,6 +2301,31 @@ static const struct dmi_system_id acpi_ec_no_wakeup[] = {
- 			DMI_MATCH(DMI_PRODUCT_FAMILY, "103C_5336AN HP ZHAN 66 Pro"),
- 		},
- 	},
-+	/* Legion Go S */
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83L3"),
-+		},
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83N6"),
-+		},
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83Q2"),
-+		},
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83Q3"),
-+		},
-+	},
- 	{ },
- };
- 
 -- 
 2.48.0
 
