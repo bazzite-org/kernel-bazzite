@@ -23,7 +23,7 @@ emptyrpm:
 patches:
     ignore_list:
         - linux-kernel-test.patch
-        - patch-6.12-redhat.patch
+        - patch-6.13-redhat.patch
 
 runpath:
     ignore:
