@@ -55196,3 +55196,35 @@ index aa058e9c6fdb..01aeeaa60cb3 100644
 -- 
 2.48.1
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Sun, 23 Feb 2025 22:39:04 +0100
+Subject: drm/amd: Lower logging level of overdrive warning to err
+
+Using a crit message breaks seamless boot by making the kernel
+wipe the framebuffer. This leads to an unfavorable user experience.
+
+Therefore, lower to err.
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index a1120af3f90a..38d9dd70c178 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2996,7 +2996,7 @@ static int __init amdgpu_init(void)
+ 
+ 	if (amdgpu_pp_feature_mask & PP_OVERDRIVE_MASK) {
+ 		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
+-		pr_crit("Overdrive is enabled, please disable it before "
++		pr_err("Overdrive is enabled, please disable it before "
+ 			"reporting any bugs unrelated to overdrive.\n");
+ 	}
+ 
+-- 
+2.48.1
+
