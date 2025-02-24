@@ -160,18 +160,18 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 %define buildid .bazzite
 # define buildid .local
-%define specrpmversion 6.13.3
-%define specversion 6.13.3
+%define specrpmversion 6.13.4
+%define specversion 6.13.4
 %define patchversion 6.13
-%define pkgrelease 201
+%define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.13.3
+%define tarfile_release 6.13.4
 # This is needed to do merge window version magic
 %define patchlevel 13
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 108%{?buildid}%{?dist}
+%define specrelease 101%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.13.3
+%define kabiversion 6.13.4
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -4156,9 +4156,11 @@ fi\
 #
 #
 %changelog
-* Wed Feb 19 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.3-201]
+* Sat Feb 22 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.4-0]
+- Config update for 6.13.4 stable (Justin M. Forbes)
 - mei: vsc: Use "wakeuphostint" when getting the host wakeup GPIO (Hans de Goede)
 - Fix up mismatch of CONFIG_CPUFREQ_DT_PLATDEV for automotive (Justin M. Forbes)
+- Linux v6.13.4
 
 * Mon Feb 17 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.3-0]
 - CONFIG_CPUFREQ_DT_PLATDEV is bool now (Justin M. Forbes)

@@ -1,3 +1,10 @@
+* Sat Feb 22 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.4-0]
+- Config update for 6.13.4 stable (Justin M. Forbes)
+- mei: vsc: Use "wakeuphostint" when getting the host wakeup GPIO (Hans de Goede)
+- Fix up mismatch of CONFIG_CPUFREQ_DT_PLATDEV for automotive (Justin M. Forbes)
+- Linux v6.13.4
+Resolves: 
+
 * Mon Feb 17 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.3-0]
 - CONFIG_CPUFREQ_DT_PLATDEV is bool now (Justin M. Forbes)
 - efi,lockdown: fix kernel lockdown on Secure Boot (Ondrej Mosnacek) {CVE-2025-1272}
