@@ -160,18 +160,18 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 %define buildid .bazzite
 # define buildid .local
-%define specrpmversion 6.13.4
-%define specversion 6.13.4
+%define specrpmversion 6.13.5
+%define specversion 6.13.5
 %define patchversion 6.13
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.13.4
+%define tarfile_release 6.13.5
 # This is needed to do merge window version magic
 %define patchlevel 13
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 103%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.13.4
+%define kabiversion 6.13.5
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -4156,6 +4156,10 @@ fi\
 #
 #
 %changelog
+* Thu Feb 27 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.5-0]
+- fuse: revert back to __readahead_folio() for readahead (Joanne Koong)
+- Linux v6.13.5
+
 * Sat Feb 22 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.4-0]
 - Config update for 6.13.4 stable (Justin M. Forbes)
 - mei: vsc: Use "wakeuphostint" when getting the host wakeup GPIO (Hans de Goede)

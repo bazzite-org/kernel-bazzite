@@ -55,6 +55,8 @@
  drivers/pci/quirks.c                               |   24 +
  drivers/scsi/sd.c                                  |   10 +
  drivers/usb/core/hub.c                             |    7 +
+ fs/fuse/dev.c                                      |    6 +
+ fs/fuse/file.c                                     |   13 +-
  include/linux/crypto.h                             |    2 +
  include/linux/efi.h                                |   22 +-
  include/linux/hid-over-i2c.h                       |  117 ++
@@ -68,7 +70,7 @@
  security/integrity/platform_certs/load_uefi.c      |    6 +-
  security/lockdown/Kconfig                          |   13 +
  security/lockdown/lockdown.c                       |   11 +
- 70 files changed, 9164 insertions(+), 277 deletions(-)
+ 72 files changed, 9181 insertions(+), 279 deletions(-)
 
 diff --git a/Documentation/hid/index.rst b/Documentation/hid/index.rst
 index af02cf7cfa82..baf156b44b58 100644
@@ -672,7 +674,7 @@ index 0fa7c5728f1e..e404279c8610 100644
  M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
  L:	platform-driver-x86@vger.kernel.org
 diff --git a/Makefile b/Makefile
-index c436a6e64971..1056b6318e7c 100644
+index 56d5c11b6f1e..351e5f119381 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -9531,6 +9533,55 @@ index 906daf423cb0..5e69805e1016 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 27ccae63495d..9ce6d1c6cac1 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -836,6 +836,12 @@ static int fuse_check_folio(struct folio *folio)
+ 	return 0;
+ }
+ 
++/*
++ * Attempt to steal a page from the splice() pipe and move it into the
++ * pagecache. If successful, the pointer in @pagep will be updated. The
++ * folio that was originally in @pagep will lose a reference and the new
++ * folio returned in @pagep will carry a reference.
++ */
+ static int fuse_try_move_page(struct fuse_copy_state *cs, struct page **pagep)
+ {
+ 	int err;
+diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+index 7d92a5479998..d63e56fd3dd2 100644
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -955,8 +955,10 @@ static void fuse_readpages_end(struct fuse_mount *fm, struct fuse_args *args,
+ 		fuse_invalidate_atime(inode);
+ 	}
+ 
+-	for (i = 0; i < ap->num_folios; i++)
++	for (i = 0; i < ap->num_folios; i++) {
+ 		folio_end_read(ap->folios[i], !err);
++		folio_put(ap->folios[i]);
++	}
+ 	if (ia->ff)
+ 		fuse_file_put(ia->ff, false);
+ 
+@@ -1048,7 +1050,14 @@ static void fuse_readahead(struct readahead_control *rac)
+ 		ap = &ia->ap;
+ 
+ 		while (ap->num_folios < cur_pages) {
+-			folio = readahead_folio(rac);
++			/*
++			 * This returns a folio with a ref held on it.
++			 * The ref needs to be held until the request is
++			 * completed, since the splice case (see
++			 * fuse_try_move_page()) drops the ref after it's
++			 * replaced in the page cache.
++			 */
++			folio = __readahead_folio(rac);
+ 			ap->folios[ap->num_folios] = folio;
+ 			ap->descs[ap->num_folios].length = folio_size(folio);
+ 			ap->num_folios++;
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
 index b164da5e129e..72bfb79b491d 100644
 --- a/include/linux/crypto.h

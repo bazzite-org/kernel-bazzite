@@ -1,3 +1,8 @@
+* Thu Feb 27 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.5-0]
+- fuse: revert back to __readahead_folio() for readahead (Joanne Koong)
+- Linux v6.13.5
+Resolves: 
+
 * Sat Feb 22 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.13.4-0]
 - Config update for 6.13.4 stable (Justin M. Forbes)
 - mei: vsc: Use "wakeuphostint" when getting the host wakeup GPIO (Hans de Goede)

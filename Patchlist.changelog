@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/993f8a0404b0a8ee5b210f2d5e1b43a9236ea1a9
+ 993f8a0404b0a8ee5b210f2d5e1b43a9236ea1a9 fuse: revert back to __readahead_folio() for readahead
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/8f2b5543568a374301731a95b3b5ea3d6f70e89a
  8f2b5543568a374301731a95b3b5ea3d6f70e89a mei: vsc: Use "wakeuphostint" when getting the host wakeup GPIO
 
