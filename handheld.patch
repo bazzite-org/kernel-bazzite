@@ -7,9 +7,9 @@ Subject: [NA] add dev tools
  .gitignore   |  4 ++++
  README       | 18 ------------------
  README.md    | 12 ++++++++++++
- sync-arch.sh | 20 ++++++++++++++++++++
+ sync-arch.sh | 22 ++++++++++++++++++++++
  sync.sh      | 30 ++++++++++++++++++++++++++++++
- 5 files changed, 66 insertions(+), 18 deletions(-)
+ 5 files changed, 68 insertions(+), 18 deletions(-)
  delete mode 100644 README
  create mode 100644 README.md
  create mode 100755 sync-arch.sh
@@ -73,10 +73,10 @@ index 000000000000..90e71ffe344a
 \ No newline at end of file
 diff --git a/sync-arch.sh b/sync-arch.sh
 new file mode 100755
-index 000000000000..dd2e678fdcbd
+index 000000000000..42cb321433df
 --- /dev/null
 +++ b/sync-arch.sh
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,22 @@
 +# if [ -z "$1" ]; then
 +#     echo "Usage: $0 <host>"
 +#     exit 1
@@ -86,10 +86,12 @@ index 000000000000..dd2e678fdcbd
 +USER=${USER:-dev}
 +
 +set -e
-+rm -rf linux-*
 +
++rm -rf linux-*
 +time PATH="/usr/lib/ccache/bin:$PATH" CCACHE_DIR=$(pwd)/../cache CCACHE_FILECLONE=1 CCACHE_MAXSIZE=30G make pacman-pkg -j 14
-+scp linux-*.pkg.tar.zst $HOST:/tmp
++
++scp linux-upstream-6*.pkg.tar.zst $HOST:/tmp
++scp linux-upstream-headers-6*.pkg.tar.zst $HOST:/tmp
 +
 +ssh $HOST /bin/bash << EOF
 +    yay --noconfirm -U /tmp/linux-upstream-6* /tmp/linux-upstream-headers-6*
@@ -28171,11 +28173,11 @@ by looking for the battery. OneXPlayer devices have a single battery.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- drivers/hwmon/oxp-sensors.c | 206 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 206 insertions(+)
+ drivers/hwmon/oxp-sensors.c | 211 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 211 insertions(+)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index f7a64fbc8f33..f8ffc78deedd 100644
+index f7a64fbc8f33..3e930043bbb5 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -26,6 +26,7 @@
@@ -28400,25 +28402,32 @@ index f7a64fbc8f33..f8ffc78deedd 100644
  /* PWM enable/disable functions */
  static int oxp_pwm_enable(void)
  {
-@@ -753,6 +954,9 @@ static int __init oxp_platform_init(void)
- 		platform_create_bundle(&oxp_platform_driver,
- 				       oxp_platform_probe, NULL, 0, NULL, 0);
+@@ -718,15 +919,25 @@ static int oxp_platform_probe(struct platform_device *pdev)
+ 	hwdev = devm_hwmon_device_register_with_info(dev, "oxpec", NULL,
+ 						     &oxp_ec_chip_info, NULL);
  
 +	if (charge_control_supported())
 +		battery_hook_register(&battery_hook);
 +
- 	return PTR_ERR_OR_ZERO(oxp_platform_device);
+ 	return PTR_ERR_OR_ZERO(hwdev);
  }
  
-@@ -760,6 +964,8 @@ static void __exit oxp_platform_exit(void)
- {
- 	platform_device_unregister(oxp_platform_device);
- 	platform_driver_unregister(&oxp_platform_driver);
++static void oxp_platform_remove(struct platform_device *device)
++{
 +	if (charge_control_supported())
 +		battery_hook_unregister(&battery_hook);
- }
++}
++
+ static struct platform_driver oxp_platform_driver = {
+ 	.driver = {
+ 		.name = "oxp-platform",
+ 		.dev_groups = oxp_ec_groups,
+ 	},
+ 	.probe = oxp_platform_probe,
++	.remove = oxp_platform_remove,
+ };
  
- MODULE_DEVICE_TABLE(dmi, dmi_table);
+ static struct platform_device *oxp_platform_device;
 -- 
 2.48.1
 
@@ -28439,7 +28448,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index f8ffc78deedd..1c01636582d7 100644
+index 3e930043bbb5..e2172cb92203 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -884,18 +884,18 @@ static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
@@ -28495,7 +28504,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 84 insertions(+)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index 1c01636582d7..9c43ec0fc994 100644
+index e2172cb92203..c0bcfc7108e4 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -101,6 +101,12 @@ static enum oxp_board board;
@@ -28566,7 +28575,7 @@ index 1c01636582d7..9c43ec0fc994 100644
 +
 +	switch (board) {
 +	case oxp_x1:
-+		reg = OXP_2_TURBO_SWITCH_REG;
++		reg = OXP_X1_TURBO_LED_REG;
 +		enval = OXP_X1_TURBO_LED_ON;
 +		break;
 +	default:
@@ -28629,7 +28638,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 27 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index 9c43ec0fc994..1da1e1655f96 100644
+index c0bcfc7108e4..1782136052ff 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -762,6 +762,32 @@ static int oxp_pwm_disable(void)
@@ -28719,7 +28728,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 87 insertions(+), 75 deletions(-)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index 1da1e1655f96..dade2f76124e 100644
+index 1782136052ff..23068bedd92e 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -802,6 +802,91 @@ static umode_t oxp_ec_hwmon_is_visible(const void *drvdata,
@@ -28924,7 +28933,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 29 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index dade2f76124e..a9332312b2b1 100644
+index 23068bedd92e..539d981119d8 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -802,6 +802,34 @@ static umode_t oxp_ec_hwmon_is_visible(const void *drvdata,
@@ -29020,7 +29029,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 33 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
-index a9332312b2b1..b5ba863a762a 100644
+index 539d981119d8..211a79c97aff 100644
 --- a/drivers/hwmon/oxp-sensors.c
 +++ b/drivers/hwmon/oxp-sensors.c
 @@ -934,7 +934,27 @@ static int oxp_platform_read(struct device *dev, enum hwmon_sensor_types type,
@@ -29087,7 +29096,7 @@ index a9332312b2b1..b5ba863a762a 100644
 +	hwdev = devm_hwmon_device_register_with_info(dev, "oxp_ec", NULL,
  						     &oxp_ec_chip_info, NULL);
  
- 	return PTR_ERR_OR_ZERO(hwdev);
+ 	if (charge_control_supported())
 -- 
 2.48.1
 
@@ -29115,11 +29124,11 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  MAINTAINERS                         |    7 +-
  drivers/hwmon/Kconfig               |   11 -
  drivers/hwmon/Makefile              |    1 -
- drivers/hwmon/oxp-sensors.c         | 1112 ---------------------------
+ drivers/hwmon/oxp-sensors.c         | 1117 ---------------------------
  drivers/platform/x86/Kconfig        |   11 +
  drivers/platform/x86/Makefile       |    3 +
- drivers/platform/x86/oxpec.c        | 1110 ++++++++++++++++++++++++++
- 10 files changed, 1218 insertions(+), 1217 deletions(-)
+ drivers/platform/x86/oxpec.c        | 1115 ++++++++++++++++++++++++++
+ 10 files changed, 1223 insertions(+), 1222 deletions(-)
  delete mode 100644 Documentation/hwmon/oxp-sensors.rst
  create mode 100644 Documentation/hwmon/oxpec.rst
  delete mode 100644 drivers/hwmon/oxp-sensors.c
@@ -29385,10 +29394,10 @@ index b827b92f2a78..1c3dba124054 100644
  obj-$(CONFIG_SENSORS_PCF8591)	+= pcf8591.o
 diff --git a/drivers/hwmon/oxp-sensors.c b/drivers/hwmon/oxp-sensors.c
 deleted file mode 100644
-index b5ba863a762a..000000000000
+index 211a79c97aff..000000000000
 --- a/drivers/hwmon/oxp-sensors.c
 +++ /dev/null
-@@ -1,1112 +0,0 @@
+@@ -1,1117 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0+
 -/*
 - * Platform driver for OneXPlayer, AOKZOE, AYANEO, and OrangePi Handhelds
@@ -29914,7 +29923,7 @@ index b5ba863a762a..000000000000
 -
 -	switch (board) {
 -	case oxp_x1:
--		reg = OXP_2_TURBO_SWITCH_REG;
+-		reg = OXP_X1_TURBO_LED_REG;
 -		enval = OXP_X1_TURBO_LED_ON;
 -		break;
 -	default:
@@ -30444,7 +30453,16 @@ index b5ba863a762a..000000000000
 -	hwdev = devm_hwmon_device_register_with_info(dev, "oxp_ec", NULL,
 -						     &oxp_ec_chip_info, NULL);
 -
+-	if (charge_control_supported())
+-		battery_hook_register(&battery_hook);
+-
 -	return PTR_ERR_OR_ZERO(hwdev);
+-}
+-
+-static void oxp_platform_remove(struct platform_device *device)
+-{
+-	if (charge_control_supported())
+-		battery_hook_unregister(&battery_hook);
 -}
 -
 -static struct platform_driver oxp_platform_driver = {
@@ -30453,6 +30471,7 @@ index b5ba863a762a..000000000000
 -		.dev_groups = oxp_ec_groups,
 -	},
 -	.probe = oxp_platform_probe,
+-	.remove = oxp_platform_remove,
 -};
 -
 -static struct platform_device *oxp_platform_device;
@@ -30479,9 +30498,6 @@ index b5ba863a762a..000000000000
 -		platform_create_bundle(&oxp_platform_driver,
 -				       oxp_platform_probe, NULL, 0, NULL, 0);
 -
--	if (charge_control_supported())
--		battery_hook_register(&battery_hook);
--
 -	return PTR_ERR_OR_ZERO(oxp_platform_device);
 -}
 -
@@ -30489,8 +30505,6 @@ index b5ba863a762a..000000000000
 -{
 -	platform_device_unregister(oxp_platform_device);
 -	platform_driver_unregister(&oxp_platform_driver);
--	if (charge_control_supported())
--		battery_hook_unregister(&battery_hook);
 -}
 -
 -MODULE_DEVICE_TABLE(dmi, dmi_table);
@@ -30537,10 +30551,10 @@ index 3558da59b4a5..337a96f03e64 100644
 \ No newline at end of file
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
 new file mode 100644
-index 000000000000..51845aae8a44
+index 000000000000..dc70e669fe5f
 --- /dev/null
 +++ b/drivers/platform/x86/oxpec.c
-@@ -0,0 +1,1110 @@
+@@ -0,0 +1,1115 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Platform driver for OneXPlayer and AOKZOE devices. For the time being,
@@ -31064,7 +31078,7 @@ index 000000000000..51845aae8a44
 +
 +	switch (board) {
 +	case oxp_x1:
-+		reg = OXP_2_TURBO_SWITCH_REG;
++		reg = OXP_X1_TURBO_LED_REG;
 +		enval = OXP_X1_TURBO_LED_ON;
 +		break;
 +	default:
@@ -31594,7 +31608,16 @@ index 000000000000..51845aae8a44
 +	hwdev = devm_hwmon_device_register_with_info(dev, "oxp_ec", NULL,
 +						     &oxp_ec_chip_info, NULL);
 +
++	if (charge_control_supported())
++		battery_hook_register(&battery_hook);
++
 +	return PTR_ERR_OR_ZERO(hwdev);
++}
++
++static void oxp_platform_remove(struct platform_device *device)
++{
++	if (charge_control_supported())
++		battery_hook_unregister(&battery_hook);
 +}
 +
 +static struct platform_driver oxp_platform_driver = {
@@ -31603,6 +31626,7 @@ index 000000000000..51845aae8a44
 +		.dev_groups = oxp_ec_groups,
 +	},
 +	.probe = oxp_platform_probe,
++	.remove = oxp_platform_remove,
 +};
 +
 +static struct platform_device *oxp_platform_device;
@@ -31629,9 +31653,6 @@ index 000000000000..51845aae8a44
 +		platform_create_bundle(&oxp_platform_driver,
 +				       oxp_platform_probe, NULL, 0, NULL, 0);
 +
-+	if (charge_control_supported())
-+		battery_hook_register(&battery_hook);
-+
 +	return PTR_ERR_OR_ZERO(oxp_platform_device);
 +}
 +
@@ -31639,8 +31660,6 @@ index 000000000000..51845aae8a44
 +{
 +	platform_device_unregister(oxp_platform_device);
 +	platform_driver_unregister(&oxp_platform_driver);
-+	if (charge_control_supported())
-+		battery_hook_unregister(&battery_hook);
 +}
 +
 +MODULE_DEVICE_TABLE(dmi, dmi_table);
@@ -57972,96 +57991,6 @@ index 1a45bb11e92d..79a2cf9d6fe0 100644
  	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
  	SND_PCI_QUIRK(0x1043, 0x31d0, "ASUS Zen AIO 27 Z272SD_A272SD", ALC274_FIXUP_ASUS_ZEN_AIO_27),
  	SND_PCI_QUIRK(0x1043, 0x3a20, "ASUS G614JZR", ALC285_FIXUP_ASUS_SPI_REAR_SPEAKERS),
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Fri, 28 Feb 2025 10:07:42 +0100
-Subject: fixupbat
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- drivers/platform/x86/oxpec.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index 51845aae8a44..01ab7932ff03 100644
---- a/drivers/platform/x86/oxpec.c
-+++ b/drivers/platform/x86/oxpec.c
-@@ -1051,15 +1051,25 @@ static int oxp_platform_probe(struct platform_device *pdev)
- 	hwdev = devm_hwmon_device_register_with_info(dev, "oxp_ec", NULL,
- 						     &oxp_ec_chip_info, NULL);
- 
-+	if (charge_control_supported())
-+		battery_hook_register(&battery_hook);
-+
- 	return PTR_ERR_OR_ZERO(hwdev);
- }
- 
-+static void oxp_platform_remove(struct platform_device *device)
-+{
-+	if (charge_control_supported())
-+		battery_hook_unregister(&battery_hook);
-+}
-+
- static struct platform_driver oxp_platform_driver = {
- 	.driver = {
- 		.name = "oxp-platform",
- 		.dev_groups = oxp_ec_groups,
- 	},
- 	.probe = oxp_platform_probe,
-+	.remove = oxp_platform_remove,
- };
- 
- static struct platform_device *oxp_platform_device;
-@@ -1086,9 +1096,6 @@ static int __init oxp_platform_init(void)
- 		platform_create_bundle(&oxp_platform_driver,
- 				       oxp_platform_probe, NULL, 0, NULL, 0);
- 
--	if (charge_control_supported())
--		battery_hook_register(&battery_hook);
--
- 	return PTR_ERR_OR_ZERO(oxp_platform_device);
- }
- 
-@@ -1096,8 +1103,6 @@ static void __exit oxp_platform_exit(void)
- {
- 	platform_device_unregister(oxp_platform_device);
- 	platform_driver_unregister(&oxp_platform_driver);
--	if (charge_control_supported())
--		battery_hook_unregister(&battery_hook);
- }
- 
- MODULE_DEVICE_TABLE(dmi, dmi_table);
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Fri, 28 Feb 2025 10:33:53 +0100
-Subject: fixup led read
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- drivers/platform/x86/oxpec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index 01ab7932ff03..dc70e669fe5f 100644
---- a/drivers/platform/x86/oxpec.c
-+++ b/drivers/platform/x86/oxpec.c
-@@ -521,7 +521,7 @@ static ssize_t tt_led_show(struct device *dev,
- 
- 	switch (board) {
- 	case oxp_x1:
--		reg = OXP_2_TURBO_SWITCH_REG;
-+		reg = OXP_X1_TURBO_LED_REG;
- 		enval = OXP_X1_TURBO_LED_ON;
- 		break;
- 	default:
 -- 
 2.48.1
 
