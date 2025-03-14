@@ -143,12 +143,11 @@ jobs:
           path: ccache
           key: ccache-${{ matrix.arch }}-${{ github.sha }}
 
-      # Trigger akmods build/kernel cache
-      - name: Trigger Workflow in Another Repository
+      # Trigger ublue-os/akmods build/kernel cache
+      - name: Trigger Kernel Cache
         run: |
-          # Set the required variables
-          repo_owner="ublue-os" 
-          repo_name="akmods"  
+          repo_owner="ublue-os"
+          repo_name="akmods"
           event_type="bazzite-kernel-build" 
           service=${{ github.event.inputs.target_service }}"
           version="${{ github.event.inputs.target_version }}"
