@@ -745,10 +745,10 @@ index 8440defa6788..03da2c8cf678 100644
  	priv->handler.profile_set = inspur_platform_profile_set;
  
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 2cfb2ac3f465..677dc966e6fc 100644
+index 84dcd7da7319..eb828379b152 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -10572,6 +10572,7 @@ static void dytc_profile_refresh(void)
+@@ -10573,6 +10573,7 @@ static void dytc_profile_refresh(void)
  }
  
  static struct platform_profile_handler dytc_profile = {
@@ -1063,10 +1063,10 @@ index 03da2c8cf678..5a53949bbbf5 100644
  	priv->handler.profile_set = inspur_platform_profile_set;
  
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 677dc966e6fc..e002fa480bf0 100644
+index eb828379b152..baf39ca58d6c 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -10639,6 +10639,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
+@@ -10640,6 +10640,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
  	dbg_printk(TPACPI_DBG_INIT,
  			"DYTC version %d: thermal mode available\n", dytc_version);
  
@@ -1287,10 +1287,10 @@ index 5a53949bbbf5..53af73a7fbf7 100644
  
  static const struct wmi_device_id inspur_wmi_id_table[] = {
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index e002fa480bf0..ccfe6564cf4d 100644
+index baf39ca58d6c..29612fcb705e 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -10661,7 +10661,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
+@@ -10662,7 +10662,7 @@ static int tpacpi_dytc_profile_init(struct ibm_init_struct *iibm)
  
  static void dytc_profile_exit(void)
  {
@@ -1390,10 +1390,10 @@ index 0a58951cb8bf..dc98f862a06d 100644
  }
  
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index ccfe6564cf4d..661a65106b18 100644
+index 29612fcb705e..da60491a9109 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -10539,6 +10539,12 @@ static int dytc_profile_set(struct platform_profile_handler *pprof,
+@@ -10540,6 +10540,12 @@ static int dytc_profile_set(struct platform_profile_handler *pprof,
  	return err;
  }
  
@@ -1406,7 +1406,7 @@ index ccfe6564cf4d..661a65106b18 100644
  static void dytc_profile_refresh(void)
  {
  	enum platform_profile_option profile;
-@@ -10567,16 +10573,10 @@ static void dytc_profile_refresh(void)
+@@ -10568,16 +10574,10 @@ static void dytc_profile_refresh(void)
  	err = convert_dytc_to_profile(funcmode, perfmode, &profile);
  	if (!err && profile != dytc_current_profile) {
  		dytc_current_profile = profile;
@@ -22514,7 +22514,7 @@ Patchset: mwifiex
  1 file changed, 15 insertions(+)
 
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 72e85673b709..110c983dfd53 100644
+index 75dbe07e07e2..fd0f1aa5eaa9 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -65,6 +65,7 @@ static struct usb_driver btusb_driver;
@@ -22533,7 +22533,7 @@ index 72e85673b709..110c983dfd53 100644
  
  	/* Intel Bluetooth devices */
  	{ USB_DEVICE(0x8087, 0x0025), .driver_info = BTUSB_INTEL_COMBINED },
-@@ -3869,6 +3871,19 @@ static int btusb_probe(struct usb_interface *intf,
+@@ -3870,6 +3872,19 @@ static int btusb_probe(struct usb_interface *intf,
  	if (id->driver_info & BTUSB_MARVELL)
  		hdev->set_bdaddr = btusb_set_bdaddr_marvell;
  
@@ -22691,7 +22691,7 @@ Patchset: ipts
  2 files changed, 2 insertions(+)
 
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index c3a6657dcd4a..82eef2f4eb0a 100644
+index a5f88ec97df7..e379dc2373b5 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -92,6 +92,7 @@
@@ -22703,7 +22703,7 @@ index c3a6657dcd4a..82eef2f4eb0a 100644
  
  #define MEI_DEV_ID_JSP_N      0x4DE0  /* Jasper Lake Point N */
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 6589635f8ba3..a1df48a434e2 100644
+index d6ff9d82ae94..a1b714505f43 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -97,6 +97,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -29179,7 +29179,7 @@ Patchset: surface-typecover
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
-index 027479179f09..ee5a6bf5452d 100644
+index 6926bd639ec6..b08e3d206c31 100644
 --- a/drivers/usb/core/quirks.c
 +++ b/drivers/usb/core/quirks.c
 @@ -223,6 +223,9 @@ static const struct usb_device_id usb_quirk_list[] = {
@@ -32865,6 +32865,35 @@ index 46e3e42f9eb5..2df6a1ca57ba 100644
  
 +MODULE_IMPORT_NS("ASUS_WMI");
  MODULE_LICENSE("GPL");
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "Luke D. Jones" <luke@ljones.dev>
+Date: Fri, 7 Jun 2024 15:58:01 +1200
+Subject: Input: xpad - add support for ASUS ROG RAIKIRI PRO
+
+Add the VID/PID for ASUS ROG RAIKIRI PRO to
+xpad_device and the VID to xpad_table.
+
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
+---
+ drivers/hid/hid-ids.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index d1d479ca50a2..d1ab021e4a6a 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -210,6 +210,7 @@
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD2	0x19b6
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD3	0x1a30
+ #define USB_DEVICE_ID_ASUSTEK_ROG_Z13_LIGHTBAR		0x18c6
++#define USB_DEVICE_ID_ASUSTEK_ROG_RAIKIRI_PAD		0x1abb
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY		0x1abe
+ #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X		0x1b4c
+ #define USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD	0x196b
 -- 
 2.48.1
 
@@ -38745,7 +38774,7 @@ Subject: linux6.13.y-bore5.9.6
  create mode 100644 kernel/sched/bore.c
 
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 949b53e0accf..724fbf6a2ffa 100644
+index 376478d29e2d..7a9607ab0100 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -538,6 +538,15 @@ struct sched_statistics {
@@ -39496,7 +39525,7 @@ index a1be00a988bf..66fcb229007d 100644
  	P(se.avg.runnable_sum);
  	P(se.avg.util_sum);
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 7d0a05660e5e..d10df202536d 100644
+index 4f850edf1640..51f18a093cde 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
 @@ -55,6 +55,8 @@
@@ -39620,7 +39649,7 @@ index 7d0a05660e5e..d10df202536d 100644
  			    unsigned long weight)
  {
  	bool curr = cfs_rq->curr == se;
-@@ -5259,7 +5295,11 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+@@ -5261,7 +5297,11 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
  		se->rel_deadline = 0;
  		return;
  	}
@@ -39633,7 +39662,7 @@ index 7d0a05660e5e..d10df202536d 100644
  	/*
  	 * When joining the competition; the existing tasks will be,
  	 * on average, halfway through their slice, as such start tasks
-@@ -7154,6 +7194,15 @@ static bool dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+@@ -7156,6 +7196,15 @@ static bool dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
  		util_est_dequeue(&rq->cfs, p);
  
  	util_est_update(&rq->cfs, p, flags & DEQUEUE_SLEEP);
@@ -39649,7 +39678,7 @@ index 7d0a05660e5e..d10df202536d 100644
  	if (dequeue_entities(rq, &p->se, flags) < 0)
  		return false;
  
-@@ -8967,16 +9016,25 @@ static void yield_task_fair(struct rq *rq)
+@@ -8969,16 +9018,25 @@ static void yield_task_fair(struct rq *rq)
  	/*
  	 * Are we the only task in the tree?
  	 */
@@ -39675,7 +39704,7 @@ index 7d0a05660e5e..d10df202536d 100644
  	/*
  	 * Tell update_rq_clock() that we've just updated,
  	 * so we don't do microscopic update in schedule()
-@@ -13037,6 +13095,9 @@ static void task_tick_fair(struct rq *rq, struct task_struct *curr, int queued)
+@@ -13039,6 +13097,9 @@ static void task_tick_fair(struct rq *rq, struct task_struct *curr, int queued)
  static void task_fork_fair(struct task_struct *p)
  {
  	set_task_max_allowed_capacity(p);
@@ -39685,7 +39714,7 @@ index 7d0a05660e5e..d10df202536d 100644
  }
  
  /*
-@@ -13147,6 +13208,10 @@ static void attach_task_cfs_rq(struct task_struct *p)
+@@ -13149,6 +13210,10 @@ static void attach_task_cfs_rq(struct task_struct *p)
  
  static void switched_from_fair(struct rq *rq, struct task_struct *p)
  {
@@ -41747,7 +41776,7 @@ Subject: [BEGIN] OneXPlayer Handheld patches
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 18:31:10 +0100
+Date: Sun, 9 Mar 2025 12:21:02 +0100
 Subject: hwmon: (oxp-sensors) Distinguish the X1 variants
 
 Currently, the oxp-sensors driver fuzzy matches the X1 variants. Luckily,
@@ -41761,6 +41790,8 @@ These are the OneXPlayer X1 AMD and Intel variants, and the X1 mini which
 only has an AMD variant. As far as registers go, all three support the
 current driver functionality.
 
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/hwmon/oxp-sensors.c | 23 ++++++++++++++++++++++-
@@ -41806,7 +41837,7 @@ index 83730d931824..5a4230ad3757 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 18:37:36 +0100
+Date: Sun, 9 Mar 2025 12:21:03 +0100
 Subject: hwmon: (oxp-sensors) Add all OneXFly variants
 
 Currently, the driver only has the F1 OneXFly variant, which was based
@@ -41827,6 +41858,7 @@ charge limitting feature on this series, only F1Pro/X1 (AMD) were
 released with it, but OneXPlayer is providing bios updates for F1, F1L,
 X1 Mini units that use the same register, so treat all of them the same.
 
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/hwmon/oxp-sensors.c | 35 +++++++++++++++++++++++++++++++++++
@@ -41884,7 +41916,7 @@ index 5a4230ad3757..f7a64fbc8f33 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sat, 22 Feb 2025 16:07:56 +0100
+Date: Sun, 9 Mar 2025 12:21:04 +0100
 Subject: platform/x86: oxpec: Move hwmon/oxp-sensors to platform/x86
 
 The EC of OneXPlayer devices used to only control the fan.
@@ -41893,7 +41925,8 @@ additional functionality (turbo button, turbo led, battery controls).
 
 As it will be beneficial from a complexity perspective
 to retain this driver as a single unit, move it out
-of hwmon, and into platform/x86.
+of hwmon, and into platform/x86. Also, remove the
+hwmon documentation to avoid it becoming stale.
 
 While at it, add myself to the maintainer's file.
 
@@ -41902,17 +41935,15 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  Documentation/hwmon/index.rst       |   2 +-
  Documentation/hwmon/oxp-sensors.rst |  89 ----
- Documentation/hwmon/oxpec.rst       |  89 ++++
  MAINTAINERS                         |   7 +-
  drivers/hwmon/Kconfig               |  11 -
  drivers/hwmon/Makefile              |   1 -
  drivers/hwmon/oxp-sensors.c         | 772 ----------------------------
- drivers/platform/x86/Kconfig        |  11 +
+ drivers/platform/x86/Kconfig        |  12 +
  drivers/platform/x86/Makefile       |   3 +
  drivers/platform/x86/oxpec.c        | 770 +++++++++++++++++++++++++++
- 10 files changed, 878 insertions(+), 877 deletions(-)
+ 9 files changed, 790 insertions(+), 877 deletions(-)
  delete mode 100644 Documentation/hwmon/oxp-sensors.rst
- create mode 100644 Documentation/hwmon/oxpec.rst
  delete mode 100644 drivers/hwmon/oxp-sensors.c
  create mode 100644 drivers/platform/x86/oxpec.c
 
@@ -42024,101 +42055,6 @@ index 581c4dafbfa1..000000000000
 -  deactivate it. The specific keycodes and behaviour is specific to the device
 -  both with this function on and off. This attribute is attached to the platform
 -  driver and not to the hwmon driver (/sys/devices/platform/oxp-platform/tt_toggle)
-diff --git a/Documentation/hwmon/oxpec.rst b/Documentation/hwmon/oxpec.rst
-new file mode 100644
-index 000000000000..581c4dafbfa1
---- /dev/null
-+++ b/Documentation/hwmon/oxpec.rst
-@@ -0,0 +1,89 @@
-+.. SPDX-License-Identifier: GPL-2.0-or-later
-+
-+Kernel driver oxp-sensors
-+=========================
-+
-+Authors:
-+    - Derek John Clark <derekjohn.clark@gmail.com>
-+    - Joaquín Ignacio Aramendía <samsagax@gmail.com>
-+
-+Description:
-+------------
-+
-+Handheld devices from OneNetbook, AOKZOE, AYANEO, And OrangePi provide fan
-+readings and fan control through their embedded controllers.
-+
-+Currently supports OneXPlayer devices, AOKZOE, AYANEO, and OrangePi
-+handheld devices. AYANEO devices preceding the AIR and OneXPlayer devices
-+preceding the Mini A07 are not supportable as the EC model is different
-+and do not have manual control capabilities.
-+
-+Some OneXPlayer and AOKZOE models have a toggle for changing the behaviour
-+of the "Turbo/Silent" button of the device. It will change the key event
-+that it triggers with a flip of the `tt_toggle` attribute. See below for
-+boards that support this function.
-+
-+Supported devices
-+-----------------
-+
-+Currently the driver supports the following handhelds:
-+
-+ - AOKZOE A1
-+ - AOKZOE A1 PRO
-+ - AYANEO 2
-+ - AYANEO 2S
-+ - AYANEO AIR
-+ - AYANEO AIR 1S
-+ - AYANEO AIR Plus (Mendocino)
-+ - AYANEO AIR Pro
-+ - AYANEO Flip DS
-+ - AYANEO Flip KB
-+ - AYANEO Geek
-+ - AYANEO Geek 1S
-+ - AYANEO KUN
-+ - OneXPlayer 2
-+ - OneXPlayer 2 Pro
-+ - OneXPlayer AMD
-+ - OneXPlayer mini AMD
-+ - OneXPlayer mini AMD PRO
-+ - OneXPlayer OneXFly
-+ - OneXPlayer X1 A
-+ - OneXPlayer X1 i
-+ - OneXPlayer X1 mini
-+ - OrangePi NEO-01
-+
-+"Turbo/Silent" button behaviour toggle is only supported on:
-+ - AOK ZOE A1
-+ - AOK ZOE A1 PRO
-+ - OneXPlayer 2
-+ - OneXPlayer 2 Pro
-+ - OneXPlayer mini AMD (only with updated alpha BIOS)
-+ - OneXPlayer mini AMD PRO
-+ - OneXPlayer OneXFly
-+ - OneXPlayer X1 A
-+ - OneXPlayer X1 i
-+ - OneXPlayer X1 mini
-+
-+Sysfs entries
-+-------------
-+
-+The following attributes are supported:
-+
-+fan1_input
-+  Read Only. Reads current fan RPM.
-+
-+pwm1_enable
-+  Read Write. Enable manual fan control. Write "1" to set to manual, write "0"
-+  to let the EC control de fan speed. Read this attribute to see current status.
-+
-+pwm1
-+  Read Write. Read this attribute to see current duty cycle in the range [0-255].
-+  When pwm1_enable is set to "1" (manual) write any value in the range [0-255]
-+  to set fan speed.
-+
-+tt_toggle
-+  Read Write. Read this attribute to check the status of the turbo/silent
-+  button behaviour function. Write "1" to activate the switch and "0" to
-+  deactivate it. The specific keycodes and behaviour is specific to the device
-+  both with this function on and off. This attribute is attached to the platform
-+  driver and not to the hwmon driver (/sys/devices/platform/oxp-platform/tt_toggle)
 diff --git a/MAINTAINERS b/MAINTAINERS
 index abd3d6e58d9d..fe7a161a0c62 100644
 --- a/MAINTAINERS
@@ -42953,16 +42889,17 @@ index f7a64fbc8f33..000000000000
 -MODULE_DESCRIPTION("Platform driver that handles EC sensors of OneXPlayer devices");
 -MODULE_LICENSE("GPL");
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 17c9dae4e658..02c3ebe770ab 100644
+index 17c9dae4e658..47d3c7ba1a9f 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
-@@ -1203,6 +1203,17 @@ config SEL3350_PLATFORM
+@@ -1203,6 +1203,18 @@ config SEL3350_PLATFORM
  	  To compile this driver as a module, choose M here: the module
  	  will be called sel3350-platform.
  
 +config OXP_EC
 +	tristate "OneXPlayer EC platform control"
 +	depends on ACPI_EC
++	depends on HWMON
 +	depends on X86
 +	help
 +		Enables support for the platform EC of OneXPlayer and AOKZOE
@@ -43768,42 +43705,37 @@ index 000000000000..dc3a0871809c
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sat, 22 Feb 2025 16:36:46 +0100
+Date: Sun, 9 Mar 2025 12:21:05 +0100
 Subject: ABI: testing: add tt_toggle and tt_led entries
 
 When tt_toggle was introduced, it was not added to the platform sysfs.
-Add it, then add documentation for tt_led. Remove the documentation
-from the hwmon entry, then update its readme to be current.
+Add it, then add documentation for tt_led.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
- Documentation/ABI/testing/sysfs-platform-oxp | 29 +++++++++
- Documentation/hwmon/oxpec.rst                | 62 +++++++-------------
- 2 files changed, 49 insertions(+), 42 deletions(-)
+ Documentation/ABI/testing/sysfs-platform-oxp | 26 ++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
  create mode 100644 Documentation/ABI/testing/sysfs-platform-oxp
 
 diff --git a/Documentation/ABI/testing/sysfs-platform-oxp b/Documentation/ABI/testing/sysfs-platform-oxp
 new file mode 100644
-index 000000000000..8727d5ecaab5
+index 000000000000..776b7dee3d59
 --- /dev/null
 +++ b/Documentation/ABI/testing/sysfs-platform-oxp
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,26 @@
 +What:		/sys/devices/platform/<platform>/tt_toggle
 +Date:		Jun 2023
 +KernelVersion:	6.5
 +Contact:	"Antheas Kapenekakis" <lkml@antheas.dev>
 +Description:
 +		Takeover TDP controls from the device. OneXPlayer devices have a
-+        turbo button that can be used to switch between two TDP modes
-+        (usually 15W and 25W). By setting this attribute to 1, this
-+        functionality is disabled, handing TDP control over to (Windows)
-+        userspace software and the Turbo button turns into a keyboard
-+        shortcut over the AT keyboard of the device. In addition,
-+        using this setting is a prerequisite for PWM control for most
-+        devices (otherwise it NOOPs).
-+
-+        This attribute was originally introduced in 6.5, without a
-+        corresponding documentation entry.
++		turbo button that can be used to switch between two TDP modes
++		(usually 15W and 25W). By setting this attribute to 1, this
++		functionality is disabled, handing TDP control over to (Windows)
++		userspace software and the Turbo button turns into a keyboard
++		shortcut over the AT keyboard of the device. In addition,
++		using this setting is a prerequisite for PWM control for most
++		newer models (otherwise it NOOPs).
 +
 +What:		/sys/devices/platform/<platform>/tt_led
 +Date:		Feb 2025
@@ -43811,122 +43743,19 @@ index 000000000000..8727d5ecaab5
 +Contact:	"Antheas Kapenekakis" <lkml@antheas.dev>
 +Description:
 +		Some OneXPlayer devices (e.g., X1 series) feature a little LED
-+        nested in the Turbo button. This LED is illuminated when the
-+        device is in the higher TDP mode (e.g., 25W). Once tt_toggle
-+        is engaged, this LED is left dangling to its last state. This
-+        attribute allows userspace to control the LED state manually
-+        (either with 1 or 0). Only a subset of devices contain this LED.
++		nested in the Turbo button. This LED is illuminated when the
++		device is in the higher TDP mode (e.g., 25W). Once tt_toggle
++		is engaged, this LED is left dangling to its last state. This
++		attribute allows userspace to control the LED state manually
++		(either with 1 or 0). Only a subset of devices contain this LED.
 +
-diff --git a/Documentation/hwmon/oxpec.rst b/Documentation/hwmon/oxpec.rst
-index 581c4dafbfa1..0a0a7c5d0263 100644
---- a/Documentation/hwmon/oxpec.rst
-+++ b/Documentation/hwmon/oxpec.rst
-@@ -1,35 +1,41 @@
- .. SPDX-License-Identifier: GPL-2.0-or-later
- 
--Kernel driver oxp-sensors
-+Kernel driver oxpec
- =========================
- 
- Authors:
-     - Derek John Clark <derekjohn.clark@gmail.com>
-     - Joaquín Ignacio Aramendía <samsagax@gmail.com>
-+    - Antheas Kapenekakis <lkml@antheas.dev>
- 
- Description:
- ------------
- 
--Handheld devices from OneNetbook, AOKZOE, AYANEO, And OrangePi provide fan
--readings and fan control through their embedded controllers.
-+Handheld devices from OneXPlayer and AOKZOE provide fan readings and fan
-+control through their embedded controllers, which can be accessed via this
-+module. If the device has the platform `tt_toggle` attribute (see
-+Documentation/ABI/testing/sysfs-platform-oxp), controlling these attributes
-+without having it engaged is undefined behavior.
- 
--Currently supports OneXPlayer devices, AOKZOE, AYANEO, and OrangePi
--handheld devices. AYANEO devices preceding the AIR and OneXPlayer devices
--preceding the Mini A07 are not supportable as the EC model is different
--and do not have manual control capabilities.
--
--Some OneXPlayer and AOKZOE models have a toggle for changing the behaviour
--of the "Turbo/Silent" button of the device. It will change the key event
--that it triggers with a flip of the `tt_toggle` attribute. See below for
--boards that support this function.
-+In addition, for legacy reasons, this driver provides hwmon functionality
-+to Ayaneo devices, and the OrangePi Neo (AOKZOE is a sister company of
-+OneXPlayer and uses the same EC).
- 
- Supported devices
- -----------------
- 
- Currently the driver supports the following handhelds:
--
-  - AOKZOE A1
-  - AOKZOE A1 PRO
-+ - OneXPlayer 2/2 Pro
-+ - OneXPlayer AMD
-+ - OneXPlayer mini AMD
-+ - OneXPlayer mini AMD PRO
-+ - OneXPlayer OneXFly variants
-+ - OneXPlayer X1 variants
-+
-+In addition, until a driver is upstreamed for the following, the driver
-+also supports controlling them:
-  - AYANEO 2
-  - AYANEO 2S
-  - AYANEO AIR
-@@ -41,29 +47,8 @@ Currently the driver supports the following handhelds:
-  - AYANEO Geek
-  - AYANEO Geek 1S
-  - AYANEO KUN
-- - OneXPlayer 2
-- - OneXPlayer 2 Pro
-- - OneXPlayer AMD
-- - OneXPlayer mini AMD
-- - OneXPlayer mini AMD PRO
-- - OneXPlayer OneXFly
-- - OneXPlayer X1 A
-- - OneXPlayer X1 i
-- - OneXPlayer X1 mini
-  - OrangePi NEO-01
- 
--"Turbo/Silent" button behaviour toggle is only supported on:
-- - AOK ZOE A1
-- - AOK ZOE A1 PRO
-- - OneXPlayer 2
-- - OneXPlayer 2 Pro
-- - OneXPlayer mini AMD (only with updated alpha BIOS)
-- - OneXPlayer mini AMD PRO
-- - OneXPlayer OneXFly
-- - OneXPlayer X1 A
-- - OneXPlayer X1 i
-- - OneXPlayer X1 mini
--
- Sysfs entries
- -------------
- 
-@@ -79,11 +64,4 @@ pwm1_enable
- pwm1
-   Read Write. Read this attribute to see current duty cycle in the range [0-255].
-   When pwm1_enable is set to "1" (manual) write any value in the range [0-255]
--  to set fan speed.
--
--tt_toggle
--  Read Write. Read this attribute to check the status of the turbo/silent
--  button behaviour function. Write "1" to activate the switch and "0" to
--  deactivate it. The specific keycodes and behaviour is specific to the device
--  both with this function on and off. This attribute is attached to the platform
--  driver and not to the hwmon driver (/sys/devices/platform/oxp-platform/tt_toggle)
-+  to set fan speed.
-\ No newline at end of file
 -- 
 2.48.1
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 9 Mar 2025 11:03:16 +0100
+Date: Sun, 9 Mar 2025 12:21:06 +0100
 Subject: power: supply: add inhibit-charge-s0 to charge_behaviour
 
 OneXPlayer devices have a charge bypass feature
@@ -43938,6 +43767,7 @@ charge_behaviour to allow the user to select
 that bypass should only be on when the device is
 in the s0 state.
 
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  Documentation/ABI/testing/sysfs-class-power | 11 ++++++-----
@@ -43947,7 +43777,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  4 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-class-power b/Documentation/ABI/testing/sysfs-class-power
-index 45180b62d426..31e3d71d89ed 100644
+index 45180b62d426..66c60a751987 100644
 --- a/Documentation/ABI/testing/sysfs-class-power
 +++ b/Documentation/ABI/testing/sysfs-class-power
 @@ -488,11 +488,12 @@ Description:
@@ -43962,7 +43792,7 @@ index 45180b62d426..31e3d71d89ed 100644
 +			================== =====================================
 +			auto:              Charge normally, respect thresholds
 +			inhibit-charge:    Do not charge while AC is attached
-+			inhibit-charge-s0: same as inhibit-charge but only in s0
++			inhibit-charge-s0: same as inhibit-charge but only in S0
 +			force-discharge:   Force discharge while AC is attached
 +			================== =====================================
  
@@ -44010,7 +43840,7 @@ index b98106e1a90f..834884a1e7cd 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 19:01:24 +0100
+Date: Sun, 9 Mar 2025 12:21:07 +0100
 Subject: platform/x86: oxpec: Add charge threshold and behaviour to OneXPlayer
 
 With the X1 (AMD), OneXPlayer added a charge limit and charge bypass to
@@ -44028,11 +43858,24 @@ by looking for the battery. OneXPlayer devices have a single battery.
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
+ drivers/platform/x86/Kconfig |   1 +
  drivers/platform/x86/oxpec.c | 217 +++++++++++++++++++++++++++++++++++
- 1 file changed, 217 insertions(+)
+ 2 files changed, 218 insertions(+)
 
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index 47d3c7ba1a9f..bee98251b8f0 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -1206,6 +1206,7 @@ config SEL3350_PLATFORM
+ config OXP_EC
+ 	tristate "OneXPlayer EC platform control"
+ 	depends on ACPI_EC
++	depends on ACPI_BATTERY
+ 	depends on HWMON
+ 	depends on X86
+ 	help
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index dc3a0871809c..dd6d333ebcfa 100644
+index dc3a0871809c..d73a10598d8f 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -24,6 +24,7 @@
@@ -44072,7 +43915,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
  
  static DEVICE_ATTR_RW(tt_toggle);
  
-+/* Callbacks for turbo toggle attribute */
++/* Callbacks for charge behaviour attributes */
 +static bool charge_behaviour_supported(void)
 +{
 +	switch (board) {
@@ -44089,10 +43932,10 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +			       struct device_attribute *attr, const char *buf,
 +			       size_t count)
 +{
++	unsigned int available;
++	long val, s0, always;
 +	int ret;
 +	u8 reg;
-+	long val, s0, always;
-+	unsigned int available;
 +
 +	switch (board) {
 +	case oxp_x1:
@@ -44125,7 +43968,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +	}
 +
 +	ret = write_to_ec(reg, val);
-+	if (ret < 0)
++	if (ret)
 +		return ret;
 +
 +	return count;
@@ -44134,10 +43977,10 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +static ssize_t charge_behaviour_show(struct device *dev,
 +			      struct device_attribute *attr, char *buf)
 +{
-+	int ret;
-+	u8 reg;
 +	long val, s0, always, sel;
 +	unsigned int available;
++	int ret;
++	u8 reg;
 +
 +	switch (board) {
 +	case oxp_x1:
@@ -44152,7 +43995,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +	}
 +
 +	ret = read_from_ec(reg, 1, &val);
-+	if (ret < 0)
++	if (ret)
 +		return ret;
 +
 +	if ((val & always) == always)
@@ -44175,7 +44018,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +	int ret;
 +
 +	ret = kstrtou64(buf, 10, &val);
-+	if (ret < 0)
++	if (ret)
 +		return ret;
 +
 +	if (val > 100)
@@ -44191,7 +44034,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +	}
 +
 +	ret = write_to_ec(reg, val);
-+	if (ret < 0)
++	if (ret)
 +		return ret;
 +
 +	return count;
@@ -44200,9 +44043,9 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +static ssize_t charge_control_end_threshold_show(struct device *dev,
 +			      struct device_attribute *attr, char *buf)
 +{
++	long val;
 +	int ret;
 +	u8 reg;
-+	long val;
 +
 +	switch (board) {
 +	case oxp_x1:
@@ -44214,7 +44057,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
 +	}
 +
 +	ret = read_from_ec(reg, 1, &val);
-+	if (ret < 0)
++	if (ret)
 +		return ret;
 +
 +	return sysfs_emit(buf, "%ld\n", val);
@@ -44295,7 +44138,7 @@ index dc3a0871809c..dd6d333ebcfa 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 18:47:25 +0100
+Date: Sun, 9 Mar 2025 12:21:08 +0100
 Subject: platform/x86: oxpec: Rename ec group to tt_toggle
 
 Currently, the EC group is used for the turbo button. However, the next
@@ -44303,13 +44146,14 @@ patch in the series adds support for the LED button in X1 devices, which
 is only applicable for X1 devices. Therefore, rename it to prepare for
 adding the second group.
 
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/platform/x86/oxpec.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index dd6d333ebcfa..9cb024325da5 100644
+index d73a10598d8f..95b0c946b7f8 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -888,18 +888,18 @@ static const struct hwmon_channel_info * const oxp_platform_sensors[] = {
@@ -44341,7 +44185,7 @@ index dd6d333ebcfa..9cb024325da5 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 19:12:16 +0100
+Date: Sun, 9 Mar 2025 12:21:09 +0100
 Subject: platform/x86: oxpec: Add turbo led support to X1 devices
 
 The X1 and X1 mini lineups feature an LED nested within their turbo
@@ -44365,7 +44209,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 84 insertions(+)
 
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index 9cb024325da5..eb7eafebbd37 100644
+index 95b0c946b7f8..58a1919aec15 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -106,6 +106,12 @@ static enum oxp_board board;
@@ -44385,7 +44229,7 @@ index 9cb024325da5..eb7eafebbd37 100644
  
  static DEVICE_ATTR_RW(tt_toggle);
  
-+/* Callbacks for turbo toggle attribute */
++/* Callbacks for turbo LED attribute */
 +static umode_t tt_led_is_visible(struct kobject *kobj,
 +				    struct attribute *attr, int n)
 +{
@@ -44403,8 +44247,8 @@ index 9cb024325da5..eb7eafebbd37 100644
 +			       size_t count)
 +{
 +	u8 reg, val;
-+	int rval;
 +	bool value;
++	int rval;
 +
 +	rval = kstrtobool(buf, &value);
 +	if (rval)
@@ -44430,9 +44274,9 @@ index 9cb024325da5..eb7eafebbd37 100644
 +			      struct device_attribute *attr, char *buf)
 +{
 +	int retval;
-+	u8 reg;
 +	long enval;
 +	long val;
++	u8 reg;
 +
 +	switch (board) {
 +	case oxp_x1:
@@ -44452,7 +44296,7 @@ index 9cb024325da5..eb7eafebbd37 100644
 +
 +static DEVICE_ATTR_RW(tt_led);
 +
- /* Callbacks for turbo toggle attribute */
+ /* Callbacks for charge behaviour attributes */
  static bool charge_behaviour_supported(void)
  {
 @@ -898,8 +971,19 @@ static struct attribute_group oxp_tt_toggle_attribute_group = {
@@ -44481,7 +44325,7 @@ index 9cb024325da5..eb7eafebbd37 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 19:43:09 +0100
+Date: Sun, 9 Mar 2025 12:21:10 +0100
 Subject: platform/x86: oxpec: Move pwm_enable read to its own function
 
 Currently, this driver breaks ABI by using auto as 0 and manual as 1.
@@ -44493,13 +44337,14 @@ the 0th value, the fan needs to be set to full power).
 Therefore, begin by moving the current pwm_enable read to its own
 function, oxp_pwm_enable.
 
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/platform/x86/oxpec.c | 50 +++++++++++++++++++-----------------
  1 file changed, 27 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index eb7eafebbd37..471444fbd786 100644
+index 58a1919aec15..31c7d0041492 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -766,6 +766,32 @@ static int oxp_pwm_disable(void)
@@ -44572,7 +44417,7 @@ index eb7eafebbd37..471444fbd786 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 19:58:55 +0100
+Date: Sun, 9 Mar 2025 12:21:11 +0100
 Subject: platform/x86: oxpec: Move pwm value read/write to separate functions
 
 Currently, this driver breaks hwmon ABI by using auto as 0 and manual
@@ -44583,13 +44428,14 @@ the 0th value, the fan needs to be set to full power).
 
 Therefore, move the pwm value read/write to separate functions.
 
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/platform/x86/oxpec.c | 162 +++++++++++++++++++----------------
  1 file changed, 87 insertions(+), 75 deletions(-)
 
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index 471444fbd786..7dfd798bec87 100644
+index 31c7d0041492..f0e70205ad19 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -806,6 +806,91 @@ static umode_t oxp_ec_hwmon_is_visible(const void *drvdata,
@@ -44781,20 +44627,21 @@ index 471444fbd786..7dfd798bec87 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 20:00:59 +0100
+Date: Sun, 9 Mar 2025 12:21:12 +0100
 Subject: platform/x86: oxpec: Move fan speed read to separate function
 
 While not necessary for fixing the ABI hwmon issue, fan speed will be
 the only remaining value without a function. Therefore, finish the
 refactor by moving it to a separate function.
 
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/platform/x86/oxpec.c | 53 ++++++++++++++++++++----------------
  1 file changed, 29 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index 7dfd798bec87..a06a7c54aa08 100644
+index f0e70205ad19..97dc7b7c70c7 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -806,6 +806,34 @@ static umode_t oxp_ec_hwmon_is_visible(const void *drvdata,
@@ -44870,7 +44717,7 @@ index 7dfd798bec87..a06a7c54aa08 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 22 Dec 2024 20:19:04 +0100
+Date: Sun, 9 Mar 2025 12:21:13 +0100
 Subject: platform/x86: oxpec: Adhere to sysfs-class-hwmon and enable pwm on 2
 
 Currently, the driver does not adhere to the sysfs-class-hwmon
@@ -44885,13 +44732,14 @@ reflecting the naming convention used by other drivers, to allow for
 a smooth migration in current userspace programs.
 
 Closes: https://lore.kernel.org/linux-hwmon/20241027174836.8588-1-derekjohn.clark@gmail.com/
+Reviewed-by: Derek J. Clark <derekjohn.clark@gmail.com>
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/platform/x86/oxpec.c | 37 ++++++++++++++++++++++++++++++++----
  1 file changed, 33 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
-index a06a7c54aa08..0b13baf190fe 100644
+index 97dc7b7c70c7..273589f8b2fa 100644
 --- a/drivers/platform/x86/oxpec.c
 +++ b/drivers/platform/x86/oxpec.c
 @@ -938,7 +938,27 @@ static int oxp_platform_read(struct device *dev, enum hwmon_sensor_types type,
@@ -44959,6 +44807,60 @@ index a06a7c54aa08..0b13baf190fe 100644
  						     &oxp_ec_chip_info, NULL);
  
  	if (charge_behaviour_supported())
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Tue, 11 Mar 2025 17:40:36 +0100
+Subject: platform/x86: oxpec: Follow reverse xmas convention for tt_toggle
+
+Since the rest of the driver follows this convention, apply it to the
+tt_toggle attribute as well.
+
+Suggested-by: Derek J. Clark <derekjohn.clark@gmail.com>
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/platform/x86/oxpec.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
+index 273589f8b2fa..a3c945c73fc5 100644
+--- a/drivers/platform/x86/oxpec.c
++++ b/drivers/platform/x86/oxpec.c
+@@ -294,9 +294,9 @@ static const struct dmi_system_id dmi_table[] = {
+ /* Helper functions to handle EC read/write */
+ static int read_from_ec(u8 reg, int size, long *val)
+ {
+-	int i;
+-	int ret;
+ 	u8 buffer;
++	int ret;
++	int i;
+ 
+ 	if (!lock_global_acpi_lock())
+ 		return -EBUSY;
+@@ -408,8 +408,8 @@ static ssize_t tt_toggle_store(struct device *dev,
+ 			       struct device_attribute *attr, const char *buf,
+ 			       size_t count)
+ {
+-	int rval;
+ 	bool value;
++	int rval;
+ 
+ 	rval = kstrtobool(buf, &value);
+ 	if (rval)
+@@ -430,8 +430,8 @@ static ssize_t tt_toggle_show(struct device *dev,
+ 			      struct device_attribute *attr, char *buf)
+ {
+ 	int retval;
+-	u8 reg;
+ 	long val;
++	u8 reg;
+ 
+ 	switch (board) {
+ 	case oxp_mini_amd_a07:
 -- 
 2.48.1
 
@@ -45172,10 +45074,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  2 files changed, 3 insertions(+)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index d1d479ca50a2..d59cd19ef2ec 100644
+index d1ab021e4a6a..7234517d4f96 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
-@@ -1000,6 +1000,7 @@
+@@ -1001,6 +1001,7 @@
  #define USB_VENDOR_ID_NOVATEK		0x0603
  #define USB_DEVICE_ID_NOVATEK_PCT	0x0600
  #define USB_DEVICE_ID_NOVATEK_MOUSE	0x1602
@@ -65720,10 +65622,10 @@ Co-developed-by: linh1987
  1 file changed, 10 insertions(+)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 0ffb7fa1b883..83fc1ee6b34c 100644
+index 10e9ec74104d..66cf156c169b 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -7556,6 +7556,7 @@ enum {
+@@ -7634,6 +7634,7 @@ enum {
  	ALC269VB_FIXUP_ASUS_ZENBOOK,
  	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
  	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
@@ -65731,7 +65633,7 @@ index 0ffb7fa1b883..83fc1ee6b34c 100644
  	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
  	ALC269VB_FIXUP_ORDISSIMO_EVE2,
  	ALC283_FIXUP_CHROME_BOOK,
-@@ -8266,6 +8267,13 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -8344,6 +8345,13 @@ static const struct hda_fixup alc269_fixups[] = {
  		.chained = true,
  		.chain_id = ALC269_FIXUP_HEADSET_MIC
  	},
@@ -65745,7 +65647,7 @@ index 0ffb7fa1b883..83fc1ee6b34c 100644
  	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -11025,6 +11033,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -11103,6 +11111,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x2782, 0x1705, "MEDION E15433", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
  	SND_PCI_QUIRK(0x2782, 0x4900, "MEDION E15443", ALC233_FIXUP_MEDION_MTL_SPK),
@@ -65753,7 +65655,7 @@ index 0ffb7fa1b883..83fc1ee6b34c 100644
  	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
  	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
  	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
-@@ -11149,6 +11158,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
+@@ -11227,6 +11236,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK, .name = "asus-zenbook"},
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A, .name = "asus-zenbook-ux31a"},
  	{.id = ALC269VB_FIXUP_ORDISSIMO_EVE2, .name = "ordissimo"},
@@ -65777,10 +65679,10 @@ Co-developed-by: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
  1 file changed, 50 insertions(+), 1 deletion(-)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 83fc1ee6b34c..d97532d357b2 100644
+index 66cf156c169b..df9dfec5372b 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -6728,6 +6728,20 @@ static void alc294_gx502_toggle_output(struct hda_codec *codec,
+@@ -6806,6 +6806,20 @@ static void alc294_gx502_toggle_output(struct hda_codec *codec,
  		alc_write_coef_idx(codec, 0x10, 0x0a20);
  }
  
@@ -65801,7 +65703,7 @@ index 83fc1ee6b34c..d97532d357b2 100644
  static void alc294_fixup_gx502_hp(struct hda_codec *codec,
  					const struct hda_fixup *fix, int action)
  {
-@@ -7543,6 +7557,8 @@ enum {
+@@ -7621,6 +7635,8 @@ enum {
  	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE,
  	ALC269_FIXUP_DELL4_MIC_NO_PRESENCE_QUIET,
  	ALC269_FIXUP_HEADSET_MODE,
@@ -65810,7 +65712,7 @@ index 83fc1ee6b34c..d97532d357b2 100644
  	ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC,
  	ALC269_FIXUP_ASPIRE_HEADSET_MIC,
  	ALC269_FIXUP_ASUS_X101_FUNC,
-@@ -7800,6 +7816,30 @@ enum {
+@@ -7878,6 +7894,30 @@ enum {
  	ALC283_FIXUP_DELL_HP_RESUME,
  };
  
@@ -65841,7 +65743,7 @@ index 83fc1ee6b34c..d97532d357b2 100644
  /* A special fixup for Lenovo C940 and Yoga Duet 7;
   * both have the very same PCI SSID, and we need to apply different fixups
   * depending on the codec ID
-@@ -9060,6 +9100,14 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -9142,6 +9182,14 @@ static const struct hda_fixup alc269_fixups[] = {
  			{ 0x1b, 0x90170152 } /* use as internal speaker (back) */
  		}
  	},
@@ -65856,7 +65758,7 @@ index 83fc1ee6b34c..d97532d357b2 100644
  	[ALC299_FIXUP_PREDATOR_SPK] = {
  		.type = HDA_FIXUP_PINS,
  		.v.pins = (const struct hda_pintbl[]) {
-@@ -11032,8 +11080,9 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -11110,8 +11158,9 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x2782, 0x1701, "Infinix Y4 Max", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1705, "MEDION E15433", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
@@ -68344,10 +68246,10 @@ index a2d9d34f9fb0..ee576dd8f35b 100644
 +
  #endif
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 110c983dfd53..48865264650b 100644
+index fd0f1aa5eaa9..4ab54d8038c5 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
-@@ -3956,6 +3956,8 @@ static int btusb_probe(struct usb_interface *intf,
+@@ -3957,6 +3957,8 @@ static int btusb_probe(struct usb_interface *intf,
  		hdev->shutdown = btrtl_shutdown_realtek;
  		hdev->cmd_timeout = btusb_rtl_cmd_timeout;
  		hdev->hw_error = btusb_rtl_hw_error;
@@ -70745,35 +70647,6 @@ Subject: [BEGIN] 6.13 Cherry picks
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: "Luke D. Jones" <luke@ljones.dev>
-Date: Fri, 7 Jun 2024 15:58:01 +1200
-Subject: Input: xpad - add support for ASUS ROG RAIKIRI PRO
-
-Add the VID/PID for ASUS ROG RAIKIRI PRO to
-xpad_device and the VID to xpad_table.
-
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
----
- drivers/hid/hid-ids.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index d59cd19ef2ec..7234517d4f96 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -210,6 +210,7 @@
- #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD2	0x19b6
- #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_KEYBOARD3	0x1a30
- #define USB_DEVICE_ID_ASUSTEK_ROG_Z13_LIGHTBAR		0x18c6
-+#define USB_DEVICE_ID_ASUSTEK_ROG_RAIKIRI_PAD		0x1abb
- #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY		0x1abe
- #define USB_DEVICE_ID_ASUSTEK_ROG_NKEY_ALLY_X		0x1b4c
- #define USB_DEVICE_ID_ASUSTEK_ROG_CLAYMORE_II_KEYBOARD	0x196b
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
 Date: Mon, 27 Jan 2025 00:44:21 +0100
 Subject: CI: add kmod downloader
@@ -71038,65 +70911,6 @@ index a0831b91dd91..825c9822c14b 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Mon, 24 Feb 2025 21:57:20 +0100
-Subject: ALSA: hda/realtek: Remove (revert) duplicate Ally X config
-
-This reverts commit ebfb5a57caa4e2e2203883ac6669bf8a294e7c89.
-
-In commit 1e9c708dc3ae ("ALSA: hda/tas2781: Add new quirk for Lenovo,
-ASUS, Dell projects") Baojun adds a bunch of projects to the file,
-including for the Ally X. Turns out the initial Ally X was not sorted
-properly, so the kernel had 2 quirks for it.
-
-The previous quirk overrode the new one due to being earlier and they
-are different. When AB testing, the normal pin fixup seems to work ok
-but causes a bit of a minor popping. Given the other config is more
-complicated and may cause undefined behavior, revert it.
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- sound/pci/hda/patch_realtek.c | 8 --------
- 1 file changed, 8 deletions(-)
-
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index d97532d357b2..1abe90713a6e 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -7694,7 +7694,6 @@ enum {
- 	ALC285_FIXUP_THINKPAD_X1_GEN7,
- 	ALC285_FIXUP_THINKPAD_HEADSET_JACK,
- 	ALC294_FIXUP_ASUS_ALLY,
--	ALC294_FIXUP_ASUS_ALLY_X,
- 	ALC294_FIXUP_ASUS_ALLY_PINS,
- 	ALC294_FIXUP_ASUS_ALLY_VERBS,
- 	ALC294_FIXUP_ASUS_ALLY_SPEAKER,
-@@ -9174,12 +9173,6 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC294_FIXUP_ASUS_ALLY_PINS
- 	},
--	[ALC294_FIXUP_ASUS_ALLY_X] = {
--		.type = HDA_FIXUP_FUNC,
--		.v.func = tas2781_fixup_i2c,
--		.chained = true,
--		.chain_id = ALC294_FIXUP_ASUS_ALLY_PINS
--	},
- 	[ALC294_FIXUP_ASUS_ALLY_PINS] = {
- 		.type = HDA_FIXUP_PINS,
- 		.v.pins = (const struct hda_pintbl[]) {
-@@ -10673,7 +10666,6 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
- 	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1043, 0x17f3, "ROG Ally NR2301L/X", ALC294_FIXUP_ASUS_ALLY),
--	SND_PCI_QUIRK(0x1043, 0x1eb3, "ROG Ally X RC72LA", ALC294_FIXUP_ASUS_ALLY_X),
- 	SND_PCI_QUIRK(0x1043, 0x1863, "ASUS UX6404VI/VV", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
--- 
-2.48.1
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
 Date: Sat, 22 Feb 2025 21:44:42 +0100
 Subject: ALSA: hda/realtek: Fix Asus Z13 2025 audio
 
@@ -71111,10 +70925,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 1 insertion(+)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 1abe90713a6e..c7b24ef3eda8 100644
+index df9dfec5372b..10cd944f71f1 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -10720,6 +10720,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -10803,6 +10803,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1043, 0x1f1f, "ASUS H7604JI/JV/J3D", ALC245_FIXUP_CS35L41_SPI_2),
  	SND_PCI_QUIRK(0x1043, 0x1f62, "ASUS UX7602ZM", ALC245_FIXUP_CS35L41_SPI_2),
  	SND_PCI_QUIRK(0x1043, 0x1f92, "ASUS ROG Flow X16", ALC289_FIXUP_ASUS_GA401),
@@ -71151,6 +70965,180 @@ index 61237ec51e70..fe99e3063171 100644
  		case 0x92: asus_map_key_clear(KEY_CALC);	break; /* Fn+Ret "Calc" symbol */
  		case 0xb2: asus_map_key_clear(KEY_PROG2);	break; /* Fn+Left previous aura */
  		case 0xb3: asus_map_key_clear(KEY_PROG3);	break; /* Fn+Left next aura */
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Thu, 6 Mar 2025 12:51:24 -0600
+Subject: drm/amd: Keep display off while going into S4
+
+When userspace invokes S4 the flow is:
+
+1) amdgpu_pmops_prepare()
+2) amdgpu_pmops_freeze()
+3) Create hibernation image
+4) amdgpu_pmops_thaw()
+5) Write out image to disk
+6) Turn off system
+
+Then on resume amdgpu_pmops_restore() is called.
+
+This flow has a problem that because amdgpu_pmops_thaw() is called
+it will call amdgpu_device_resume() which will resume all of the GPU.
+
+This includes turning the display hardware back on and discovering
+connectors again.
+
+This is an unexpected experience for the display to turn back on.
+Adjust the flow so that during the S4 sequence display hardware is
+not turned back on.
+
+Reported-by: Xaver Hugl <xaver.hugl@gmail.com>
+Closes: https://gitlab.freedesktop.org/drm/amd/-/issues/2038
+Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Tested-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Acked-by: Harry Wentland <harry.wentland@amd.com>
+Link: https://lore.kernel.org/r/20250306185124.44780-1-mario.limonciello@amd.com
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c           | 11 +++++++++--
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  5 +++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index 825c9822c14b..6f6c552b9afd 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2556,7 +2556,6 @@ static int amdgpu_pmops_freeze(struct device *dev)
+ 
+ 	adev->in_s4 = true;
+ 	r = amdgpu_device_suspend(drm_dev, true);
+-	adev->in_s4 = false;
+ 	if (r)
+ 		return r;
+ 
+@@ -2568,8 +2567,13 @@ static int amdgpu_pmops_freeze(struct device *dev)
+ static int amdgpu_pmops_thaw(struct device *dev)
+ {
+ 	struct drm_device *drm_dev = dev_get_drvdata(dev);
++	struct amdgpu_device *adev = drm_to_adev(drm_dev);
++	int r;
+ 
+-	return amdgpu_device_resume(drm_dev, true);
++	r = amdgpu_device_resume(drm_dev, true);
++	adev->in_s4 = false;
++
++	return r;
+ }
+ 
+ static int amdgpu_pmops_poweroff(struct device *dev)
+@@ -2582,6 +2586,9 @@ static int amdgpu_pmops_poweroff(struct device *dev)
+ static int amdgpu_pmops_restore(struct device *dev)
+ {
+ 	struct drm_device *drm_dev = dev_get_drvdata(dev);
++	struct amdgpu_device *adev = drm_to_adev(drm_dev);
++
++	adev->in_s4 = false;
+ 
+ 	return amdgpu_device_resume(drm_dev, true);
+ }
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index bea38d486b09..a7b559f3d6d2 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3320,6 +3320,11 @@ static int dm_resume(struct amdgpu_ip_block *ip_block)
+ 
+ 		return 0;
+ 	}
++
++	/* leave display off for S4 sequence */
++	if (adev->in_s4)
++		return 0;
++
+ 	/* Recreate dc_state - DC invalidates it when setting power state to S3. */
+ 	dc_state_release(dm_state->context);
+ 	dm_state->context = dc_state_create(dm->dc, NULL);
+-- 
+2.48.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Wed, 5 Mar 2025 13:13:46 +0800
+Subject: drm/amd/display: Add and use new dm_prepare_suspend() callback
+
+[Why]
+The displays currently don't get turned off until after other IP blocks
+have been suspended.  However turning off the displays first gives a
+very visible response that the system is on it's way down.
+
+[How]
+Turn off displays in a prepare_suspend() callback instead when possible.
+This will help for suspend and hibernate sequences.
+The shutdown sequence however will not call prepare() so check whether
+the state has been already saved to decide what to do.
+
+Acked-by: Wayne Lin <Wayne.Lin@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Tom Chung <chiahsuan.chung@amd.com>
+---
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 25 ++++++++++++++++---
+ 1 file changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index a7b559f3d6d2..16a32397d6e8 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3045,6 +3045,21 @@ static void hpd_rx_irq_work_suspend(struct amdgpu_display_manager *dm)
+ 	}
+ }
+ 
++static int dm_prepare_suspend(struct amdgpu_ip_block *ip_block)
++{
++	struct amdgpu_device *adev = ip_block->adev;
++
++	if (amdgpu_in_reset(adev))
++		return 0;
++
++	WARN_ON(adev->dm.cached_state);
++	adev->dm.cached_state = drm_atomic_helper_suspend(adev_to_drm(adev));
++	if (IS_ERR(adev->dm.cached_state))
++		return PTR_ERR(adev->dm.cached_state);
++
++	return 0;
++}
++
+ static int dm_suspend(struct amdgpu_ip_block *ip_block)
+ {
+ 	struct amdgpu_device *adev = ip_block->adev;
+@@ -3070,10 +3085,11 @@ static int dm_suspend(struct amdgpu_ip_block *ip_block)
+ 		return ret;
+ 	}
+ 
+-	WARN_ON(adev->dm.cached_state);
+-	adev->dm.cached_state = drm_atomic_helper_suspend(adev_to_drm(adev));
+-	if (IS_ERR(adev->dm.cached_state))
+-		return PTR_ERR(adev->dm.cached_state);
++	if (!adev->dm.cached_state) {
++		adev->dm.cached_state = drm_atomic_helper_suspend(adev_to_drm(adev));
++		if (IS_ERR(adev->dm.cached_state))
++			return PTR_ERR(adev->dm.cached_state);
++	}
+ 
+ 	s3_handle_mst(adev_to_drm(adev), true);
+ 
+@@ -3477,6 +3493,7 @@ static const struct amd_ip_funcs amdgpu_dm_funcs = {
+ 	.early_fini = amdgpu_dm_early_fini,
+ 	.hw_init = dm_hw_init,
+ 	.hw_fini = dm_hw_fini,
++	.prepare_suspend = dm_prepare_suspend,
+ 	.suspend = dm_suspend,
+ 	.resume = dm_resume,
+ 	.is_idle = dm_is_idle,
 -- 
 2.48.1
 
