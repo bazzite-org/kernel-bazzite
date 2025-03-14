@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Maximize build space
         if: matrix.arch == 'x86_64'
-        uses: ublue-os/remove-unwanted-software@v7
+        uses: ublue-os/remove-unwanted-software@v9
 
       - name: Checkout repository
         uses: actions/checkout@v4
