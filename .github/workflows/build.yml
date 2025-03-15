@@ -145,6 +145,7 @@ jobs:
 
       # Trigger ublue-os/akmods build/kernel cache
       - name: Trigger Kernel Cache
+        if: matrix.arch == 'x86_64' && github.event_name == 'release' && github.event.release.prerelease == false
         run: |
           repo_owner="ublue-os"
           repo_name="akmods"
