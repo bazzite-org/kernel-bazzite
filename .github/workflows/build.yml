@@ -147,7 +147,7 @@ jobs:
   cache_kernel:
     runs-on: ubuntu-24.04
     needs: build_kernel
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' && github.event.release.prerelease == false
     steps:
       - name: Trigger Kernel Cache
         run: |
