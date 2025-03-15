@@ -132,7 +132,7 @@ jobs:
               x86_64/linux-*.pkg.tar.zst
               x86_64/linux-*.pkg.tar.zst.sig
             fail_on_unmatched_files: false
-            make_latest: ${{ github.event.release.prerelease == false }}
+            make_latest: false
 
       # We always want to save the newest ccache
       - name: Backup ccache
@@ -144,11 +144,23 @@ jobs:
           key: ccache-${{ matrix.arch }}-${{ github.sha }}
 
   # Trigger ublue-os/akmods build/kernel cache
-  cache_kernel:
+  post_release:
     runs-on: ubuntu-24.04
     needs: build_kernel
-    if: github.event_name == 'release' && github.event.release.prerelease == false
+    if: github.event_name == 'release'
     steps:
+      - name: Make release latest
+        if: github.event.release.prerelease == false
+        uses: Wandalen/wretry.action@v3.8.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          attempt_limit: 3
+          attempt_delay: 15000
+          action: softprops/action-gh-release@v2
+          with: |
+            make_latest: true
+
       - name: Trigger Kernel Cache
         run: |
           repo_owner="ublue-os"
