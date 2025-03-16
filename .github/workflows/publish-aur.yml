@@ -35,7 +35,7 @@ jobs:
     environment: prod
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Create PKGBUILD dir
         run: mkdir -p ./pkg/
       - name: Build PKGBUILD
@@ -60,7 +60,7 @@ jobs:
       - name: Echo PKGBUILD
         run: cat ./pkg/PKGBUILD
       - name: Publish AUR package
-        uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
+        uses: KSXGitHub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
         with:
           pkgname: linux-bazzite-bin
           pkgbuild: ./pkg/PKGBUILD
