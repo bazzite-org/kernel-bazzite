@@ -1,4 +1,4 @@
-FROM archlinux:base-devel
+FROM archlinux:base-devel@sha256:61b9b05cf6a7a42aa1a32f0b00c92dcfc0b6acf3af2db1b86ab29f6605b21401
 
 ARG UID=1000
 ARG GID=1000
