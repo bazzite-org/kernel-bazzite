@@ -103,7 +103,7 @@ jobs:
           KERNEL_VER=$(ls -a | grep .build | head -n 1 | sed 's/.build-//' | sed 's/.log//')
           ARCH_VER=$(echo $KERNEL_VER | sed 's/-/./g')
           # Place in PKGBUILD
-          cat PKGBUILD | \
+          cat PKGBUILD-ACTION | \
             sed "s/VERSION_FEDORA/${KERNEL_VER}.x86_64/" | \
             sed "s/VERSION_ARCH/${ARCH_VER}/" \
             > x86_64/PKGBUILD
