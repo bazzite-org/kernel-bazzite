@@ -73615,3 +73615,38 @@ index dc081cf46d211..25fe351701559 100644
 -- 
 2.49.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Fri, 28 Mar 2025 13:54:23 +0100
+Subject: Revert "USB: core: Disable LPM only for non-suspended ports"
+
+May break USB devices after a while if powersave mode is enabled.
+
+This reverts commit 59bfeaf5454b7e764288d84802577f4a99bf0819.
+---
+ drivers/usb/core/port.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/usb/core/port.c b/drivers/usb/core/port.c
+index e857e532b35a4..45d7af00f8d17 100644
+--- a/drivers/usb/core/port.c
++++ b/drivers/usb/core/port.c
+@@ -453,11 +453,10 @@ static int usb_port_runtime_suspend(struct device *dev)
+ static void usb_port_shutdown(struct device *dev)
+ {
+ 	struct usb_port *port_dev = to_usb_port(dev);
+-	struct usb_device *udev = port_dev->child;
+ 
+-	if (udev && !udev->port_is_suspended) {
+-		usb_disable_usb2_hardware_lpm(udev);
+-		usb_unlocked_disable_lpm(udev);
++	if (port_dev->child) {
++		usb_disable_usb2_hardware_lpm(port_dev->child);
++		usb_unlocked_disable_lpm(port_dev->child);
+ 	}
+ }
+ 
+-- 
+2.49.0
+
