@@ -1035,7 +1035,7 @@ Patchset: mwifiex
  1 file changed, 15 insertions(+)
 
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index bfd769f2026b3..2173ee647ce64 100644
+index ccd0a21da3955..7dec2970af35f 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -66,6 +66,7 @@ static struct usb_driver btusb_driver;
@@ -1054,7 +1054,7 @@ index bfd769f2026b3..2173ee647ce64 100644
  
  	/* Intel Bluetooth devices */
  	{ USB_DEVICE(0x8087, 0x0025), .driver_info = BTUSB_INTEL_COMBINED },
-@@ -3963,6 +3965,19 @@ static int btusb_probe(struct usb_interface *intf,
+@@ -4008,6 +4010,19 @@ static int btusb_probe(struct usb_interface *intf,
  	if (id->driver_info & BTUSB_MARVELL)
  		hdev->set_bdaddr = btusb_set_bdaddr_marvell;
  
@@ -1212,7 +1212,7 @@ Patchset: ipts
  2 files changed, 2 insertions(+)
 
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index a5f88ec97df75..e379dc2373b56 100644
+index bc40b940ae214..45fbd856d4162 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -92,6 +92,7 @@
@@ -1224,7 +1224,7 @@ index a5f88ec97df75..e379dc2373b56 100644
  
  #define MEI_DEV_ID_JSP_N      0x4DE0  /* Jasper Lake Point N */
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index d6ff9d82ae94b..a1b714505f43f 100644
+index 3f9c60b579ae4..853a677533333 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -97,6 +97,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -1263,7 +1263,7 @@ Patchset: ipts
  1 file changed, 29 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 76417bd5e926e..6ffb7733ac59c 100644
+index 07adf4ceeea06..d9dc61fdadeee 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
 @@ -39,6 +39,11 @@
@@ -1332,7 +1332,7 @@ index 76417bd5e926e..6ffb7733ac59c 100644
  /* G4x/GM45 integrated gfx dmar support is totally busted. */
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
-@@ -4530,6 +4555,10 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
+@@ -4533,6 +4558,10 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
  
@@ -7704,7 +7704,7 @@ Patchset: surface-typecover
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
-index 8efbacc5bc341..4dfb3e3023af1 100644
+index 36d3df7d040c6..4525b4ede1929 100644
 --- a/drivers/usb/core/quirks.c
 +++ b/drivers/usb/core/quirks.c
 @@ -223,6 +223,9 @@ static const struct usb_device_id usb_quirk_list[] = {
@@ -8339,10 +8339,10 @@ index 0cf24ba613a21..baad122bf3014 100644
 +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x466d, quirk_no_shutdown);  // Thunderbolt 4 NHI
 +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x46a8, quirk_no_shutdown);  // GPU
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 47b31ad724fa5..c571fdca6c5f5 100644
+index 8e028620642f3..5dea44aa163bf 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -476,6 +476,7 @@ struct pci_dev {
+@@ -478,6 +478,7 @@ struct pci_dev {
  	unsigned int	no_command_memory:1;	/* No PCI_COMMAND_MEMORY */
  	unsigned int	rom_bar_overlap:1;	/* ROM BAR disable broken */
  	unsigned int	rom_attr_enabled:1;	/* Display of ROM attribute enabled? */
@@ -8509,7 +8509,7 @@ Patchset: cameras
  1 file changed, 30 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 6ffb7733ac59c..ce1ea51c02ec8 100644
+index d9dc61fdadeee..9616d433fb4fe 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
 @@ -44,6 +44,13 @@
@@ -8580,7 +8580,7 @@ index 6ffb7733ac59c..ce1ea51c02ec8 100644
  static void quirk_iommu_ipts(struct pci_dev *dev)
  {
  	if (!IS_IPTS(dev))
-@@ -4555,6 +4582,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
+@@ -4558,6 +4585,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
  
@@ -8654,11 +8654,11 @@ Patchset: cameras
  1 file changed, 15 insertions(+)
 
 diff --git a/drivers/platform/x86/intel/int3472/discrete.c b/drivers/platform/x86/intel/int3472/discrete.c
-index 092252eb95a87..7a73d5f903a98 100644
+index 394975f55d645..ceebd226fd583 100644
 --- a/drivers/platform/x86/intel/int3472/discrete.c
 +++ b/drivers/platform/x86/intel/int3472/discrete.c
-@@ -81,12 +81,27 @@ static int skl_int3472_map_gpio_to_sensor(struct int3472_discrete_device *int347
- 					  const char *func, unsigned long gpio_flags)
+@@ -82,12 +82,27 @@ static int skl_int3472_map_gpio_to_sensor(struct int3472_discrete_device *int347
+ 					  const char *con_id, unsigned long gpio_flags)
  {
  	int ret;
 +	const struct acpi_device_id ov7251_ids[] = {
@@ -8683,7 +8683,7 @@ index 092252eb95a87..7a73d5f903a98 100644
 +	}
 +
  	ret = skl_int3472_fill_gpiod_lookup(&int3472->gpios.table[int3472->n_sensor_gpios],
- 					    agpio, func, gpio_flags);
+ 					    agpio, con_id, gpio_flags);
  	if (ret)
 -- 
 2.49.0
@@ -18056,10 +18056,10 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index 052852f801467..fee1c911d3085 100644
+index 54a4ee2b90b7f..ae529d9f153de 100644
 --- a/drivers/usb/dwc3/dwc3-pci.c
 +++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -183,6 +183,7 @@ static const struct property_entry dwc3_pci_mr_properties[] = {
+@@ -193,6 +193,7 @@ static const struct property_entry dwc3_pci_mr_properties[] = {
  	PROPERTY_ENTRY_BOOL("usb-role-switch"),
  	PROPERTY_ENTRY_STRING("role-switch-default-mode", "host"),
  	PROPERTY_ENTRY_BOOL("linux,sysdev_is_parent"),
@@ -18086,10 +18086,10 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 89a4dc8ebf948..b7b8d17099b46 100644
+index c6761fe89cfae..492527beea082 100644
 --- a/drivers/usb/dwc3/gadget.c
 +++ b/drivers/usb/dwc3/gadget.c
-@@ -2408,7 +2408,7 @@ static int __dwc3_gadget_wakeup(struct dwc3 *dwc, bool async)
+@@ -2416,7 +2416,7 @@ static int __dwc3_gadget_wakeup(struct dwc3 *dwc, bool async)
  		return 0;
  
  	/* poll until Link State changes to ON */
@@ -18123,10 +18123,10 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 2 deletions(-)
 
 diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index fee1c911d3085..ac6827f4ef89c 100644
+index ae529d9f153de..efb6422d21ced 100644
 --- a/drivers/usb/dwc3/dwc3-pci.c
 +++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -180,8 +180,6 @@ static const struct property_entry dwc3_pci_amd_properties[] = {
+@@ -190,8 +190,6 @@ static const struct property_entry dwc3_pci_amd_properties[] = {
  
  static const struct property_entry dwc3_pci_mr_properties[] = {
  	PROPERTY_ENTRY_STRING("dr_mode", "otg"),
@@ -18151,10 +18151,10 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index ac6827f4ef89c..23d0c29380a77 100644
+index efb6422d21ced..871194b6b2f3f 100644
 --- a/drivers/usb/dwc3/dwc3-pci.c
 +++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -181,7 +181,7 @@ static const struct property_entry dwc3_pci_amd_properties[] = {
+@@ -191,7 +191,7 @@ static const struct property_entry dwc3_pci_amd_properties[] = {
  static const struct property_entry dwc3_pci_mr_properties[] = {
  	PROPERTY_ENTRY_STRING("dr_mode", "otg"),
  	PROPERTY_ENTRY_BOOL("linux,sysdev_is_parent"),
@@ -18330,7 +18330,7 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  4 files changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index a8586c3058c7c..bfb2b4c732d78 100644
+index 797992019f9ee..31d03d9e4f5d3 100644
 --- a/include/net/bluetooth/hci.h
 +++ b/include/net/bluetooth/hci.h
 @@ -483,6 +483,7 @@ enum {
@@ -18342,7 +18342,7 @@ index a8586c3058c7c..bfb2b4c732d78 100644
  #define HCI_ACL_CONN_TIMEOUT	msecs_to_jiffies(20000)	/* 20 seconds */
  #define HCI_LE_CONN_TIMEOUT	msecs_to_jiffies(20000)	/* 20 seconds */
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index f0b49aad519eb..82d5a462f6ac6 100644
+index 7d8bab892154e..4f7842ed44c7a 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
 @@ -480,7 +480,7 @@ struct hci_dev {
@@ -18478,7 +18478,7 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 14c3ee5c6a1e8..1b1b9a5889ec4 100644
+index 85c6ac082bfcd..f2d6f08b28b3a 100644
 --- a/net/bluetooth/hci_sync.c
 +++ b/net/bluetooth/hci_sync.c
 @@ -6113,7 +6113,7 @@ int hci_suspend_sync(struct hci_dev *hdev)
@@ -18526,7 +18526,7 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 10 insertions(+)
 
 diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 1b1b9a5889ec4..07dc808764c5f 100644
+index f2d6f08b28b3a..edca975496b34 100644
 --- a/net/bluetooth/hci_sync.c
 +++ b/net/bluetooth/hci_sync.c
 @@ -2666,6 +2666,7 @@ static u8 hci_update_accept_list_sync(struct hci_dev *hdev)
@@ -18799,7 +18799,7 @@ index a2d9d34f9fb08..61be34ccb625f 100644
 +
  #endif
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 2173ee647ce64..817da900e1617 100644
+index 7dec2970af35f..7996fa1e50593 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -920,9 +920,11 @@ struct btusb_data {
@@ -18814,7 +18814,7 @@ index 2173ee647ce64..817da900e1617 100644
  
  	int oob_wake_irq;   /* irq for out-of-band wake-on-bt */
  
-@@ -4050,6 +4052,8 @@ static int btusb_probe(struct usb_interface *intf,
+@@ -4095,6 +4097,8 @@ static int btusb_probe(struct usb_interface *intf,
  		hdev->shutdown = btrtl_shutdown_realtek;
  		hdev->reset = btusb_rtl_reset;
  		hdev->hw_error = btusb_rtl_hw_error;
@@ -18823,7 +18823,7 @@ index 2173ee647ce64..817da900e1617 100644
  
  		/* Realtek devices need to set remote wakeup on auto-suspend */
  		set_bit(BTUSB_WAKEUP_AUTOSUSPEND, &data->flags);
-@@ -4221,6 +4225,8 @@ static void btusb_disconnect(struct usb_interface *intf)
+@@ -4266,6 +4270,8 @@ static void btusb_disconnect(struct usb_interface *intf)
  static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
  {
  	struct btusb_data *data = usb_get_intfdata(intf);
@@ -18832,7 +18832,7 @@ index 2173ee647ce64..817da900e1617 100644
  
  	BT_DBG("intf %p", intf);
  
-@@ -4233,6 +4239,11 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
+@@ -4278,6 +4284,11 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
  	if (data->suspend_count++)
  		return 0;
  
@@ -18844,7 +18844,7 @@ index 2173ee647ce64..817da900e1617 100644
  	spin_lock_irq(&data->txlock);
  	if (!(PMSG_IS_AUTO(message) && data->tx_in_flight)) {
  		set_bit(BTUSB_SUSPENDING, &data->flags);
-@@ -4360,6 +4371,11 @@ static int btusb_resume(struct usb_interface *intf)
+@@ -4405,6 +4416,11 @@ static int btusb_resume(struct usb_interface *intf)
  	spin_unlock_irq(&data->txlock);
  	schedule_work(&data->work);
  
@@ -19166,7 +19166,7 @@ index 61be34ccb625f..a2d9d34f9fb08 100644
 -
  #endif
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 817da900e1617..2173ee647ce64 100644
+index 7996fa1e50593..7dec2970af35f 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -920,11 +920,9 @@ struct btusb_data {
@@ -19181,7 +19181,7 @@ index 817da900e1617..2173ee647ce64 100644
  
  	int oob_wake_irq;   /* irq for out-of-band wake-on-bt */
  
-@@ -4052,8 +4050,6 @@ static int btusb_probe(struct usb_interface *intf,
+@@ -4097,8 +4095,6 @@ static int btusb_probe(struct usb_interface *intf,
  		hdev->shutdown = btrtl_shutdown_realtek;
  		hdev->reset = btusb_rtl_reset;
  		hdev->hw_error = btusb_rtl_hw_error;
@@ -19190,7 +19190,7 @@ index 817da900e1617..2173ee647ce64 100644
  
  		/* Realtek devices need to set remote wakeup on auto-suspend */
  		set_bit(BTUSB_WAKEUP_AUTOSUSPEND, &data->flags);
-@@ -4225,8 +4221,6 @@ static void btusb_disconnect(struct usb_interface *intf)
+@@ -4270,8 +4266,6 @@ static void btusb_disconnect(struct usb_interface *intf)
  static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
  {
  	struct btusb_data *data = usb_get_intfdata(intf);
@@ -19199,7 +19199,7 @@ index 817da900e1617..2173ee647ce64 100644
  
  	BT_DBG("intf %p", intf);
  
-@@ -4239,11 +4233,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
+@@ -4284,11 +4278,6 @@ static int btusb_suspend(struct usb_interface *intf, pm_message_t message)
  	if (data->suspend_count++)
  		return 0;
  
@@ -19211,7 +19211,7 @@ index 817da900e1617..2173ee647ce64 100644
  	spin_lock_irq(&data->txlock);
  	if (!(PMSG_IS_AUTO(message) && data->tx_in_flight)) {
  		set_bit(BTUSB_SUSPENDING, &data->flags);
-@@ -4371,11 +4360,6 @@ static int btusb_resume(struct usb_interface *intf)
+@@ -4416,11 +4405,6 @@ static int btusb_resume(struct usb_interface *intf)
  	spin_unlock_irq(&data->txlock);
  	schedule_work(&data->work);
  
@@ -19300,10 +19300,10 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 old mode 100644
 new mode 100755
-index 80a3cbd2cbe5d..686ad14263ac3
+index 3660e4a1a85f8..18ad78d6ff290
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -6166,6 +6166,8 @@ get_output_color_space(const struct dc_crtc_timing *dc_crtc_timing,
+@@ -6146,6 +6146,8 @@ get_output_color_space(const struct dc_crtc_timing *dc_crtc_timing,
  	default:
  		if (dc_crtc_timing->pixel_encoding == PIXEL_ENCODING_RGB) {
  			color_space = COLOR_SPACE_SRGB;
@@ -19312,7 +19312,7 @@ index 80a3cbd2cbe5d..686ad14263ac3
  		/*
  		 * 27030khz is the separation point between HDTV and SDTV
  		 * according to HDMI spec, we use YCbCr709 and YCbCr601
-@@ -8334,6 +8336,10 @@ void amdgpu_dm_connector_init_helper(struct amdgpu_display_manager *dm,
+@@ -8314,6 +8316,10 @@ void amdgpu_dm_connector_init_helper(struct amdgpu_display_manager *dm,
  				dm->ddev->mode_config.scaling_mode_property,
  				DRM_MODE_SCALE_NONE);
  
@@ -19323,7 +19323,7 @@ index 80a3cbd2cbe5d..686ad14263ac3
  	drm_object_attach_property(&aconnector->base.base,
  				adev->mode_info.underscan_property,
  				UNDERSCAN_OFF);
-@@ -10121,7 +10127,7 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
+@@ -10101,7 +10107,7 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
  		struct dc_stream_update stream_update;
  		struct dc_info_packet hdr_packet;
  		struct dc_stream_status *status = NULL;
@@ -19332,7 +19332,7 @@ index 80a3cbd2cbe5d..686ad14263ac3
  
  		memset(&stream_update, 0, sizeof(stream_update));
  
-@@ -10140,13 +10146,17 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
+@@ -10120,13 +10126,17 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
  		scaling_changed = is_scaling_state_different(dm_new_con_state,
  							     dm_old_con_state);
  
@@ -19351,7 +19351,7 @@ index 80a3cbd2cbe5d..686ad14263ac3
  			continue;
  
  		stream_update.stream = dm_new_crtc_state->stream;
-@@ -10158,6 +10168,13 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
+@@ -10138,6 +10148,13 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
  			stream_update.dst = dm_new_crtc_state->stream->dst;
  		}
  
@@ -19449,7 +19449,7 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  4 files changed, 71 insertions(+)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index 69895fccb474a..c5b5de2a92ddc 100644
+index 98f0c12df12bc..05d508910ff6d 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
 @@ -57,6 +57,7 @@
@@ -20277,10 +20277,10 @@ Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 686ad14263ac3..c51ac0d7a3b3a 100755
+index 18ad78d6ff290..54716641434c3 100755
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -6272,8 +6272,7 @@ static void fill_stream_properties_from_drm_display_mode(
+@@ -6252,8 +6252,7 @@ static void fill_stream_properties_from_drm_display_mode(
  	timing_out->v_border_top = 0;
  	timing_out->v_border_bottom = 0;
  	/* TODO: un-hardcode */
@@ -20313,10 +20313,10 @@ Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
  1 file changed, 22 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index c51ac0d7a3b3a..8a86561474d6b 100755
+index 54716641434c3..9834649c495a5 100755
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -4691,7 +4691,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
+@@ -4671,7 +4671,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
  	return 0;
  }
  
@@ -20325,7 +20325,7 @@ index c51ac0d7a3b3a..8a86561474d6b 100755
  #define AMDGPU_DM_DEFAULT_MAX_BACKLIGHT 255
  #define AMDGPU_DM_MIN_SPREAD ((AMDGPU_DM_DEFAULT_MAX_BACKLIGHT - AMDGPU_DM_DEFAULT_MIN_BACKLIGHT) / 2)
  #define AUX_BL_DEFAULT_TRANSITION_TIME_MS 50
-@@ -4725,11 +4725,27 @@ static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
+@@ -4705,11 +4705,27 @@ static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
  
  	if (caps.caps_valid) {
  		dm->backlight_caps[bl_idx].caps_valid = true;
@@ -20353,7 +20353,7 @@ index c51ac0d7a3b3a..8a86561474d6b 100755
  		dm->backlight_caps[bl_idx].min_input_signal =
  				AMDGPU_DM_DEFAULT_MIN_BACKLIGHT;
  		dm->backlight_caps[bl_idx].max_input_signal =
-@@ -4739,6 +4755,9 @@ static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
+@@ -4719,6 +4735,9 @@ static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
  	if (dm->backlight_caps[bl_idx].aux_support)
  		return;
  
@@ -20363,7 +20363,7 @@ index c51ac0d7a3b3a..8a86561474d6b 100755
  	dm->backlight_caps[bl_idx].min_input_signal = AMDGPU_DM_DEFAULT_MIN_BACKLIGHT;
  	dm->backlight_caps[bl_idx].max_input_signal = AMDGPU_DM_DEFAULT_MAX_BACKLIGHT;
  #endif
-@@ -4770,7 +4789,7 @@ static u32 convert_brightness_from_user(const struct amdgpu_dm_backlight_caps *c
+@@ -4750,7 +4769,7 @@ static u32 convert_brightness_from_user(const struct amdgpu_dm_backlight_caps *c
  	if (!get_brightness_range(caps, &min, &max))
  		return brightness;
  
@@ -20372,7 +20372,7 @@ index c51ac0d7a3b3a..8a86561474d6b 100755
  	return min + DIV_ROUND_CLOSEST((max - min) * brightness,
  				       AMDGPU_MAX_BL_LEVEL);
  }
-@@ -4785,7 +4804,7 @@ static u32 convert_brightness_to_user(const struct amdgpu_dm_backlight_caps *cap
+@@ -4765,7 +4784,7 @@ static u32 convert_brightness_to_user(const struct amdgpu_dm_backlight_caps *cap
  
  	if (brightness < min)
  		return 0;
@@ -20400,10 +20400,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 45 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 8a86561474d6b..6d99c164a9496 100755
+index 9834649c495a5..50328fe5db458 100755
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -4691,11 +4691,45 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
+@@ -4671,11 +4671,45 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
  	return 0;
  }
  
@@ -20450,7 +20450,7 @@ index 8a86561474d6b..6d99c164a9496 100755
  static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
  					    int bl_idx)
  {
-@@ -4729,10 +4763,16 @@ static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
+@@ -4709,10 +4743,16 @@ static void amdgpu_dm_update_backlight_caps(struct amdgpu_display_manager *dm,
  		printk(KERN_NOTICE"VLV Successfully queried backlight range over ACPI: %d %d\n",
  		       (int) caps.min_input_signal, (int) caps.max_input_signal);
  
@@ -20499,10 +20499,10 @@ Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
  1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 6d99c164a9496..30bec2b87cc94 100755
+index 50328fe5db458..85bbf805e8772 100755
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -8320,7 +8320,12 @@ static int amdgpu_dm_connector_get_modes(struct drm_connector *connector)
+@@ -8300,7 +8300,12 @@ static int amdgpu_dm_connector_get_modes(struct drm_connector *connector)
  				drm_add_modes_noedid(connector, 1920, 1080);
  	} else {
  		amdgpu_dm_connector_ddc_get_modes(connector, drm_edid);
@@ -20972,10 +20972,10 @@ index abd3b6564373a..46937e6fa78d4 100644
 +
  endmenu
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 30bec2b87cc94..96538dd7c0dde 100755
+index 85bbf805e8772..ec17052cb8e1b 100755
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -4673,7 +4673,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
+@@ -4653,7 +4653,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
  		return r;
  	}
  
@@ -21284,7 +21284,7 @@ index 0000000000000..a8faabc2885e7
 +#endif // CONFIG_SCHED_BORE
 +#endif // _LINUX_SCHED_BORE_H
 diff --git a/init/Kconfig b/init/Kconfig
-index 5ab47c346ef93..ed24648f50047 100644
+index dc7b10a1fad2b..ec5869aa50552 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1360,6 +1360,23 @@ config CHECKPOINT_RESTORE
@@ -21953,7 +21953,7 @@ index a0893a483d35d..1ee54165fc813 100644
  	P(se.avg.runnable_sum);
  	P(se.avg.util_sum);
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 89c7260103e18..275fcb83140e7 100644
+index 3d9b68a347b76..98429398bbac6 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
 @@ -58,6 +58,8 @@
@@ -22090,7 +22090,7 @@ index 89c7260103e18..275fcb83140e7 100644
  	/*
  	 * When joining the competition; the existing tasks will be,
  	 * on average, halfway through their slice, as such start tasks
-@@ -7189,6 +7229,15 @@ static bool dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+@@ -7187,6 +7227,15 @@ static bool dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
  		util_est_dequeue(&rq->cfs, p);
  
  	util_est_update(&rq->cfs, p, flags & DEQUEUE_SLEEP);
@@ -22106,7 +22106,7 @@ index 89c7260103e18..275fcb83140e7 100644
  	if (dequeue_entities(rq, &p->se, flags) < 0)
  		return false;
  
-@@ -9009,16 +9058,25 @@ static void yield_task_fair(struct rq *rq)
+@@ -9007,16 +9056,25 @@ static void yield_task_fair(struct rq *rq)
  	/*
  	 * Are we the only task in the tree?
  	 */
@@ -22132,7 +22132,7 @@ index 89c7260103e18..275fcb83140e7 100644
  	/*
  	 * Tell update_rq_clock() that we've just updated,
  	 * so we don't do microscopic update in schedule()
-@@ -13132,6 +13190,9 @@ static void task_tick_fair(struct rq *rq, struct task_struct *curr, int queued)
+@@ -13130,6 +13188,9 @@ static void task_tick_fair(struct rq *rq, struct task_struct *curr, int queued)
  static void task_fork_fair(struct task_struct *p)
  {
  	set_task_max_allowed_capacity(p);
@@ -22142,7 +22142,7 @@ index 89c7260103e18..275fcb83140e7 100644
  }
  
  /*
-@@ -13242,6 +13303,10 @@ static void attach_task_cfs_rq(struct task_struct *p)
+@@ -13240,6 +13301,10 @@ static void attach_task_cfs_rq(struct task_struct *p)
  
  static void switched_from_fair(struct rq *rq, struct task_struct *p)
  {
@@ -22414,7 +22414,7 @@ Reviewed-by: Wayne Lin <Wayne.Lin@amd.com>
  3 files changed, 7 insertions(+)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-index fbd80d8545a82..e2cccf194a5ae 100644
+index a2532907c7be9..30d49dbc44939 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
 @@ -132,6 +132,8 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
@@ -23167,7 +23167,7 @@ Subject: PCI: Add ACI override to allow GPU passthrough in older motherboards
  2 files changed, 110 insertions(+)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index aa7447f8837cb..d4f4ba0ac9798 100644
+index 56be1fc99bdd4..74e08e381ae81 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -4644,6 +4644,14 @@
@@ -23595,7 +23595,7 @@ Subject: Cachy: drm/amdgpu/pm: Allow override of min_power_limit with
  4 files changed, 26 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index c5b5de2a92ddc..51eb98848e0ca 100644
+index 05d508910ff6d..d2dbe7557b001 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
 @@ -161,6 +161,7 @@ struct amdgpu_watchdog_timer {
@@ -23607,7 +23607,7 @@ index c5b5de2a92ddc..51eb98848e0ca 100644
  extern int amdgpu_gart_size;
  extern int amdgpu_gtt_size;
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index 24c255e05079e..5177d55c7a10a 100644
+index f2d77bc04e4a9..ca38459db89ae 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 @@ -139,6 +139,7 @@ enum AMDGPU_DEBUG_MASK {
@@ -23699,10 +23699,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  4 files changed, 180 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d4f4ba0ac9798..d9f9229a0c64e 100644
+index 74e08e381ae81..ce64b227b7f03 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -7601,6 +7601,14 @@
+@@ -7603,6 +7603,14 @@
  					request from 5000 ms to 500 ms);
  			Example: quirks=0781:5580:bk,0a5c:5834:gij
  
@@ -23985,7 +23985,7 @@ Signed-off-by: Jan200101 <sentrycraft123@gmail.com>
  2 files changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index 5177d55c7a10a..ca9102c06185b 100644
+index ca38459db89ae..148d1aa0a580d 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 @@ -626,13 +626,8 @@ module_param_named(timeout_period, amdgpu_watchdog_timer.period, uint, 0644);
@@ -24510,10 +24510,10 @@ index 581c4dafbfa13..0000000000000
 -  both with this function on and off. This attribute is attached to the platform
 -  driver and not to the hwmon driver (/sys/devices/platform/oxp-platform/tt_toggle)
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 00e94bec401e1..2ccea0b0a5c7a 100644
+index 292b51652cca7..cfd2507c4307d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -17665,12 +17665,13 @@ S:	Maintained
+@@ -17682,12 +17682,13 @@ S:	Maintained
  F:	drivers/mtd/nand/onenand/
  F:	include/linux/mtd/onenand*.h
  
@@ -29685,10 +29685,10 @@ Co-developed-by: bouhaa <boukehaarsma23@gmail.com>
  create mode 100644 sound/soc/codecs/aw87xxx/aw87xxx_pid_9b_reg.h
 
 diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index ee35f3aa55216..666ce6af5f5b7 100644
+index 0138cfabbb038..d089f4cc8a5e3 100644
 --- a/sound/soc/codecs/Kconfig
 +++ b/sound/soc/codecs/Kconfig
-@@ -2664,4 +2664,6 @@ config SND_SOC_LPASS_TX_MACRO
+@@ -2663,4 +2663,6 @@ config SND_SOC_LPASS_TX_MACRO
  	select SND_SOC_LPASS_MACRO_COMMON
  	tristate "Qualcomm TX Macro in LPASS(Low Power Audio SubSystem)"
  
@@ -50078,7 +50078,7 @@ Co-developed-by: linh1987
  1 file changed, 10 insertions(+)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 356df48c97309..9282d8bd1f129 100644
+index 2ff02fb6f7e94..d29acda8c822a 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
 @@ -7679,6 +7679,7 @@ enum {
@@ -50103,7 +50103,7 @@ index 356df48c97309..9282d8bd1f129 100644
  	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc269_fixup_limit_int_mic_boost,
-@@ -11229,6 +11237,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -11232,6 +11240,7 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x2782, 0x1705, "MEDION E15433", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
  	SND_PCI_QUIRK(0x2782, 0x4900, "MEDION E15443", ALC233_FIXUP_MEDION_MTL_SPK),
@@ -50111,7 +50111,7 @@ index 356df48c97309..9282d8bd1f129 100644
  	SND_PCI_QUIRK(0x8086, 0x2074, "Intel NUC 8", ALC233_FIXUP_INTEL_NUC8_DMIC),
  	SND_PCI_QUIRK(0x8086, 0x2080, "Intel NUC 8 Rugged", ALC256_FIXUP_INTEL_NUC8_RUGGED),
  	SND_PCI_QUIRK(0x8086, 0x2081, "Intel NUC 10", ALC256_FIXUP_INTEL_NUC10),
-@@ -11353,6 +11362,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
+@@ -11356,6 +11365,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK, .name = "asus-zenbook"},
  	{.id = ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A, .name = "asus-zenbook-ux31a"},
  	{.id = ALC269VB_FIXUP_ORDISSIMO_EVE2, .name = "ordissimo"},
@@ -50135,7 +50135,7 @@ Co-developed-by: Bouke Sybren Haarsma <boukehaarsma23@gmail.com>
  1 file changed, 50 insertions(+), 1 deletion(-)
 
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 9282d8bd1f129..5511833a60b61 100644
+index d29acda8c822a..2f7ad5e0e0878 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
 @@ -6837,6 +6837,20 @@ static void alc294_gx502_toggle_output(struct hda_codec *codec,
@@ -50214,7 +50214,7 @@ index 9282d8bd1f129..5511833a60b61 100644
  	[ALC299_FIXUP_PREDATOR_SPK] = {
  		.type = HDA_FIXUP_PINS,
  		.v.pins = (const struct hda_pintbl[]) {
-@@ -11236,8 +11284,9 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
+@@ -11239,8 +11287,9 @@ static const struct hda_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x2782, 0x1701, "Infinix Y4 Max", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1705, "MEDION E15433", ALC269VC_FIXUP_INFINIX_Y4_MAX),
  	SND_PCI_QUIRK(0x2782, 0x1707, "Vaio VJFE-ADL", ALC298_FIXUP_SPK_VOLUME),
@@ -52130,61 +52130,6 @@ index 6254814d48171..cb894b39e4bae 100644
  #endif
  #ifdef CONFIG_PM_AUTOSLEEP
  	&autosleep_attr.attr,
--- 
-2.49.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 2 Feb 2025 10:38:18 +0100
-Subject: [HACK] remove EC wakeups from legion go s
-
-Fix the wake-ups causing the APU to stay awake on the Legio Go S by
-disabling listening to EC wakeups altogether. Fixes overheating issue
-when plugging an AC power adapter and after a battery check awake
-happens.
-
-Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
----
- drivers/acpi/ec.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
-
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index 8db09d81918fb..bca0ce284c5aa 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2301,6 +2301,31 @@ static const struct dmi_system_id acpi_ec_no_wakeup[] = {
- 			DMI_MATCH(DMI_PRODUCT_FAMILY, "103C_5336AN HP ZHAN 66 Pro"),
- 		},
- 	},
-+	/* Legion Go S */
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83L3"),
-+		},
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83N6"),
-+		},
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83Q2"),
-+		},
-+	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "83Q3"),
-+		},
-+	},
- 	{ },
- };
- 
 -- 
 2.49.0
 
@@ -54569,10 +54514,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index ca9102c06185b..d7405c71d9389 100644
+index 148d1aa0a580d..6b311e300eaef 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -3005,7 +3005,7 @@ static int __init amdgpu_init(void)
+@@ -3017,7 +3017,7 @@ static int __init amdgpu_init(void)
  
  	if (amdgpu_pp_feature_mask & PP_OVERDRIVE_MASK) {
  		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
@@ -54621,55 +54566,6 @@ index f54198171b6a3..073314512566e 100644
 
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 27 Apr 2025 16:03:32 +0200
-Subject: Revert "rndis_host: Flag RNDIS modems as WWAN devices"
-
-This reverts commit d34963d968a6e5f5f98ceecc987fc9f221f1cac7.
----
- drivers/net/usb/rndis_host.c | 16 ++--------------
- 1 file changed, 2 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.c
-index bb0bf14158727..7b3739b29c8f7 100644
---- a/drivers/net/usb/rndis_host.c
-+++ b/drivers/net/usb/rndis_host.c
-@@ -630,16 +630,6 @@ static const struct driver_info	zte_rndis_info = {
- 	.tx_fixup =	rndis_tx_fixup,
- };
- 
--static const struct driver_info	wwan_rndis_info = {
--	.description =	"Mobile Broadband RNDIS device",
--	.flags =	FLAG_WWAN | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT,
--	.bind =		rndis_bind,
--	.unbind =	rndis_unbind,
--	.status =	rndis_status,
--	.rx_fixup =	rndis_rx_fixup,
--	.tx_fixup =	rndis_tx_fixup,
--};
--
- /*-------------------------------------------------------------------------*/
- 
- static const struct usb_device_id	products [] = {
-@@ -676,11 +666,9 @@ static const struct usb_device_id	products [] = {
- 	USB_INTERFACE_INFO(USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
- 	.driver_info = (unsigned long) &rndis_info,
- }, {
--	/* Mobile Broadband Modem, seen in Novatel Verizon USB730L and
--	 * Telit FN990A (RNDIS)
--	 */
-+	/* Novatel Verizon USB730L */
- 	USB_INTERFACE_INFO(USB_CLASS_MISC, 4, 1),
--	.driver_info = (unsigned long)&wwan_rndis_info,
-+	.driver_info = (unsigned long) &rndis_info,
- },
- 	{ },		// END
- };
--- 
-2.49.0
-
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Alex Deucher <alexander.deucher@amd.com>
 Date: Thu, 1 May 2025 13:00:16 -0400
 Subject: Revert "drm/amd: Stop evicting resources on APUs in suspend"
@@ -54692,7 +54588,7 @@ Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
  3 files changed, 2 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index 51eb98848e0ca..cde028d0a2194 100644
+index d2dbe7557b001..620fe57d4a4e7 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
 @@ -1597,11 +1597,9 @@ static inline void amdgpu_acpi_get_backlight_caps(struct amdgpu_dm_backlight_cap
@@ -54838,10 +54734,10 @@ index e644791dda1d8..d70585a76f047 100644
  	}
  
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index d7405c71d9389..1561baa247ed5 100644
+index 6b311e300eaef..c4b896addf130 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -2570,13 +2570,8 @@ static int amdgpu_pmops_freeze(struct device *dev)
+@@ -2582,13 +2582,8 @@ static int amdgpu_pmops_freeze(struct device *dev)
  static int amdgpu_pmops_thaw(struct device *dev)
  {
  	struct drm_device *drm_dev = dev_get_drvdata(dev);
@@ -54856,7 +54752,7 @@ index d7405c71d9389..1561baa247ed5 100644
  }
  
  static int amdgpu_pmops_poweroff(struct device *dev)
-@@ -2589,9 +2584,6 @@ static int amdgpu_pmops_poweroff(struct device *dev)
+@@ -2601,9 +2596,6 @@ static int amdgpu_pmops_poweroff(struct device *dev)
  static int amdgpu_pmops_restore(struct device *dev)
  {
  	struct drm_device *drm_dev = dev_get_drvdata(dev);
