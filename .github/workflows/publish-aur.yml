@@ -12,7 +12,7 @@ on:
         description: 'Fedora version'
         type: string
         required: true
-        default: '41'
+        default: '42'
   workflow_call:
     inputs:
       relver:
@@ -24,7 +24,7 @@ on:
         description: 'Fedora version'
         type: string
         required: true
-        default: '41'
+        default: '42'
 
 permissions:
   contents: read

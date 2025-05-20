@@ -184,4 +184,4 @@ jobs:
     if: github.event_name == 'release' && github.event.release.prerelease == false
     with:
       relver: ${{ github.event.release.tag_name }}
-      fedora_version: 41 #arch_fedora
+      fedora_version: 42 #arch_fedora
