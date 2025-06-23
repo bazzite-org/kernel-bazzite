@@ -169,7 +169,7 @@ Summary: The Linux kernel
 # This is needed to do merge window version magic
 %define patchlevel 14
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 110%{?buildid}%{?dist}
+%define specrelease 111%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.14.6
 
