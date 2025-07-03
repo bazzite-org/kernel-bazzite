@@ -1,3 +1,8 @@
+* Fri Jun 27 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.15.4-0]
+- redhat: Restore the status quo wrt memory onlining (Vitaly Kuznetsov) [2375049]
+- Linux v6.15.4
+Resolves: rhbz#2375049
+
 * Thu Jun 19 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.15.3-0]
 - ACPICA: Refuse to evaluate a method if arguments are missing (Rafael J. Wysocki)
 - Linux v6.15.3

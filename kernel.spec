@@ -160,18 +160,18 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 %define buildid .bazzite
 # define buildid .local
-%define specrpmversion 6.15.3
-%define specversion 6.15.3
+%define specrpmversion 6.15.4
+%define specversion 6.15.4
 %define patchversion 6.15
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.15.3
+%define tarfile_release 6.15.4
 # This is needed to do merge window version magic
 %define patchlevel 15
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 102%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.15.3
+%define kabiversion 6.15.4
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -4251,6 +4251,10 @@ fi\
 #
 #
 %changelog
+* Fri Jun 27 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.15.4-0]
+- redhat: Restore the status quo wrt memory onlining (Vitaly Kuznetsov) [2375049]
+- Linux v6.15.4
+
 * Thu Jun 19 2025 Justin M. Forbes <jforbes@fedoraproject.org> [6.15.3-0]
 - ACPICA: Refuse to evaluate a method if arguments are missing (Rafael J. Wysocki)
 - Linux v6.15.3

@@ -35,7 +35,6 @@
  drivers/media/i2c/Makefile                         |    2 +
  drivers/media/i2c/ov02c10.c                        | 1013 ++++++++++++++++++++
  drivers/media/i2c/ov02e10.c                        |  969 +++++++++++++++++++
- drivers/media/i2c/ov08x40.c                        |    2 +-
  drivers/net/wireless/ath/ath12k/core.c             |   23 +-
  drivers/net/wireless/ath/ath12k/core.h             |    4 +
  drivers/net/wireless/ath/ath12k/fw.c               |    9 +-
@@ -60,7 +59,7 @@
  security/integrity/platform_certs/load_uefi.c      |    6 +-
  security/lockdown/Kconfig                          |   13 +
  security/lockdown/lockdown.c                       |   11 +
- 62 files changed, 2757 insertions(+), 349 deletions(-)
+ 61 files changed, 2756 insertions(+), 348 deletions(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
 index dd844ac8d910..dab2b4892122 100644
@@ -91,7 +90,7 @@ index dd844ac8d910..dab2b4892122 100644
  M:	Jimmy Su <jimmy.su@intel.com>
  L:	linux-media@vger.kernel.org
 diff --git a/Makefile b/Makefile
-index 01ddb4eb3659..063569b53bbd 100644
+index c1bde4eef2bf..ae5f5a705142 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1282,7 +1281,7 @@ index 2168b6cd7167..5d7cda175a0c 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e4628d962161..9b5994d1a535 100644
+index df871a500b28..692113b3c14f 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1293,7 +1292,7 @@ index e4628d962161..9b5994d1a535 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2954,6 +2955,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2968,6 +2969,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -3359,19 +3358,6 @@ index 000000000000..d74dc62e189d
 +MODULE_AUTHOR("Bryan O'Donoghue <bryan.odonoghue@linaro.org>");
 +MODULE_DESCRIPTION("OmniVision OV02E10 sensor driver");
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/media/i2c/ov08x40.c b/drivers/media/i2c/ov08x40.c
-index cf0e41fc3071..54575eea3c49 100644
---- a/drivers/media/i2c/ov08x40.c
-+++ b/drivers/media/i2c/ov08x40.c
-@@ -1341,7 +1341,7 @@ static int ov08x40_power_on(struct device *dev)
- 	}
- 
- 	gpiod_set_value_cansleep(ov08x->reset_gpio, 0);
--	usleep_range(1500, 1800);
-+	usleep_range(5000, 5500);
- 
- 	return 0;
- 
 diff --git a/drivers/net/wireless/ath/ath12k/core.c b/drivers/net/wireless/ath/ath12k/core.c
 index 261f52b327e8..b768799221c4 100644
 --- a/drivers/net/wireless/ath/ath12k/core.c
@@ -3495,7 +3481,7 @@ index 273c003eff3b..7afaefed5086 100644
  
  #endif /* ATH12K_FW_H */
 diff --git a/drivers/net/wireless/ath/ath12k/pci.c b/drivers/net/wireless/ath/ath12k/pci.c
-index 2e7d302ace67..eaa4ca79c6d8 100644
+index 928991088721..a07e03f764ee 100644
 --- a/drivers/net/wireless/ath/ath12k/pci.c
 +++ b/drivers/net/wireless/ath/ath12k/pci.c
 @@ -718,7 +718,7 @@ static void ath12k_pci_init_qmi_ce_config(struct ath12k_base *ab)
@@ -3541,7 +3527,7 @@ index 348dbc81bad8..c5e31b954796 100644
  		   resp.board_id_valid, resp.board_id);
  
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 94daca15a096..8de27d109820 100644
+index d0f7b749b9a6..ba74f2d67495 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4452,6 +4452,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
