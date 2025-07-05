@@ -19939,7 +19939,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 42 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 9cf2a286069c..7e57da7bb2ab 100644
+index 9cf2a286069c..7c6787e811dc 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -72,6 +72,7 @@
@@ -20008,7 +20008,7 @@ index 9cf2a286069c..7e57da7bb2ab 100644
 +			dmi_first_match(backlight_override_quirks);
 +
 +		if (override_sysid &&
-+		    caps->min_input_signal > (long) override_sysid->driver_data) {
++		    caps->min_input_signal != (long) override_sysid->driver_data) {
 +			caps->min_input_signal =
 +				(long)override_sysid->driver_data;
  			printk(KERN_NOTICE"VLV OVERRIDE backlight range (min only): %d %d\n",
@@ -20042,7 +20042,7 @@ Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
  1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 7e57da7bb2ab..aeaca5638b70 100644
+index 7c6787e811dc..afe601444beb 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -8261,7 +8261,12 @@ static int amdgpu_dm_connector_get_modes(struct drm_connector *connector)
@@ -20515,7 +20515,7 @@ index abd3b6564373..46937e6fa78d 100644
 +
  endmenu
 diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index aeaca5638b70..ce894f94a4c5 100644
+index afe601444beb..803b10d11822 100644
 --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
 @@ -4575,7 +4575,7 @@ static int amdgpu_dm_mode_config_init(struct amdgpu_device *adev)
