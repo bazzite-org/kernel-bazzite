@@ -244,6 +244,8 @@ Summary: The Linux kernel
 #
 # Additional options for user-friendly one-off kernel building:
 #
+# Build for bazzite (--with bazzite):
+%define with_bazzite  %{?_with_bazzite:     1} %{?!_with_bazzite:     0}
 # Only build the base kernel (--with baseonly):
 %define with_baseonly  %{?_with_baseonly:     1} %{?!_with_baseonly:     0}
 # Only build the debug variants (--with dbgonly):
@@ -372,6 +374,20 @@ Summary: The Linux kernel
 # Needed because we override almost everything involving build-ids
 # and debuginfo generation. Currently we rely on the old alldebug setting.
 %global _build_id_links alldebug
+
+%if %{with_bazzite}
+%define with_tools 1
+%define with_debug 0
+%define with_realtime 0
+%define with_realtime_arm64_64k 0
+%define with_vdso_install 0
+%define with_perf 0
+%define with_libperf 0
+%define with_kernel_abi_stablelists 0
+%define with_selftests 0
+%define with_efiuki 0
+%define with_automotive 0
+%endif
 
 # if requested, only build base kernel
 %if %{with_baseonly}

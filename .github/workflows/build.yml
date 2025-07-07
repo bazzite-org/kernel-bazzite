@@ -64,7 +64,7 @@ jobs:
             --env CCACHE_COMPRESS=1 \
             fedora_builder fedpkg \
             --name kernel --namespace rpms --release "f${FEDORA_VERSION:-41}" \
-            local --arch ${ARCH:-x86_64} --with baseonly \
+            local --arch ${ARCH:-x86_64} --with bazzite \
             --builddir build --buildrootdir buildroot
       
       - name: Print ccache stats
