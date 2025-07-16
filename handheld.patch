@@ -55141,16 +55141,16 @@ index 8c0af1d26a30..6e575c22b86a 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Wed, 16 Jul 2025 18:55:44 +0200
+Date: Wed, 16 Jul 2025 19:01:47 +0200
 Subject: Input: evdev - allow releasing keys on grab
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/input/evdev.c            | 10 +++---
- drivers/input/input.c            | 56 +++++++++++++++++++-------------
+ drivers/input/input.c            | 52 ++++++++++++++++++--------------
  drivers/input/tests/input_test.c |  6 ++--
  include/linux/input.h            |  2 +-
- 4 files changed, 43 insertions(+), 31 deletions(-)
+ 4 files changed, 39 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/input/evdev.c b/drivers/input/evdev.c
 index b5cbb57ee5f6..1f95cc4df0e5 100644
@@ -55187,7 +55187,7 @@ index b5cbb57ee5f6..1f95cc4df0e5 100644
  			return evdev_ungrab(evdev, client);
  
 diff --git a/drivers/input/input.c b/drivers/input/input.c
-index ec4346f20efd..abf1bc25779a 100644
+index ec4346f20efd..74123cc904a2 100644
 --- a/drivers/input/input.c
 +++ b/drivers/input/input.c
 @@ -508,29 +508,6 @@ void input_copy_abs(struct input_dev *dst, unsigned int dst_axis,
@@ -55220,7 +55220,7 @@ index ec4346f20efd..abf1bc25779a 100644
  static void __input_release_device(struct input_handle *handle)
  {
  	struct input_dev *dev = handle->dev;
-@@ -1769,6 +1746,39 @@ void input_reset_device(struct input_dev *dev)
+@@ -1769,6 +1746,35 @@ void input_reset_device(struct input_dev *dev)
  }
  EXPORT_SYMBOL(input_reset_device);
  
@@ -55238,17 +55238,13 @@ index ec4346f20efd..abf1bc25779a 100644
 +	struct input_dev *dev = handle->dev;
 +
 +	scoped_cond_guard(mutex_intr, return -EINTR, &dev->mutex) {
++		guard(spinlock_irqsave)(&dev->event_lock);
++
 +		if (dev->grab)
 +			return -EBUSY;
 +
-+		guard(spinlock_irqsave)(&dev->event_lock);
-+
-+		if (release_keys && input_dev_release_keys(dev)) {
++		if (release_keys && input_dev_release_keys(dev))
 +			input_handle_event(dev, EV_SYN, SYN_REPORT, 1);
-+			// Force flush events to handlers before grab
-+			input_pass_values(dev, dev->vals, dev->num_vals);
-+			dev->num_vals = 0;
-+		}
 +
 +		rcu_assign_pointer(dev->grab, handle);
 +	}
