@@ -53182,8 +53182,8 @@ sets an upper bound those (e.g., low-power would be used with 8W).
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/platform/x86/Kconfig            |   1 +
- drivers/platform/x86/msi-wmi-platform.c | 379 +++++++++++++++++++++++-
- 2 files changed, 378 insertions(+), 2 deletions(-)
+ drivers/platform/x86/msi-wmi-platform.c | 382 +++++++++++++++++++++++-
+ 2 files changed, 381 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
 index 61f6ff8e9866..a8bbc116bb74 100644
@@ -53198,7 +53198,7 @@ index 61f6ff8e9866..a8bbc116bb74 100644
  	  Say Y here if you want to have support for WMI-based platform features
  	  like fan sensor access on MSI machines.
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 6ad6c2064800..2db910d0cadd 100644
+index 6ad6c2064800..646e007bba8e 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -34,6 +34,8 @@
@@ -53210,18 +53210,19 @@ index 6ad6c2064800..2db910d0cadd 100644
  #define DRIVER_NAME	"msi-wmi-platform"
  
  #define MSI_PLATFORM_GUID	"ABBC0F6E-8EA1-11d1-00A0-C90629100000"
-@@ -74,6 +76,10 @@
+@@ -74,6 +76,11 @@
  #define MSI_PLATFORM_SHIFT_ECO		(MSI_PLATFORM_SHIFT_ENABLE + 2)
  #define MSI_PLATFORM_SHIFT_USER		(MSI_PLATFORM_SHIFT_ENABLE + 3)
  
 +/* Get_Data() and Set_Data() Params */
-+#define MSI_PLATFORM_PL1_ADDR	0x50
-+#define MSI_PLATFORM_PL2_ADDR	0x51
++#define MSI_PLATFORM_PPT_PL1_SPL_ADDR	0x50
++#define MSI_PLATFORM_PPT_PL2_SPPT_ADDR	0x51
++#define MSI_PLATFORM_PPT_FPPT_ADDR	0x52
 +
  static bool force;
  module_param_unsafe(force, bool, 0);
  MODULE_PARM_DESC(force, "Force loading without checking for supported WMI interface versions");
-@@ -112,6 +118,10 @@ enum msi_wmi_platform_method {
+@@ -112,6 +119,10 @@ enum msi_wmi_platform_method {
  
  struct msi_wmi_platform_quirk {
  	bool shift_mode;	/* Shift mode is supported */
@@ -53232,7 +53233,7 @@ index 6ad6c2064800..2db910d0cadd 100644
  };
  
  struct msi_wmi_platform_data {
-@@ -119,6 +129,47 @@ struct msi_wmi_platform_data {
+@@ -119,6 +130,47 @@ struct msi_wmi_platform_data {
  	struct msi_wmi_platform_quirk *quirks;
  	struct mutex wmi_lock;	/* Necessary when calling WMI methods */
  	struct device *ppdev;
@@ -53280,7 +53281,7 @@ index 6ad6c2064800..2db910d0cadd 100644
  };
  
  struct msi_wmi_platform_debugfs_data {
-@@ -163,12 +214,23 @@ static const char * const msi_wmi_platform_debugfs_names[] = {
+@@ -163,12 +215,23 @@ static const char * const msi_wmi_platform_debugfs_names[] = {
  
  static struct msi_wmi_platform_quirk quirk_default = {};
  static struct msi_wmi_platform_quirk quirk_gen1 = {
@@ -53306,7 +53307,7 @@ index 6ad6c2064800..2db910d0cadd 100644
  };
  
  static const struct dmi_system_id msi_quirks[] = {
-@@ -670,6 +732,315 @@ static const struct platform_profile_ops msi_wmi_platform_profile_ops = {
+@@ -670,6 +733,317 @@ static const struct platform_profile_ops msi_wmi_platform_profile_ops = {
  	.profile_set = msi_wmi_platform_profile_set,
  };
  
@@ -53316,9 +53317,11 @@ index 6ad6c2064800..2db910d0cadd 100644
 +{
 +	switch (id) {
 +	case MSI_ATTR_PPT_PL1_SPL:
-+		return MSI_PLATFORM_PL1_ADDR;
++		return MSI_PLATFORM_PPT_PL1_SPL_ADDR;
 +	case MSI_ATTR_PPT_PL2_SPPT:
-+		return MSI_PLATFORM_PL2_ADDR;
++		return MSI_PLATFORM_PPT_PL2_SPPT_ADDR;
++	case MSI_ATTR_PPT_FPPT:
++		return MSI_PLATFORM_PPT_FPPT_ADDR;
 +	default:
 +		pr_warn("Invalid attribute id %d\n", id);
 +		return -EINVAL;
@@ -53622,7 +53625,7 @@ index 6ad6c2064800..2db910d0cadd 100644
  static ssize_t msi_wmi_platform_debugfs_write(struct file *fp, const char __user *input,
  					      size_t length, loff_t *offset)
  {
-@@ -894,6 +1265,10 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
+@@ -894,6 +1268,10 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
  	if (ret < 0)
  		return ret;
  
@@ -53663,7 +53666,7 @@ index a8bbc116bb74..425bdb0387b1 100644
  	depends on HWMON
  	select ACPI_PLATFORM_PROFILE
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 2db910d0cadd..882f52f6d6fb 100644
+index 646e007bba8e..65203539848c 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -31,6 +31,7 @@
@@ -53674,15 +53677,15 @@ index 2db910d0cadd..882f52f6d6fb 100644
  
  #include <linux/unaligned.h>
  
-@@ -79,6 +80,7 @@
- /* Get_Data() and Set_Data() Params */
- #define MSI_PLATFORM_PL1_ADDR	0x50
- #define MSI_PLATFORM_PL2_ADDR	0x51
+@@ -80,6 +81,7 @@
+ #define MSI_PLATFORM_PPT_PL1_SPL_ADDR	0x50
+ #define MSI_PLATFORM_PPT_PL2_SPPT_ADDR	0x51
+ #define MSI_PLATFORM_PPT_FPPT_ADDR	0x52
 +#define MSI_PLATFORM_BAT_ADDR	0xd7
  
  static bool force;
  module_param_unsafe(force, bool, 0);
-@@ -118,6 +120,7 @@ enum msi_wmi_platform_method {
+@@ -119,6 +121,7 @@ enum msi_wmi_platform_method {
  
  struct msi_wmi_platform_quirk {
  	bool shift_mode;	/* Shift mode is supported */
@@ -53690,7 +53693,7 @@ index 2db910d0cadd..882f52f6d6fb 100644
  	int ppt_min;		/* Minimum PLx value */
  	int ppt_pl1_spl_max;	/* Maximum PL1/SPL value */
  	int ppt_pl2_sppt_max;	/* Maximum PL2/SPPT value */
-@@ -129,6 +132,7 @@ struct msi_wmi_platform_data {
+@@ -130,6 +133,7 @@ struct msi_wmi_platform_data {
  	struct msi_wmi_platform_quirk *quirks;
  	struct mutex wmi_lock;	/* Necessary when calling WMI methods */
  	struct device *ppdev;
@@ -53698,7 +53701,7 @@ index 2db910d0cadd..882f52f6d6fb 100644
  	struct device *fw_attrs_dev;
  	struct kset *fw_attrs_kset;
  };
-@@ -215,18 +219,21 @@ static const char * const msi_wmi_platform_debugfs_names[] = {
+@@ -216,18 +220,21 @@ static const char * const msi_wmi_platform_debugfs_names[] = {
  static struct msi_wmi_platform_quirk quirk_default = {};
  static struct msi_wmi_platform_quirk quirk_gen1 = {
  	.shift_mode = true,
@@ -53720,7 +53723,7 @@ index 2db910d0cadd..882f52f6d6fb 100644
  	.ppt_min = 4,
  	.ppt_pl1_spl_max = 28,
  	.ppt_pl2_sppt_max = 45,
-@@ -1041,6 +1048,94 @@ static int msi_wmi_fw_attrs_init(struct msi_wmi_platform_data *data)
+@@ -1044,6 +1051,94 @@ static int msi_wmi_fw_attrs_init(struct msi_wmi_platform_data *data)
  	return 0;
  }
  
@@ -53815,7 +53818,7 @@ index 2db910d0cadd..882f52f6d6fb 100644
  static ssize_t msi_wmi_platform_debugfs_write(struct file *fp, const char __user *input,
  					      size_t length, loff_t *offset)
  {
-@@ -1269,6 +1364,13 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
+@@ -1272,6 +1367,13 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
  	if (ret < 0)
  		return ret;
  
@@ -53829,7 +53832,7 @@ index 2db910d0cadd..882f52f6d6fb 100644
  	msi_wmi_platform_debugfs_init(data);
  
  	msi_wmi_platform_profile_setup(data);
-@@ -1276,6 +1378,14 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
+@@ -1279,6 +1381,14 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
  	return msi_wmi_platform_hwmon_init(data);
  }
  
@@ -53844,7 +53847,7 @@ index 2db910d0cadd..882f52f6d6fb 100644
  static const struct wmi_device_id msi_wmi_platform_id_table[] = {
  	{ MSI_PLATFORM_GUID, NULL },
  	{ }
-@@ -1289,6 +1399,7 @@ static struct wmi_driver msi_wmi_platform_driver = {
+@@ -1292,6 +1402,7 @@ static struct wmi_driver msi_wmi_platform_driver = {
  	},
  	.id_table = msi_wmi_platform_id_table,
  	.probe = msi_wmi_platform_probe,
@@ -53872,10 +53875,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 26 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 882f52f6d6fb..e5fd32707fa3 100644
+index 65203539848c..e1af2a2928df 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
-@@ -121,6 +121,7 @@ enum msi_wmi_platform_method {
+@@ -122,6 +122,7 @@ enum msi_wmi_platform_method {
  struct msi_wmi_platform_quirk {
  	bool shift_mode;	/* Shift mode is supported */
  	bool charge_threshold;	/* Charge threshold is supported */
@@ -53883,7 +53886,7 @@ index 882f52f6d6fb..e5fd32707fa3 100644
  	int ppt_min;		/* Minimum PLx value */
  	int ppt_pl1_spl_max;	/* Maximum PL1/SPL value */
  	int ppt_pl2_sppt_max;	/* Maximum PL2/SPPT value */
-@@ -220,6 +221,7 @@ static struct msi_wmi_platform_quirk quirk_default = {};
+@@ -221,6 +222,7 @@ static struct msi_wmi_platform_quirk quirk_default = {};
  static struct msi_wmi_platform_quirk quirk_gen1 = {
  	.shift_mode = true,
  	.charge_threshold = true,
@@ -53891,7 +53894,7 @@ index 882f52f6d6fb..e5fd32707fa3 100644
  	.ppt_min = 8,
  	.ppt_pl1_spl_max = 43,
  	.ppt_pl2_sppt_max = 45
-@@ -227,6 +229,7 @@ static struct msi_wmi_platform_quirk quirk_gen1 = {
+@@ -228,6 +230,7 @@ static struct msi_wmi_platform_quirk quirk_gen1 = {
  static struct msi_wmi_platform_quirk quirk_gen2 = {
  	.shift_mode = true,
  	.charge_threshold = true,
@@ -53899,7 +53902,7 @@ index 882f52f6d6fb..e5fd32707fa3 100644
  	.ppt_min = 8,
  	.ppt_pl1_spl_max = 30,
  	.ppt_pl2_sppt_max = 37,
-@@ -234,6 +237,7 @@ static struct msi_wmi_platform_quirk quirk_gen2 = {
+@@ -235,6 +238,7 @@ static struct msi_wmi_platform_quirk quirk_gen2 = {
  static struct msi_wmi_platform_quirk quirk_amd = {
  	.shift_mode = true,
  	.charge_threshold = true,
@@ -53907,7 +53910,7 @@ index 882f52f6d6fb..e5fd32707fa3 100644
  	.ppt_min = 4,
  	.ppt_pl1_spl_max = 28,
  	.ppt_pl2_sppt_max = 45,
-@@ -655,6 +659,23 @@ static const struct hwmon_chip_info msi_wmi_platform_chip_info = {
+@@ -656,6 +660,23 @@ static const struct hwmon_chip_info msi_wmi_platform_chip_info = {
  	.info = msi_wmi_platform_info,
  };
  
@@ -53931,7 +53934,7 @@ index 882f52f6d6fb..e5fd32707fa3 100644
  static int msi_wmi_platform_profile_probe(void *drvdata, unsigned long *choices)
  {
  	set_bit(PLATFORM_PROFILE_LOW_POWER, choices);
-@@ -1256,9 +1277,11 @@ static int msi_wmi_platform_hwmon_init(struct msi_wmi_platform_data *data)
+@@ -1259,9 +1280,11 @@ static int msi_wmi_platform_hwmon_init(struct msi_wmi_platform_data *data)
  {
  	struct device *hdev;
  
@@ -53965,7 +53968,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index e5fd32707fa3..14015d765eb6 100644
+index e1af2a2928df..dab323d7a5fb 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -1,8 +1,9 @@
@@ -54002,10 +54005,10 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 123 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 14015d765eb6..6b0fa8251fad 100644
+index dab323d7a5fb..f402790e9368 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
-@@ -123,17 +123,26 @@ struct msi_wmi_platform_quirk {
+@@ -124,17 +124,26 @@ struct msi_wmi_platform_quirk {
  	bool shift_mode;	/* Shift mode is supported */
  	bool charge_threshold;	/* Charge threshold is supported */
  	bool dual_fans;		/* For devices with two hwmon fans */
@@ -54032,7 +54035,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  	struct acpi_battery_hook battery_hook;
  	struct device *fw_attrs_dev;
  	struct kset *fw_attrs_kset;
-@@ -223,6 +232,7 @@ static struct msi_wmi_platform_quirk quirk_gen1 = {
+@@ -224,6 +233,7 @@ static struct msi_wmi_platform_quirk quirk_gen1 = {
  	.shift_mode = true,
  	.charge_threshold = true,
  	.dual_fans = true,
@@ -54040,7 +54043,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  	.ppt_min = 8,
  	.ppt_pl1_spl_max = 43,
  	.ppt_pl2_sppt_max = 45
-@@ -231,6 +241,7 @@ static struct msi_wmi_platform_quirk quirk_gen2 = {
+@@ -232,6 +242,7 @@ static struct msi_wmi_platform_quirk quirk_gen2 = {
  	.shift_mode = true,
  	.charge_threshold = true,
  	.dual_fans = true,
@@ -54048,7 +54051,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  	.ppt_min = 8,
  	.ppt_pl1_spl_max = 30,
  	.ppt_pl2_sppt_max = 37,
-@@ -239,6 +250,7 @@ static struct msi_wmi_platform_quirk quirk_amd = {
+@@ -240,6 +251,7 @@ static struct msi_wmi_platform_quirk quirk_amd = {
  	.shift_mode = true,
  	.charge_threshold = true,
  	.dual_fans = true,
@@ -54056,7 +54059,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  	.ppt_min = 4,
  	.ppt_pl1_spl_max = 28,
  	.ppt_pl2_sppt_max = 45,
-@@ -528,6 +540,94 @@ static struct attribute *msi_wmi_platform_hwmon_attrs[] = {
+@@ -529,6 +541,94 @@ static struct attribute *msi_wmi_platform_hwmon_attrs[] = {
  };
  ATTRIBUTE_GROUPS(msi_wmi_platform_hwmon);
  
@@ -54151,7 +54154,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  static umode_t msi_wmi_platform_is_visible(const void *drvdata, enum hwmon_sensor_types type,
  					   u32 attr, int channel)
  {
-@@ -624,9 +724,19 @@ static int msi_wmi_platform_write(struct device *dev, enum hwmon_sensor_types ty
+@@ -625,9 +725,19 @@ static int msi_wmi_platform_write(struct device *dev, enum hwmon_sensor_types ty
  				return -EINVAL;
  			}
  
@@ -54172,7 +54175,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  		default:
  			return -EOPNOTSUPP;
  		}
-@@ -1399,6 +1509,13 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
+@@ -1402,6 +1512,13 @@ static int msi_wmi_platform_probe(struct wmi_device *wdev, const void *context)
  
  	msi_wmi_platform_profile_setup(data);
  
@@ -54186,7 +54189,7 @@ index 14015d765eb6..6b0fa8251fad 100644
  	return msi_wmi_platform_hwmon_init(data);
  }
  
-@@ -1408,6 +1525,11 @@ static void msi_wmi_platform_remove(struct wmi_device *wdev)
+@@ -1411,6 +1528,11 @@ static void msi_wmi_platform_remove(struct wmi_device *wdev)
  
  	if (data->quirks->charge_threshold)
  		battery_hook_unregister(&data->battery_hook);
