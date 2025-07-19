@@ -53198,7 +53198,7 @@ index 61f6ff8e9866..a8bbc116bb74 100644
  	  Say Y here if you want to have support for WMI-based platform features
  	  like fan sensor access on MSI machines.
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 6ad6c2064800..646e007bba8e 100644
+index 6ad6c2064800..14420e5ea2a8 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -34,6 +34,8 @@
@@ -53217,7 +53217,7 @@ index 6ad6c2064800..646e007bba8e 100644
 +/* Get_Data() and Set_Data() Params */
 +#define MSI_PLATFORM_PPT_PL1_SPL_ADDR	0x50
 +#define MSI_PLATFORM_PPT_PL2_SPPT_ADDR	0x51
-+#define MSI_PLATFORM_PPT_FPPT_ADDR	0x52
++#define MSI_PLATFORM_PPT_PL3_FPPT_ADDR	0x52
 +
  static bool force;
  module_param_unsafe(force, bool, 0);
@@ -53229,7 +53229,7 @@ index 6ad6c2064800..646e007bba8e 100644
 +	int ppt_min;		/* Minimum PLx value */
 +	int ppt_pl1_spl_max;	/* Maximum PL1/SPL value */
 +	int ppt_pl2_sppt_max;	/* Maximum PL2/SPPT value */
-+	int ppt_fppt;		/* Maximum FPPT value */
++	int ppt_pl3_fppt;		/* Maximum FPPT value */
  };
  
  struct msi_wmi_platform_data {
@@ -53244,19 +53244,19 @@ index 6ad6c2064800..646e007bba8e 100644
 +enum msi_fw_attr_id {
 +	MSI_ATTR_PPT_PL1_SPL,
 +	MSI_ATTR_PPT_PL2_SPPT,
-+	MSI_ATTR_PPT_FPPT,
++	MSI_ATTR_PPT_PL3_FPPT,
 +};
 +
 +static const char *const msi_fw_attr_name[] = {
 +	[MSI_ATTR_PPT_PL1_SPL] = "ppt_pl1_spl",
 +	[MSI_ATTR_PPT_PL2_SPPT] = "ppt_pl2_sppt",
-+	[MSI_ATTR_PPT_FPPT] = "ppt_fppt",
++	[MSI_ATTR_PPT_PL3_FPPT] = "ppt_pl3_fppt",
 +};
 +
 +static const char *const msi_fw_attr_desc[] = {
 +	[MSI_ATTR_PPT_PL1_SPL] = "CPU Steady package limit (PL1/SPL)",
 +	[MSI_ATTR_PPT_PL2_SPPT] = "CPU Boost slow package limit (PL2/SPPT)",
-+	[MSI_ATTR_PPT_FPPT] = "CPU Boost fast package limit (FPPT)",
++	[MSI_ATTR_PPT_PL3_FPPT] = "CPU Boost fast package limit (FPPT)",
 +};
 +
 +#define MSI_ATTR_LANGUAGE_CODE "en_US.UTF-8"
@@ -53301,9 +53301,9 @@ index 6ad6c2064800..646e007bba8e 100644
  static struct msi_wmi_platform_quirk quirk_amd = {
 +	.shift_mode = true,
 +	.ppt_min = 4,
-+	.ppt_pl1_spl_max = 28,
++	.ppt_pl1_spl_max = 37,
 +	.ppt_pl2_sppt_max = 45,
-+	.ppt_fppt = 55
++	.ppt_pl3_fppt = 55
  };
  
  static const struct dmi_system_id msi_quirks[] = {
@@ -53320,8 +53320,8 @@ index 6ad6c2064800..646e007bba8e 100644
 +		return MSI_PLATFORM_PPT_PL1_SPL_ADDR;
 +	case MSI_ATTR_PPT_PL2_SPPT:
 +		return MSI_PLATFORM_PPT_PL2_SPPT_ADDR;
-+	case MSI_ATTR_PPT_FPPT:
-+		return MSI_PLATFORM_PPT_FPPT_ADDR;
++	case MSI_ATTR_PPT_PL3_FPPT:
++		return MSI_PLATFORM_PPT_PL3_FPPT_ADDR;
 +	default:
 +		pr_warn("Invalid attribute id %d\n", id);
 +		return -EINVAL;
@@ -53610,10 +53610,10 @@ index 6ad6c2064800..646e007bba8e 100644
 +			return err;
 +	}
 +
-+	if (data->quirks->ppt_fppt) {
-+		err = msi_fw_attr_init(data, MSI_ATTR_PPT_PL2_SPPT,
++	if (data->quirks->ppt_pl3_fppt) {
++		err = msi_fw_attr_init(data, MSI_ATTR_PPT_PL3_FPPT,
 +				       &fw_attr_type_int, data->quirks->ppt_min,
-+				       data->quirks->ppt_fppt,
++				       data->quirks->ppt_pl3_fppt,
 +				       &data_get_value, &data_set_value);
 +		if (err)
 +			return err;
@@ -53666,7 +53666,7 @@ index a8bbc116bb74..425bdb0387b1 100644
  	depends on HWMON
  	select ACPI_PLATFORM_PROFILE
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 646e007bba8e..65203539848c 100644
+index 14420e5ea2a8..66fa939c4742 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -31,6 +31,7 @@
@@ -53680,7 +53680,7 @@ index 646e007bba8e..65203539848c 100644
 @@ -80,6 +81,7 @@
  #define MSI_PLATFORM_PPT_PL1_SPL_ADDR	0x50
  #define MSI_PLATFORM_PPT_PL2_SPPT_ADDR	0x51
- #define MSI_PLATFORM_PPT_FPPT_ADDR	0x52
+ #define MSI_PLATFORM_PPT_PL3_FPPT_ADDR	0x52
 +#define MSI_PLATFORM_BAT_ADDR	0xd7
  
  static bool force;
@@ -53721,7 +53721,7 @@ index 646e007bba8e..65203539848c 100644
  	.shift_mode = true,
 +	.charge_threshold = true,
  	.ppt_min = 4,
- 	.ppt_pl1_spl_max = 28,
+ 	.ppt_pl1_spl_max = 37,
  	.ppt_pl2_sppt_max = 45,
 @@ -1044,6 +1051,94 @@ static int msi_wmi_fw_attrs_init(struct msi_wmi_platform_data *data)
  	return 0;
@@ -53875,7 +53875,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 26 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index 65203539848c..e1af2a2928df 100644
+index 66fa939c4742..871568a017b8 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -122,6 +122,7 @@ enum msi_wmi_platform_method {
@@ -53908,7 +53908,7 @@ index 65203539848c..e1af2a2928df 100644
  	.charge_threshold = true,
 +	.dual_fans = true,
  	.ppt_min = 4,
- 	.ppt_pl1_spl_max = 28,
+ 	.ppt_pl1_spl_max = 37,
  	.ppt_pl2_sppt_max = 45,
 @@ -656,6 +660,23 @@ static const struct hwmon_chip_info msi_wmi_platform_chip_info = {
  	.info = msi_wmi_platform_info,
@@ -53968,7 +53968,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index e1af2a2928df..dab323d7a5fb 100644
+index 871568a017b8..d7cfdbb28e83 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -1,8 +1,9 @@
@@ -54005,7 +54005,7 @@ Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
  1 file changed, 123 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/platform/x86/msi-wmi-platform.c b/drivers/platform/x86/msi-wmi-platform.c
-index dab323d7a5fb..f402790e9368 100644
+index d7cfdbb28e83..896fb11af696 100644
 --- a/drivers/platform/x86/msi-wmi-platform.c
 +++ b/drivers/platform/x86/msi-wmi-platform.c
 @@ -124,17 +124,26 @@ struct msi_wmi_platform_quirk {
@@ -54016,7 +54016,7 @@ index dab323d7a5fb..f402790e9368 100644
  	int ppt_min;		/* Minimum PLx value */
  	int ppt_pl1_spl_max;	/* Maximum PL1/SPL value */
  	int ppt_pl2_sppt_max;	/* Maximum PL2/SPPT value */
- 	int ppt_fppt;		/* Maximum FPPT value */
+ 	int ppt_pl3_fppt;		/* Maximum FPPT value */
  };
  
 +struct msi_wmi_platform_factory_curves {
@@ -54057,7 +54057,7 @@ index dab323d7a5fb..f402790e9368 100644
  	.dual_fans = true,
 +	.restore_curves = true,
  	.ppt_min = 4,
- 	.ppt_pl1_spl_max = 28,
+ 	.ppt_pl1_spl_max = 37,
  	.ppt_pl2_sppt_max = 45,
 @@ -529,6 +541,94 @@ static struct attribute *msi_wmi_platform_hwmon_attrs[] = {
  };
@@ -55545,6 +55545,38 @@ index d00795fdc8f8..f362fc6f1618 100644
  	default:
  		ret = read_from_ec(OXP_SENSOR_PWM_REG, 1, val);
  		if (ret)
+-- 
+2.50.1
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Sat, 19 Jul 2025 01:51:45 +0200
+Subject: platform/x86: oxpec: Add support for OneXPlayer X1Pro EVA-02
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/platform/x86/oxpec.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/platform/x86/oxpec.c b/drivers/platform/x86/oxpec.c
+index f362fc6f1618..fa5bfbe84654 100644
+--- a/drivers/platform/x86/oxpec.c
++++ b/drivers/platform/x86/oxpec.c
+@@ -306,6 +306,13 @@ static const struct dmi_system_id dmi_table[] = {
+ 		},
+ 		.driver_data = (void *)oxp_x1,
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "ONE-NETBOOK"),
++			DMI_EXACT_MATCH(DMI_BOARD_NAME, "ONEXPLAYER X1Pro EVA-02"),
++		},
++		.driver_data = (void *)oxp_x1,
++	},
+ 	{},
+ };
+ 
 -- 
 2.50.1
 
