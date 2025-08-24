@@ -56212,3 +56212,43 @@ index 918e9df73730..81e23fb3cb8c 100644
 -- 
 2.50.1
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lauri Tirkkonen <lauri@hacktheplanet.fi>
+Date: Mon, 21 Jul 2025 09:59:40 +0900
+Subject: drm/amd/display: fix initial backlight brightness calculation
+
+DIV_ROUND_CLOSEST(x, 100) returns either 0 or 1 if 0<x<=100, so the
+division needs to be performed after the multiplication and not the
+other way around, to properly scale the value.
+
+Fixes: 8b5f3a229a70 ("drm/amd/display: Fix default DC and AC levels")
+Signed-off-by: Lauri Tirkkonen <lauri@hacktheplanet.fi>
+Cc: stable@vger.kernel.org
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+Link: https://lore.kernel.org/r/aH2Q_HJvxKbW74vU@hacktheplanet.fi
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 110d4913199e..3ffef0511b4b 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -4887,9 +4887,9 @@ amdgpu_dm_register_backlight_device(struct amdgpu_dm_connector *aconnector)
+ 	caps = &dm->backlight_caps[aconnector->bl_idx];
+ 	if (get_brightness_range(caps, &min, &max, &multiple)) {
+ 		if (power_supply_is_system_supplied() > 0)
+-			props.brightness = (max - min) * DIV_ROUND_CLOSEST(caps->ac_level, 100);
++			props.brightness = DIV_ROUND_CLOSEST((max - min) * caps->ac_level, 100);
+ 		else
+-			props.brightness = (max - min) * DIV_ROUND_CLOSEST(caps->dc_level, 100);
++			props.brightness = DIV_ROUND_CLOSEST((max - min) * caps->dc_level, 100);
+ 		/* min is zero, so max needs to be adjusted */
+ 		props.max_brightness = max - min;
+ 		drm_dbg(drm, "Backlight caps: min: %d, max: %d, ac %d, dc %d, multiple: %d\n", min, max,
+-- 
+2.50.1
+
