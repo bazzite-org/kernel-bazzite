@@ -145,3 +145,7 @@ CONFIG_DRM_ACCEL_AMDXDNA=m
 
 # Used for MControlCenter if msi-ec support is missing
 CONFIG_ACPI_EC_DEBUGFS=m
+
+# Save kernel config
+CONFIG_IKCONFIG=y
+CONFIG_IKCONFIG_PROC=y
