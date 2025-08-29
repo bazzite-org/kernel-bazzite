@@ -132,13 +132,8 @@ CONFIG_ASUS_ARMOURY=m
 # from batoceran, ignore for now # CONFIG_DRM_RZG2L_DU is not set
 # from batoceran, ignore for now # CONFIG_DRM_TEGRA is not set
 
-# ntsync backport
-CONFIG_NTSYNC=m
-
-# add OxpSensors new place and Ayaneo EC
-CONFIG_OXP_EC=m
+# Add Ayaneo EC
 CONFIG_AYANEO_EC=m
-# CONFIG_SENSORS_OXP is not set
 
 # Add AMDXDNA options
 CONFIG_DRM_ACCEL_AMDXDNA=m
