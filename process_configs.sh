@@ -14,7 +14,7 @@ usage()
 	echo "process_configs.sh [ options ] package_name kernel_version"
 	echo "     -a: report all errors, equivalent to [-c -n -w -i]"
 	echo "     -c: error on mismatched config options"
-	echo "     -i: continue on error"
+	echo "     -i: ignore any errors, but print them"
 	echo "     -n: error on unset config options"
 	echo "     -t: test run, do not overwrite original config"
 	echo "     -w: error on misconfigured config options"
@@ -154,12 +154,14 @@ parsenewconfigs()
                         split($0, a, " ");
                         symbol="CONFIG_"a[2];
                         outfile=BASE "/fake_"symbol
+                        print "# ~~~" >> outfile;
                 }
                 /-----/ {
 			if (inpatch == 0) {
 				inpatch = 1;
 			}
                         else {
+                                print "# ~~~" >> outfile;
                                 if (symbol != "none") {
                                     print "# Commit: "commit >> outfile
                                     system("cat " outfile " " BASE "/" symbol " > " BASE "/tmpf");
@@ -352,6 +354,7 @@ function process_configs()
 }
 
 CHECKOPTIONS=""
+IGNOREERRORS=""
 NEWOPTIONS=""
 TESTRUN=""
 CHECKWARNINGS=""
@@ -366,6 +369,7 @@ do
 	case $key in
 		-a)
 			CHECKOPTIONS="x"
+			IGNOREERRORS="x"
 			NEWOPTIONS="x"
 			CHECKWARNINGS="x"
 			;;
@@ -374,6 +378,9 @@ do
 			;;
 		-h)
 			usage
+			;;
+		-i)
+			IGNOREERRORS="x"
 			;;
 		-n)
 			NEWOPTIONS="x"
@@ -421,4 +428,8 @@ else
 	process_configs
 fi
 
-exit $RETURNCODE
+if test -n "$IGNOREERRORS"; then
+	exit 0
+else
+	exit $RETURNCODE
+fi

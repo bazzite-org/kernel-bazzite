@@ -1,0 +1,1398 @@
+ Makefile                                           |  30 +++++
+ arch/arm/Kconfig                                   |   4 +-
+ arch/arm64/Kconfig                                 |   2 +-
+ arch/s390/include/asm/ipl.h                        |   1 +
+ arch/s390/kernel/ipl.c                             |   5 +
+ arch/s390/kernel/setup.c                           |   4 +
+ arch/x86/kernel/setup.c                            |  22 ++--
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
+ drivers/firmware/efi/Makefile                      |   1 +
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/hid/hid-rmi.c                              |  66 -----------
+ .../intel-thc-hid/intel-quicki2c/quicki2c-dev.h    |   2 +
+ .../hid/intel-thc-hid/intel-thc/intel-thc-dev.c    |   4 +-
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/iommu.c                              |  22 ++++
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/scsi/sd.c                                  |  10 ++
+ drivers/usb/core/hub.c                             |   7 ++
+ include/linux/efi.h                                |  22 ++--
+ include/linux/lsm_hook_defs.h                      |   1 +
+ include/linux/rmi.h                                |   1 +
+ include/linux/security.h                           |   9 ++
+ kernel/module/signing.c                            |   9 +-
+ scripts/Makefile.lib                               |   3 +
+ scripts/tags.sh                                    |   2 +
+ security/integrity/platform_certs/load_uefi.c      |   6 +-
+ security/lockdown/Kconfig                          |  13 +++
+ security/lockdown/lockdown.c                       |  11 ++
+ tools/testing/selftests/bpf/Makefile               |   2 +-
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 ------
+ 37 files changed, 492 insertions(+), 210 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index e5509045fe3f..221d29b704b6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -355,6 +355,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
+     endif
+ endif
+ 
++# CKI/cross compilation hack
++# Do we need to rebuild scripts after cross compilation?
++# If kernel was cross-compiled, these scripts have arch of build host.
++REBUILD_SCRIPTS_FOR_CROSS:=0
++
++# Regenerating config with incomplete source tree will produce different
++# config options. Disable it.
++ifeq ($(REBUILD_SCRIPTS_FOR_CROSS),1)
++may-sync-config:=
++endif
++
+ ifdef mixed-build
+ # ===========================================================================
+ # We're called with mixed targets (*config and build targets).
+@@ -1298,6 +1309,8 @@ uapi-asm-generic:
+ # Generate some files
+ # ---------------------------------------------------------------------------
+ 
++include $(srctree)/Makefile.rhelver
++
+ # KERNELRELEASE can change from a few different places, meaning version.h
+ # needs to be updated, so this check is forced on all builds
+ 
+@@ -1924,6 +1937,23 @@ endif
+ 
+ ifdef CONFIG_MODULES
+ 
++scripts_build:
++	$(MAKE) $(build)=scripts/basic
++	$(MAKE) $(build)=scripts/mod
++	$(MAKE) $(build)=scripts scripts/module.lds
++	$(MAKE) $(build)=scripts scripts/unifdef
++	$(MAKE) $(build)=scripts
++
++prepare_after_cross:
++	# disable STACK_VALIDATION to avoid building objtool
++	sed -i '/^CONFIG_STACK_VALIDATION/d' ./include/config/auto.conf || true
++	# build minimum set of scripts and resolve_btfids to allow building
++	# external modules
++	$(MAKE) KBUILD_EXTMOD="" M="" scripts_build V=1
++	$(MAKE) -C tools/bpf/resolve_btfids
++
++PHONY += prepare_after_cross scripts_build
++
+ modules.order: $(build-dir)
+ 	@:
+ 
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 962451e54fdd..8602c0ac5f43 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -1232,9 +1232,9 @@ config HIGHMEM
+ 	  If unsure, say n.
+ 
+ config HIGHPTE
+-	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
++	bool "Allocate 2nd-level pagetables from highmem"
+ 	depends on HIGHMEM
+-	default y
++	default n
+ 	help
+ 	  The VM uses one page of physical memory for each page table.
+ 	  For systems with a lot of processes, this can use a lot of
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 393d71124f5d..ea142284db99 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1428,7 +1428,7 @@ endchoice
+ 
+ config ARM64_FORCE_52BIT
+ 	bool "Force 52-bit virtual addresses for userspace"
+-	depends on ARM64_VA_BITS_52 && EXPERT
++	depends on ARM64_VA_BITS_52
+ 	help
+ 	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
+ 	  to maintain compatibility with older software by providing 48-bit VAs
+diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
+index b0d00032479d..afb9544fb007 100644
+--- a/arch/s390/include/asm/ipl.h
++++ b/arch/s390/include/asm/ipl.h
+@@ -139,6 +139,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
+ 			     unsigned char flags, unsigned short cert);
+ int ipl_report_add_certificate(struct ipl_report *report, void *key,
+ 			       unsigned long addr, unsigned long len);
++bool ipl_get_secureboot(void);
+ 
+ /*
+  * DIAG 308 support
+diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
+index ff15f91affde..baded34170cb 100644
+--- a/arch/s390/kernel/ipl.c
++++ b/arch/s390/kernel/ipl.c
+@@ -2497,3 +2497,8 @@ int ipl_report_free(struct ipl_report *report)
+ }
+ 
+ #endif
++
++bool ipl_get_secureboot(void)
++{
++	return !!ipl_secure_flag;
++}
+diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
+index 5c9789804120..daacbe5b8159 100644
+--- a/arch/s390/kernel/setup.c
++++ b/arch/s390/kernel/setup.c
+@@ -49,6 +49,7 @@
+ #include <linux/memory.h>
+ #include <linux/compat.h>
+ #include <linux/start_kernel.h>
++#include <linux/security.h>
+ #include <linux/hugetlb.h>
+ #include <linux/kmemleak.h>
+ 
+@@ -919,6 +920,9 @@ void __init setup_arch(char **cmdline_p)
+ 
+ 	log_component_list();
+ 
++	if (ipl_get_secureboot())
++		security_lock_kernel_down("Secure IPL mode", LOCKDOWN_INTEGRITY_MAX);
++
+ 	/* Have one command line that is parsed and saved in /proc/cmdline */
+ 	/* boot_command_line has been already set up in early.c */
+ 	*cmdline_p = boot_command_line;
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index fb27be697128..b983647349c4 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -21,6 +21,7 @@
+ #include <linux/pci.h>
+ #include <linux/random.h>
+ #include <linux/root_dev.h>
++#include <linux/security.h>
+ #include <linux/static_call.h>
+ #include <linux/swiotlb.h>
+ #include <linux/tboot.h>
+@@ -986,6 +987,13 @@ void __init setup_arch(char **cmdline_p)
+ 	if (efi_enabled(EFI_BOOT))
+ 		efi_init();
+ 
++	efi_set_secure_boot(boot_params.secure_boot);
++
++#ifdef CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT
++	if (efi_enabled(EFI_SECURE_BOOT))
++		security_lock_kernel_down("EFI Secure Boot mode", LOCKDOWN_INTEGRITY_MAX);
++#endif
++
+ 	reserve_ibft_region();
+ 	x86_init.resources.dmi_setup();
+ 
+@@ -1149,19 +1157,7 @@ void __init setup_arch(char **cmdline_p)
+ 	/* Allocate bigger log buffer */
+ 	setup_log_buf(1);
+ 
+-	if (efi_enabled(EFI_BOOT)) {
+-		switch (boot_params.secure_boot) {
+-		case efi_secureboot_mode_disabled:
+-			pr_info("Secure boot disabled\n");
+-			break;
+-		case efi_secureboot_mode_enabled:
+-			pr_info("Secure boot enabled\n");
+-			break;
+-		default:
+-			pr_info("Secure boot could not be determined\n");
+-			break;
+-		}
+-	}
++	efi_set_secure_boot(boot_params.secure_boot);
+ 
+ 	reserve_initrd();
+ 
+diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
+index 20d757687e3d..90a13f20f052 100644
+--- a/drivers/acpi/apei/hest.c
++++ b/drivers/acpi/apei/hest.c
+@@ -142,6 +142,14 @@ static int apei_hest_parse(apei_hest_func_t func, void *data)
+ 	if (hest_disable || !hest_tab)
+ 		return -EINVAL;
+ 
++#ifdef CONFIG_ARM64
++	/* Ignore broken firmware */
++	if (!strncmp(hest_tab->header.oem_id, "HPE   ", 6) &&
++	    !strncmp(hest_tab->header.oem_table_id, "ProLiant", 8) &&
++	    MIDR_IMPLEMENTOR(read_cpuid_id()) == ARM_CPU_IMP_APM)
++		return -EINVAL;
++#endif
++
+ 	hest_hdr = (struct acpi_hest_header *)(hest_tab + 1);
+ 	for (i = 0; i < hest_tab->error_source_count; i++) {
+ 		len = hest_esrc_len(hest_hdr);
+diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
+index 76a856c32c4d..f2d25d95811c 100644
+--- a/drivers/acpi/irq.c
++++ b/drivers/acpi/irq.c
+@@ -143,6 +143,7 @@ struct acpi_irq_parse_one_ctx {
+ 	unsigned int index;
+ 	unsigned long *res_flags;
+ 	struct irq_fwspec *fwspec;
++	bool skip_producer_check;
+ };
+ 
+ /**
+@@ -216,7 +217,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+ 		return AE_CTRL_TERMINATE;
+ 	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
+ 		eirq = &ares->data.extended_irq;
+-		if (eirq->producer_consumer == ACPI_PRODUCER)
++		if (!ctx->skip_producer_check &&
++		    eirq->producer_consumer == ACPI_PRODUCER)
+ 			return AE_OK;
+ 		if (ctx->index >= eirq->interrupt_count) {
+ 			ctx->index -= eirq->interrupt_count;
+@@ -252,8 +254,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+ static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
+ 			      struct irq_fwspec *fwspec, unsigned long *flags)
+ {
+-	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec };
++	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec, false };
+ 
++	/*
++	 * Firmware on arm64-based HPE m400 platform incorrectly marks
++	 * its UART interrupt as ACPI_PRODUCER rather than ACPI_CONSUMER.
++	 * Don't do the producer/consumer check for that device.
++	 */
++	if (IS_ENABLED(CONFIG_ARM64)) {
++		struct acpi_device *adev = acpi_get_acpi_dev(handle);
++
++		if (adev && !strcmp(acpi_device_hid(adev), "APMC0D08"))
++			ctx.skip_producer_check = true;
++	}
+ 	acpi_walk_resources(handle, METHOD_NAME__CRS, acpi_irq_parse_one_cb, &ctx);
+ 	return ctx.rc;
+ }
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index fb1fe9f3b1a3..5a3312fc0ea0 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1794,6 +1794,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
+ 		return false;
+ 
++	/*
++	 * Firmware on some arm64 X-Gene platforms will make the UART
++	 * device appear as both a UART and a slave of that UART. Just
++	 * bail out here for X-Gene UARTs.
++	 */
++	if (IS_ENABLED(CONFIG_ARM64) &&
++	    !strcmp(acpi_device_hid(device), "APMC0D08"))
++		return false;
++
+ 	INIT_LIST_HEAD(&resource_list);
+ 	acpi_dev_get_resources(device, &resource_list,
+ 			       acpi_check_serial_bus_slave,
+diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
+index 41130abe90c4..070cce92eed6 100644
+--- a/drivers/ata/libahci.c
++++ b/drivers/ata/libahci.c
+@@ -731,6 +731,24 @@ int ahci_stop_engine(struct ata_port *ap)
+ 	tmp &= ~PORT_CMD_START;
+ 	writel(tmp, port_mmio + PORT_CMD);
+ 
++#ifdef CONFIG_ARM64
++	/* Rev Ax of Cavium CN99XX needs a hack for port stop */
++	if (dev_is_pci(ap->host->dev) &&
++	    to_pci_dev(ap->host->dev)->vendor == 0x14e4 &&
++	    to_pci_dev(ap->host->dev)->device == 0x9027 &&
++	    midr_is_cpu_model_range(read_cpuid_id(),
++			MIDR_CPU_MODEL(ARM_CPU_IMP_BRCM, BRCM_CPU_PART_VULCAN),
++			MIDR_CPU_VAR_REV(0, 0),
++			MIDR_CPU_VAR_REV(0, MIDR_REVISION_MASK))) {
++		tmp = readl(hpriv->mmio + 0x8000);
++		udelay(100);
++		writel(tmp | (1 << 26), hpriv->mmio + 0x8000);
++		udelay(100);
++		writel(tmp & ~(1 << 26), hpriv->mmio + 0x8000);
++		dev_warn(ap->host->dev, "CN99XX SATA reset workaround applied\n");
++	}
++#endif
++
+ 	/* wait for engine to stop. This could be as long as 500 msec */
+ 	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
+ 				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
+diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
+index bbf7029e224b..cf7faa970dd6 100644
+--- a/drivers/char/ipmi/ipmi_dmi.c
++++ b/drivers/char/ipmi/ipmi_dmi.c
+@@ -215,6 +215,21 @@ static int __init scan_for_dmi_ipmi(void)
+ {
+ 	const struct dmi_device *dev = NULL;
+ 
++#ifdef CONFIG_ARM64
++	/* RHEL-only
++	 * If this is ARM-based HPE m400, return now, because that platform
++	 * reports the host-side ipmi address as intel port-io space, which
++	 * does not exist in the ARM architecture.
++	 */
++	const char *dmistr = dmi_get_system_info(DMI_PRODUCT_NAME);
++
++	if (dmistr && (strcmp("ProLiant m400 Server", dmistr) == 0)) {
++		pr_debug("%s does not support host ipmi\n", dmistr);
++		return 0;
++	}
++	/* END RHEL-only */
++#endif
++
+ 	while ((dev = dmi_find_device(DMI_DEV_TYPE_IPMI, NULL, dev)))
+ 		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
+ 
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index 8e9050f99e9e..f80ff2c42132 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -34,6 +34,7 @@
+ #include <linux/uuid.h>
+ #include <linux/nospec.h>
+ #include <linux/vmalloc.h>
++#include <linux/dmi.h>
+ #include <linux/delay.h>
+ 
+ #define IPMI_DRIVER_VERSION "39.2"
+@@ -5548,8 +5549,21 @@ static int __init ipmi_init_msghandler_mod(void)
+ {
+ 	int rv;
+ 
+-	pr_info("version " IPMI_DRIVER_VERSION "\n");
++#ifdef CONFIG_ARM64
++	/* RHEL-only
++	 * If this is ARM-based HPE m400, return now, because that platform
++	 * reports the host-side ipmi address as intel port-io space, which
++	 * does not exist in the ARM architecture.
++	 */
++	const char *dmistr = dmi_get_system_info(DMI_PRODUCT_NAME);
+ 
++	if (dmistr && (strcmp("ProLiant m400 Server", dmistr) == 0)) {
++		pr_debug("%s does not support host ipmi\n", dmistr);
++		return -ENOSYS;
++	}
++	/* END RHEL-only */
++#endif
++	pr_info("version " IPMI_DRIVER_VERSION "\n");
+ 	mutex_lock(&ipmi_interfaces_mutex);
+ 	rv = ipmi_register_driver();
+ 	mutex_unlock(&ipmi_interfaces_mutex);
+diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
+index a2d0009560d0..4f3486e6a84b 100644
+--- a/drivers/firmware/efi/Makefile
++++ b/drivers/firmware/efi/Makefile
+@@ -25,6 +25,7 @@ subdir-$(CONFIG_EFI_STUB)		+= libstub
+ obj-$(CONFIG_EFI_BOOTLOADER_CONTROL)	+= efibc.o
+ obj-$(CONFIG_EFI_TEST)			+= test/
+ obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
++obj-$(CONFIG_EFI)			+= secureboot.o
+ obj-$(CONFIG_APPLE_PROPERTIES)		+= apple-properties.o
+ obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
+ obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
+diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+index e57bff702b5f..1252e9d11235 100644
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -33,6 +33,7 @@
+ #include <linux/memblock.h>
+ #include <linux/security.h>
+ #include <linux/notifier.h>
++#include <linux/bsearch.h>
+ 
+ #include <asm/early_ioremap.h>
+ 
+@@ -1008,40 +1009,101 @@ int efi_mem_type(unsigned long phys_addr)
+ 	return -EINVAL;
+ }
+ 
++struct efi_error_code {
++	efi_status_t status;
++	int errno;
++	const char *description;
++};
++
++static const struct efi_error_code efi_error_codes[] = {
++	{ EFI_SUCCESS, 0, "Success"},
++#if 0
++	{ EFI_LOAD_ERROR, -EPICK_AN_ERRNO, "Load Error"},
++#endif
++	{ EFI_INVALID_PARAMETER, -EINVAL, "Invalid Parameter"},
++	{ EFI_UNSUPPORTED, -ENOSYS, "Unsupported"},
++	{ EFI_BAD_BUFFER_SIZE, -ENOSPC, "Bad Buffer Size"},
++	{ EFI_BUFFER_TOO_SMALL, -ENOSPC, "Buffer Too Small"},
++	{ EFI_NOT_READY, -EAGAIN, "Not Ready"},
++	{ EFI_DEVICE_ERROR, -EIO, "Device Error"},
++	{ EFI_WRITE_PROTECTED, -EROFS, "Write Protected"},
++	{ EFI_OUT_OF_RESOURCES, -ENOMEM, "Out of Resources"},
++#if 0
++	{ EFI_VOLUME_CORRUPTED, -EPICK_AN_ERRNO, "Volume Corrupt"},
++	{ EFI_VOLUME_FULL, -EPICK_AN_ERRNO, "Volume Full"},
++	{ EFI_NO_MEDIA, -EPICK_AN_ERRNO, "No Media"},
++	{ EFI_MEDIA_CHANGED, -EPICK_AN_ERRNO, "Media changed"},
++#endif
++	{ EFI_NOT_FOUND, -ENOENT, "Not Found"},
++#if 0
++	{ EFI_ACCESS_DENIED, -EPICK_AN_ERRNO, "Access Denied"},
++	{ EFI_NO_RESPONSE, -EPICK_AN_ERRNO, "No Response"},
++	{ EFI_NO_MAPPING, -EPICK_AN_ERRNO, "No mapping"},
++	{ EFI_TIMEOUT, -EPICK_AN_ERRNO, "Time out"},
++	{ EFI_NOT_STARTED, -EPICK_AN_ERRNO, "Not started"},
++	{ EFI_ALREADY_STARTED, -EPICK_AN_ERRNO, "Already started"},
++#endif
++	{ EFI_ABORTED, -EINTR, "Aborted"},
++#if 0
++	{ EFI_ICMP_ERROR, -EPICK_AN_ERRNO, "ICMP Error"},
++	{ EFI_TFTP_ERROR, -EPICK_AN_ERRNO, "TFTP Error"},
++	{ EFI_PROTOCOL_ERROR, -EPICK_AN_ERRNO, "Protocol Error"},
++	{ EFI_INCOMPATIBLE_VERSION, -EPICK_AN_ERRNO, "Incompatible Version"},
++#endif
++	{ EFI_SECURITY_VIOLATION, -EACCES, "Security Policy Violation"},
++#if 0
++	{ EFI_CRC_ERROR, -EPICK_AN_ERRNO, "CRC Error"},
++	{ EFI_END_OF_MEDIA, -EPICK_AN_ERRNO, "End of Media"},
++	{ EFI_END_OF_FILE, -EPICK_AN_ERRNO, "End of File"},
++	{ EFI_INVALID_LANGUAGE, -EPICK_AN_ERRNO, "Invalid Languages"},
++	{ EFI_COMPROMISED_DATA, -EPICK_AN_ERRNO, "Compromised Data"},
++
++	// warnings
++	{ EFI_WARN_UNKOWN_GLYPH, -EPICK_AN_ERRNO, "Warning Unknown Glyph"},
++	{ EFI_WARN_DELETE_FAILURE, -EPICK_AN_ERRNO, "Warning Delete Failure"},
++	{ EFI_WARN_WRITE_FAILURE, -EPICK_AN_ERRNO, "Warning Write Failure"},
++	{ EFI_WARN_BUFFER_TOO_SMALL, -EPICK_AN_ERRNO, "Warning Buffer Too Small"},
++#endif
++};
++
++static int
++efi_status_cmp_bsearch(const void *key, const void *item)
++{
++	u64 status = (u64)(uintptr_t)key;
++	struct efi_error_code *code = (struct efi_error_code *)item;
++
++	if (status < code->status)
++		return -1;
++	if (status > code->status)
++		return 1;
++	return 0;
++}
++
+ int efi_status_to_err(efi_status_t status)
+ {
+-	int err;
+-
+-	switch (status) {
+-	case EFI_SUCCESS:
+-		err = 0;
+-		break;
+-	case EFI_INVALID_PARAMETER:
+-		err = -EINVAL;
+-		break;
+-	case EFI_OUT_OF_RESOURCES:
+-		err = -ENOSPC;
+-		break;
+-	case EFI_DEVICE_ERROR:
+-		err = -EIO;
+-		break;
+-	case EFI_WRITE_PROTECTED:
+-		err = -EROFS;
+-		break;
+-	case EFI_SECURITY_VIOLATION:
+-		err = -EACCES;
+-		break;
+-	case EFI_NOT_FOUND:
+-		err = -ENOENT;
+-		break;
+-	case EFI_ABORTED:
+-		err = -EINTR;
+-		break;
+-	default:
+-		err = -EINVAL;
+-	}
++	struct efi_error_code *found;
++	size_t num = sizeof(efi_error_codes) / sizeof(struct efi_error_code);
+ 
+-	return err;
++	found = bsearch((void *)(uintptr_t)status, efi_error_codes,
++			sizeof(struct efi_error_code), num,
++			efi_status_cmp_bsearch);
++	if (!found)
++		return -EINVAL;
++	return found->errno;
++}
++
++const char *
++efi_status_to_str(efi_status_t status)
++{
++	struct efi_error_code *found;
++	size_t num = sizeof(efi_error_codes) / sizeof(struct efi_error_code);
++
++	found = bsearch((void *)(uintptr_t)status, efi_error_codes,
++			sizeof(struct efi_error_code), num,
++			efi_status_cmp_bsearch);
++	if (!found)
++		return "Unknown error code";
++	return found->description;
+ }
+ EXPORT_SYMBOL_GPL(efi_status_to_err);
+ 
+diff --git a/drivers/firmware/efi/secureboot.c b/drivers/firmware/efi/secureboot.c
+new file mode 100644
+index 000000000000..de0a3714a5d4
+--- /dev/null
++++ b/drivers/firmware/efi/secureboot.c
+@@ -0,0 +1,38 @@
++/* Core kernel secure boot support.
++ *
++ * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
++ * Written by David Howells (dhowells@redhat.com)
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public Licence
++ * as published by the Free Software Foundation; either version
++ * 2 of the Licence, or (at your option) any later version.
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/efi.h>
++#include <linux/kernel.h>
++#include <linux/printk.h>
++
++/*
++ * Decide what to do when UEFI secure boot mode is enabled.
++ */
++void __init efi_set_secure_boot(enum efi_secureboot_mode mode)
++{
++	if (efi_enabled(EFI_BOOT)) {
++		switch (mode) {
++		case efi_secureboot_mode_disabled:
++			pr_info("Secure boot disabled\n");
++			break;
++		case efi_secureboot_mode_enabled:
++			set_bit(EFI_SECURE_BOOT, &efi.flags);
++			pr_info("Secure boot enabled\n");
++			break;
++		default:
++			pr_warn("Secure boot could not be determined (mode %u)\n",
++				   mode);
++			break;
++		}
++	}
++}
+diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
+index d4af17fdba46..154f0403cbf4 100644
+--- a/drivers/hid/hid-rmi.c
++++ b/drivers/hid/hid-rmi.c
+@@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
+ {
+ 	struct rmi_data *hdata = hid_get_drvdata(hdev);
+ 	struct rmi_device *rmi_dev = hdata->xport.rmi_dev;
+-	unsigned long flags;
+ 
+ 	if (!(test_bit(RMI_STARTED, &hdata->flags)))
+ 		return 0;
+ 
+-	pm_wakeup_event(hdev->dev.parent, 0);
+-
+-	local_irq_save(flags);
+-
+ 	rmi_set_attn_data(rmi_dev, data[1], &data[2], size - 2);
+ 
+-	generic_handle_irq(hdata->rmi_irq);
+-
+-	local_irq_restore(flags);
+-
+ 	return 1;
+ }
+ 
+@@ -589,56 +580,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+ 	.reset		= rmi_hid_reset,
+ };
+ 
+-static void rmi_irq_teardown(void *data)
+-{
+-	struct rmi_data *hdata = data;
+-	struct irq_domain *domain = hdata->domain;
+-
+-	if (!domain)
+-		return;
+-
+-	irq_dispose_mapping(irq_find_mapping(domain, 0));
+-
+-	irq_domain_remove(domain);
+-	hdata->domain = NULL;
+-	hdata->rmi_irq = 0;
+-}
+-
+-static int rmi_irq_map(struct irq_domain *h, unsigned int virq,
+-		       irq_hw_number_t hw_irq_num)
+-{
+-	irq_set_chip_and_handler(virq, &dummy_irq_chip, handle_simple_irq);
+-
+-	return 0;
+-}
+-
+-static const struct irq_domain_ops rmi_irq_ops = {
+-	.map = rmi_irq_map,
+-};
+-
+-static int rmi_setup_irq_domain(struct hid_device *hdev)
+-{
+-	struct rmi_data *hdata = hid_get_drvdata(hdev);
+-	int ret;
+-
+-	hdata->domain = irq_domain_create_linear(hdev->dev.fwnode, 1,
+-						 &rmi_irq_ops, hdata);
+-	if (!hdata->domain)
+-		return -ENOMEM;
+-
+-	ret = devm_add_action_or_reset(&hdev->dev, &rmi_irq_teardown, hdata);
+-	if (ret)
+-		return ret;
+-
+-	hdata->rmi_irq = irq_create_mapping(hdata->domain, 0);
+-	if (hdata->rmi_irq <= 0) {
+-		hid_err(hdev, "Can't allocate an IRQ\n");
+-		return hdata->rmi_irq < 0 ? hdata->rmi_irq : -ENXIO;
+-	}
+-
+-	return 0;
+-}
+-
+ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ {
+ 	struct rmi_data *data = NULL;
+@@ -711,18 +652,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 
+ 	mutex_init(&data->page_mutex);
+ 
+-	ret = rmi_setup_irq_domain(hdev);
+-	if (ret) {
+-		hid_err(hdev, "failed to allocate IRQ domain\n");
+-		return ret;
+-	}
+-
+ 	if (data->device_flags & RMI_DEVICE_HAS_PHYS_BUTTONS)
+ 		rmi_hid_pdata.gpio_data.disable = true;
+ 
+ 	data->xport.dev = hdev->dev.parent;
+ 	data->xport.pdata = rmi_hid_pdata;
+-	data->xport.pdata.irq = data->rmi_irq;
+ 	data->xport.proto_name = "hid";
+ 	data->xport.ops = &hid_rmi_ops;
+ 
+diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
+index 6ddb584bd611..97085a6a7452 100644
+--- a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
++++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
+@@ -71,6 +71,7 @@ struct quicki2c_subip_acpi_parameter {
+ 	u16 device_address;
+ 	u64 connection_speed;
+ 	u8 addressing_mode;
++	u8 reserved;
+ } __packed;
+ 
+ /**
+@@ -120,6 +121,7 @@ struct quicki2c_subip_acpi_config {
+ 	u64 HMTD;
+ 	u64 HMRD;
+ 	u64 HMSL;
++	u8 reserved;
+ };
+ 
+ struct device;
+diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
+index c105df7f6c87..4698722e0d0a 100644
+--- a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
++++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
+@@ -1539,7 +1539,7 @@ int thc_i2c_subip_regs_save(struct thc_device *dev)
+ 
+ 	for (int i = 0; i < ARRAY_SIZE(i2c_subip_regs); i++) {
+ 		ret = thc_i2c_subip_pio_read(dev, i2c_subip_regs[i],
+-					     &read_size, (u32 *)&dev->i2c_subip_regs + i);
++					     &read_size, &dev->i2c_subip_regs[i]);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -1562,7 +1562,7 @@ int thc_i2c_subip_regs_restore(struct thc_device *dev)
+ 
+ 	for (int i = 0; i < ARRAY_SIZE(i2c_subip_regs); i++) {
+ 		ret = thc_i2c_subip_pio_write(dev, i2c_subip_regs[i],
+-					      write_size, (u32 *)&dev->i2c_subip_regs + i);
++					      write_size, &dev->i2c_subip_regs[i]);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+index 42e5d37403ad..87b0c6c936b1 100644
+--- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+@@ -11,6 +11,7 @@
+ #include <linux/init.h>
+ #include <linux/types.h>
+ #include <linux/device.h>
++#include <linux/dmi.h>
+ #include <linux/io.h>
+ #include <linux/err.h>
+ #include <linux/fs.h>
+@@ -2446,6 +2447,16 @@ static const struct amba_id etm4_ids[] = {
+ 	{},
+ };
+ 
++static const struct dmi_system_id broken_coresight[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HPE"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Apollo 70"),
++		},
++	},
++	{ }	/* terminating entry */
++};
++
+ MODULE_DEVICE_TABLE(amba, etm4_ids);
+ 
+ static struct amba_driver etm4x_amba_driver = {
+@@ -2514,6 +2525,11 @@ static int __init etm4x_init(void)
+ {
+ 	int ret;
+ 
++	if (dmi_check_system(broken_coresight)) {
++		pr_info("ETM4 disabled due to firmware bug\n");
++		return 0;
++	}
++
+ 	ret = etm4_pm_setup();
+ 
+ 	/* etm4_pm_setup() does its own cleanup - exit on error */
+@@ -2540,6 +2556,9 @@ static int __init etm4x_init(void)
+ 
+ static void __exit etm4x_exit(void)
+ {
++	if (dmi_check_system(broken_coresight))
++		return;
++
+ 	amba_driver_unregister(&etm4x_amba_driver);
+ 	platform_driver_unregister(&etm4_platform_driver);
+ 	etm4_pm_clear();
+diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
+index 2168b6cd7167..5d7cda175a0c 100644
+--- a/drivers/input/rmi4/rmi_driver.c
++++ b/drivers/input/rmi4/rmi_driver.c
+@@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
+ 	attn_data.data = fifo_data;
+ 
+ 	kfifo_put(&drvdata->attn_fifo, attn_data);
++
++	schedule_work(&drvdata->attn_work);
+ }
+ EXPORT_SYMBOL_GPL(rmi_set_attn_data);
+ 
+-static irqreturn_t rmi_irq_fn(int irq, void *dev_id)
++static void attn_callback(struct work_struct *work)
+ {
+-	struct rmi_device *rmi_dev = dev_id;
+-	struct rmi_driver_data *drvdata = dev_get_drvdata(&rmi_dev->dev);
++	struct rmi_driver_data *drvdata = container_of(work,
++							struct rmi_driver_data,
++							attn_work);
+ 	struct rmi4_attn_data attn_data = {0};
+ 	int ret, count;
+ 
+ 	count = kfifo_get(&drvdata->attn_fifo, &attn_data);
+-	if (count) {
+-		*(drvdata->irq_status) = attn_data.irq_status;
+-		drvdata->attn_data = attn_data;
+-	}
++	if (!count)
++		return;
+ 
+-	ret = rmi_process_interrupt_requests(rmi_dev);
++	*(drvdata->irq_status) = attn_data.irq_status;
++	drvdata->attn_data = attn_data;
++
++	ret = rmi_process_interrupt_requests(drvdata->rmi_dev);
+ 	if (ret)
+-		rmi_dbg(RMI_DEBUG_CORE, &rmi_dev->dev,
++		rmi_dbg(RMI_DEBUG_CORE, &drvdata->rmi_dev->dev,
+ 			"Failed to process interrupt request: %d\n", ret);
+ 
+-	if (count) {
+-		kfree(attn_data.data);
+-		drvdata->attn_data.data = NULL;
+-	}
++	kfree(attn_data.data);
++	drvdata->attn_data.data = NULL;
+ 
+ 	if (!kfifo_is_empty(&drvdata->attn_fifo))
+-		return rmi_irq_fn(irq, dev_id);
++		schedule_work(&drvdata->attn_work);
++}
++
++static irqreturn_t rmi_irq_fn(int irq, void *dev_id)
++{
++	struct rmi_device *rmi_dev = dev_id;
++	int ret;
++
++	ret = rmi_process_interrupt_requests(rmi_dev);
++	if (ret)
++		rmi_dbg(RMI_DEBUG_CORE, &rmi_dev->dev,
++			"Failed to process interrupt request: %d\n", ret);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -217,7 +230,6 @@ static irqreturn_t rmi_irq_fn(int irq, void *dev_id)
+ static int rmi_irq_init(struct rmi_device *rmi_dev)
+ {
+ 	struct rmi_device_platform_data *pdata = rmi_get_platform_data(rmi_dev);
+-	struct rmi_driver_data *data = dev_get_drvdata(&rmi_dev->dev);
+ 	int irq_flags = irq_get_trigger_type(pdata->irq);
+ 	int ret;
+ 
+@@ -235,8 +247,6 @@ static int rmi_irq_init(struct rmi_device *rmi_dev)
+ 		return ret;
+ 	}
+ 
+-	data->enabled = true;
+-
+ 	return 0;
+ }
+ 
+@@ -886,23 +896,27 @@ void rmi_enable_irq(struct rmi_device *rmi_dev, bool clear_wake)
+ 	if (data->enabled)
+ 		goto out;
+ 
+-	enable_irq(irq);
+-	data->enabled = true;
+-	if (clear_wake && device_may_wakeup(rmi_dev->xport->dev)) {
+-		retval = disable_irq_wake(irq);
+-		if (retval)
+-			dev_warn(&rmi_dev->dev,
+-				 "Failed to disable irq for wake: %d\n",
+-				 retval);
+-	}
++	if (irq) {
++		enable_irq(irq);
++		data->enabled = true;
++		if (clear_wake && device_may_wakeup(rmi_dev->xport->dev)) {
++			retval = disable_irq_wake(irq);
++			if (retval)
++				dev_warn(&rmi_dev->dev,
++					 "Failed to disable irq for wake: %d\n",
++					 retval);
++		}
+ 
+-	/*
+-	 * Call rmi_process_interrupt_requests() after enabling irq,
+-	 * otherwise we may lose interrupt on edge-triggered systems.
+-	 */
+-	irq_flags = irq_get_trigger_type(pdata->irq);
+-	if (irq_flags & IRQ_TYPE_EDGE_BOTH)
+-		rmi_process_interrupt_requests(rmi_dev);
++		/*
++		 * Call rmi_process_interrupt_requests() after enabling irq,
++		 * otherwise we may lose interrupt on edge-triggered systems.
++		 */
++		irq_flags = irq_get_trigger_type(pdata->irq);
++		if (irq_flags & IRQ_TYPE_EDGE_BOTH)
++			rmi_process_interrupt_requests(rmi_dev);
++	} else {
++		data->enabled = true;
++	}
+ 
+ out:
+ 	mutex_unlock(&data->enabled_mutex);
+@@ -922,20 +936,22 @@ void rmi_disable_irq(struct rmi_device *rmi_dev, bool enable_wake)
+ 		goto out;
+ 
+ 	data->enabled = false;
+-	disable_irq(irq);
+-	if (enable_wake && device_may_wakeup(rmi_dev->xport->dev)) {
+-		retval = enable_irq_wake(irq);
+-		if (retval)
+-			dev_warn(&rmi_dev->dev,
+-				 "Failed to enable irq for wake: %d\n",
+-				 retval);
+-	}
+-
+-	/* make sure the fifo is clean */
+-	while (!kfifo_is_empty(&data->attn_fifo)) {
+-		count = kfifo_get(&data->attn_fifo, &attn_data);
+-		if (count)
+-			kfree(attn_data.data);
++	if (irq) {
++		disable_irq(irq);
++		if (enable_wake && device_may_wakeup(rmi_dev->xport->dev)) {
++			retval = enable_irq_wake(irq);
++			if (retval)
++				dev_warn(&rmi_dev->dev,
++					 "Failed to enable irq for wake: %d\n",
++					 retval);
++		}
++	} else {
++		/* make sure the fifo is clean */
++		while (!kfifo_is_empty(&data->attn_fifo)) {
++			count = kfifo_get(&data->attn_fifo, &attn_data);
++			if (count)
++				kfree(attn_data.data);
++		}
+ 	}
+ 
+ out:
+@@ -978,6 +994,8 @@ static int rmi_driver_remove(struct device *dev)
+ 
+ 	rmi_disable_irq(rmi_dev, false);
+ 
++	cancel_work_sync(&data->attn_work);
++
+ 	rmi_f34_remove_sysfs(rmi_dev);
+ 	rmi_free_function_list(rmi_dev);
+ 
+@@ -1223,9 +1241,15 @@ static int rmi_driver_probe(struct device *dev)
+ 		}
+ 	}
+ 
+-	retval = rmi_irq_init(rmi_dev);
+-	if (retval < 0)
+-		goto err_destroy_functions;
++	if (pdata->irq) {
++		retval = rmi_irq_init(rmi_dev);
++		if (retval < 0)
++			goto err_destroy_functions;
++	}
++
++	data->enabled = true;
++
++	INIT_WORK(&data->attn_work, attn_callback);
+ 
+ 	if (data->f01_container->dev.driver) {
+ 		/* Driver already bound, so enable ATTN now. */
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a4b606c591da..772946ea4bb2 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/amba/bus.h>
+ #include <linux/device.h>
++#include <linux/dmi.h>
+ #include <linux/kernel.h>
+ #include <linux/bits.h>
+ #include <linux/bug.h>
+@@ -2948,6 +2949,27 @@ int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
+ }
+ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+ 
++#ifdef CONFIG_ARM64
++static int __init iommu_quirks(void)
++{
++	const char *vendor, *name;
++
++	vendor = dmi_get_system_info(DMI_SYS_VENDOR);
++	name = dmi_get_system_info(DMI_PRODUCT_NAME);
++
++	if (vendor &&
++	    (strncmp(vendor, "GIGABYTE", 8) == 0 && name &&
++	     (strncmp(name, "R120", 4) == 0 ||
++	      strncmp(name, "R270", 4) == 0))) {
++		pr_warn("Gigabyte %s detected, force iommu passthrough mode", name);
++		iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
++	}
++
++	return 0;
++}
++arch_initcall(iommu_quirks);
++#endif
++
+ /**
+  * iommu_setup_default_domain - Set the default_domain for the group
+  * @group: Group to change
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index db6e142b082d..76dcc1cc4149 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4450,6 +4450,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
+ 				quirk_bridge_cavm_thrx2_pcie_root);
+ 
++/*
++ * PCI BAR 5 is not setup correctly for the on-board AHCI controller
++ * on Broadcom's Vulcan processor. Added a quirk to fix BAR 5 by
++ * using BAR 4's resources which are populated correctly and NOT
++ * actually used by the AHCI controller.
++ */
++static void quirk_fix_vulcan_ahci_bars(struct pci_dev *dev)
++{
++	struct resource *r =  &dev->resource[4];
++
++	if (!(r->flags & IORESOURCE_MEM) || (r->start == 0))
++		return;
++
++	/* Set BAR5 resource to BAR4 */
++	dev->resource[5] = *r;
++
++	/* Update BAR5 in pci config space */
++	pci_write_config_dword(dev, PCI_BASE_ADDRESS_5, r->start);
++
++	/* Clear BAR4's resource */
++	memset(r, 0, sizeof(*r));
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9027, quirk_fix_vulcan_ahci_bars);
++
+ /*
+  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+  * class code.  Fix it.
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 282000c761f8..d0412bf45503 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -121,6 +121,14 @@ static const char *sd_cache_types[] = {
+ 	"write back, no read (daft)"
+ };
+ 
++static const char *sd_probe_types[] = { "async", "sync" };
++
++static char sd_probe_type[6] = "async";
++module_param_string(probe, sd_probe_type, sizeof(sd_probe_type),
++		    S_IRUGO|S_IWUSR);
++MODULE_PARM_DESC(probe, "async or sync. Setting to 'sync' disables asynchronous "
++		 "device number assignments (sda, sdb, ...).");
++
+ static void sd_set_flush_flag(struct scsi_disk *sdkp,
+ 		struct queue_limits *lim)
+ {
+@@ -4373,6 +4381,8 @@ static int __init init_sd(void)
+ 		goto err_out_class;
+ 	}
+ 
++	if (!strcmp(sd_probe_type, "sync"))
++		sd_template.gendrv.probe_type = PROBE_FORCE_SYNCHRONOUS;
+ 	err = scsi_register_driver(&sd_template.gendrv);
+ 	if (err)
+ 		goto err_out_driver;
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 256fe8c86828..2e4a09948df8 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -5893,6 +5893,13 @@ static void hub_event(struct work_struct *work)
+ 			(u16) hub->change_bits[0],
+ 			(u16) hub->event_bits[0]);
+ 
++	/* Don't disconnect USB-SATA on TrimSlice */
++	if (strcmp(dev_name(hdev->bus->controller), "tegra-ehci.0") == 0) {
++		if ((hdev->state == 7) && (hub->change_bits[0] == 0) &&
++				(hub->event_bits[0] == 0x2))
++			hub->event_bits[0] = 0;
++	}
++
+ 	/* Lock the device, then check to see if we were
+ 	 * disconnected while waiting for the lock to succeed. */
+ 	usb_lock_device(hdev);
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index 7d63d1d75f22..c7481fdedbdd 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -45,6 +45,8 @@ struct screen_info;
+ #define EFI_ABORTED		(21 | (1UL << (BITS_PER_LONG-1)))
+ #define EFI_SECURITY_VIOLATION	(26 | (1UL << (BITS_PER_LONG-1)))
+ 
++#define EFI_IS_ERROR(x)		((x) & (1UL << (BITS_PER_LONG-1)))
++
+ typedef unsigned long efi_status_t;
+ typedef u8 efi_bool_t;
+ typedef u16 efi_char16_t;		/* UNICODE character */
+@@ -863,6 +865,14 @@ static inline int efi_range_is_wc(unsigned long start, unsigned long len)
+ #define EFI_MEM_ATTR		9	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
+ #define EFI_MEM_NO_SOFT_RESERVE	10	/* Is the kernel configured to ignore soft reservations? */
+ #define EFI_PRESERVE_BS_REGIONS	11	/* Are EFI boot-services memory segments available? */
++#define EFI_SECURE_BOOT		12	/* Are we in Secure Boot mode? */
++
++enum efi_secureboot_mode {
++	efi_secureboot_mode_unset,
++	efi_secureboot_mode_unknown,
++	efi_secureboot_mode_disabled,
++	efi_secureboot_mode_enabled,
++};
+ 
+ #ifdef CONFIG_EFI
+ /*
+@@ -874,6 +884,8 @@ static inline bool efi_enabled(int feature)
+ }
+ extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
+ 
++extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
++
+ bool __pure __efi_soft_reserve_enabled(void);
+ 
+ static inline bool __pure efi_soft_reserve_enabled(void)
+@@ -895,6 +907,8 @@ static inline bool efi_enabled(int feature)
+ static inline void
+ efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
+ 
++static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
++
+ static inline bool efi_soft_reserve_enabled(void)
+ {
+ 	return false;
+@@ -909,6 +923,7 @@ static inline void efi_find_mirror(void) {}
+ #endif
+ 
+ extern int efi_status_to_err(efi_status_t status);
++extern const char *efi_status_to_str(efi_status_t status);
+ 
+ /*
+  * Variable Attributes
+@@ -1124,13 +1139,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+ extern void efi_call_virt_check_flags(unsigned long flags, const void *caller);
+ extern unsigned long efi_call_virt_save_flags(void);
+ 
+-enum efi_secureboot_mode {
+-	efi_secureboot_mode_unset,
+-	efi_secureboot_mode_unknown,
+-	efi_secureboot_mode_disabled,
+-	efi_secureboot_mode_enabled,
+-};
+-
+ static inline
+ enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
+ {
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index bf3bbac4e02a..b9840b1a43fe 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -444,6 +444,7 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
+ 
+ LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
+ 
++
+ #ifdef CONFIG_PERF_EVENTS
+ LSM_HOOK(int, 0, perf_event_open, int type)
+ LSM_HOOK(int, 0, perf_event_alloc, struct perf_event *event)
+diff --git a/include/linux/rmi.h b/include/linux/rmi.h
+index ab7eea01ab42..fff7c5f737fc 100644
+--- a/include/linux/rmi.h
++++ b/include/linux/rmi.h
+@@ -364,6 +364,7 @@ struct rmi_driver_data {
+ 
+ 	struct rmi4_attn_data attn_data;
+ 	DECLARE_KFIFO(attn_fifo, struct rmi4_attn_data, 16);
++	struct work_struct attn_work;
+ };
+ 
+ int rmi_register_transport_device(struct rmi_transport_dev *xport);
+diff --git a/include/linux/security.h b/include/linux/security.h
+index dba349629229..9a32f178f9fe 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -2390,4 +2390,13 @@ static inline void security_initramfs_populated(void)
+ }
+ #endif /* CONFIG_SECURITY */
+ 
++#ifdef CONFIG_SECURITY_LOCKDOWN_LSM
++extern int security_lock_kernel_down(const char *where, enum lockdown_reason level);
++#else
++static inline int security_lock_kernel_down(const char *where, enum lockdown_reason level)
++{
++	return 0;
++}
++#endif /* CONFIG_SECURITY_LOCKDOWN_LSM */
++
+ #endif /* ! __LINUX_SECURITY_H */
+diff --git a/kernel/module/signing.c b/kernel/module/signing.c
+index a2ff4242e623..f0d2be1ee4f1 100644
+--- a/kernel/module/signing.c
++++ b/kernel/module/signing.c
+@@ -61,10 +61,17 @@ int mod_verify_sig(const void *mod, struct load_info *info)
+ 	modlen -= sig_len + sizeof(ms);
+ 	info->len = modlen;
+ 
+-	return verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
++	ret = verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
+ 				      VERIFY_USE_SECONDARY_KEYRING,
+ 				      VERIFYING_MODULE_SIGNATURE,
+ 				      NULL, NULL);
++	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
++		ret = verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
++				VERIFY_USE_PLATFORM_KEYRING,
++				VERIFYING_MODULE_SIGNATURE,
++				NULL, NULL);
++	}
++	return ret;
+ }
+ 
+ int module_sig_check(struct load_info *info, int flags)
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 1d581ba5df66..7826803444df 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -191,7 +191,10 @@ objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
+ objtool-args-$(CONFIG_HAVE_UACCESS_VALIDATION)		+= --uaccess
+ objtool-args-$(or $(CONFIG_GCOV_KERNEL),$(CONFIG_KCOV))	+= --no-unreachable
+ objtool-args-$(CONFIG_PREFIX_SYMBOLS)			+= --prefix=$(CONFIG_FUNCTION_PADDING_BYTES)
++# RHEL-only: don't enforce OBJTOOL_WERROR for out of tree modules
++ifeq ($(KBUILD_EXTMOD),)
+ objtool-args-$(CONFIG_OBJTOOL_WERROR)			+= --Werror
++endif
+ 
+ objtool-args = $(objtool-args-y)					\
+ 	$(if $(delay-objtool), --link)					\
+diff --git a/scripts/tags.sh b/scripts/tags.sh
+index 99ce427d9a69..f191cd9d7ee6 100755
+--- a/scripts/tags.sh
++++ b/scripts/tags.sh
+@@ -16,6 +16,8 @@ fi
+ ignore="$(echo "$RCS_FIND_IGNORE" | sed 's|\\||g' )"
+ # tags and cscope files should also ignore MODVERSION *.mod.c files
+ ignore="$ignore ( -name *.mod.c ) -prune -o"
++# RHEL tags and cscope should also ignore redhat/rpm
++ignore="$ignore ( -path redhat/rpm ) -prune -o"
+ 
+ # ignore arbitrary directories
+ if [ -n "${IGNORE_DIRS}" ]; then
+diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
+index d1fdd113450a..182e8090cfe8 100644
+--- a/security/integrity/platform_certs/load_uefi.c
++++ b/security/integrity/platform_certs/load_uefi.c
+@@ -74,7 +74,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+ 		return NULL;
+ 
+ 	if (*status != EFI_BUFFER_TOO_SMALL) {
+-		pr_err("Couldn't get size: 0x%lx\n", *status);
++		pr_err("Couldn't get size: %s (0x%lx)\n",
++		       efi_status_to_str(*status), *status);
+ 		return NULL;
+ 	}
+ 
+@@ -85,7 +86,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+ 	*status = efi.get_variable(name, guid, NULL, &lsize, db);
+ 	if (*status != EFI_SUCCESS) {
+ 		kfree(db);
+-		pr_err("Error reading db var: 0x%lx\n", *status);
++		pr_err("Error reading db var: %s (0x%lx)\n",
++		       efi_status_to_str(*status), *status);
+ 		return NULL;
+ 	}
+ 
+diff --git a/security/lockdown/Kconfig b/security/lockdown/Kconfig
+index e84ddf484010..d0501353a4b9 100644
+--- a/security/lockdown/Kconfig
++++ b/security/lockdown/Kconfig
+@@ -16,6 +16,19 @@ config SECURITY_LOCKDOWN_LSM_EARLY
+ 	  subsystem is fully initialised. If enabled, lockdown will
+ 	  unconditionally be called before any other LSMs.
+ 
++config LOCK_DOWN_IN_EFI_SECURE_BOOT
++	bool "Lock down the kernel in EFI Secure Boot mode"
++	default n
++	depends on EFI && SECURITY_LOCKDOWN_LSM_EARLY
++	help
++	  UEFI Secure Boot provides a mechanism for ensuring that the firmware
++	  will only load signed bootloaders and kernels.  Secure boot mode may
++	  be determined from EFI variables provided by the system firmware if
++	  not indicated by the boot parameters.
++
++	  Enabling this option results in kernel lockdown being triggered if
++	  EFI Secure Boot is set.
++
+ choice
+ 	prompt "Kernel default lockdown mode"
+ 	default LOCK_DOWN_KERNEL_FORCE_NONE
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index cf83afa1d879..aba751e7abff 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -72,6 +72,17 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
+ 	return 0;
+ }
+ 
++/**
++ * security_lock_kernel_down() - Put the kernel into lock-down mode.
++ *
++ * @where: Where the lock-down is originating from (e.g. command line option)
++ * @level: The lock-down level (can only increase)
++ */
++int security_lock_kernel_down(const char *where, enum lockdown_reason level)
++{
++	return lock_kernel_down(where, level);
++}
++
+ static struct security_hook_list lockdown_hooks[] __ro_after_init = {
+ 	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
+ };
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 910d8d6402ef..5267287ba225 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -501,7 +501,7 @@ LSKELS := fentry_test.c fexit_test.c fexit_sleep.c atomics.c 		\
+ 	test_ringbuf_n.c test_ringbuf_map_key.c test_ringbuf_write.c
+ 
+ # Generate both light skeleton and libbpf skeleton for these
+-LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c kfunc_call_test.c \
++LSKELS_EXTRA := test_ksyms_module.c kfunc_call_test.c \
+ 	kfunc_call_test_subprog.c
+ SKEL_BLACKLIST += $$(LSKELS)
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+index 1d7a2f1e0731..b22f3a9cb8b8 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+@@ -7,7 +7,6 @@
+ #include "test_ksyms_btf.skel.h"
+ #include "test_ksyms_btf_null_check.skel.h"
+ #include "test_ksyms_weak.skel.h"
+-#include "test_ksyms_weak.lskel.h"
+ #include "test_ksyms_btf_write_check.skel.h"
+ 
+ static int duration;
+@@ -111,33 +110,6 @@ static void test_weak_syms(void)
+ 	test_ksyms_weak__destroy(skel);
+ }
+ 
+-static void test_weak_syms_lskel(void)
+-{
+-	struct test_ksyms_weak_lskel *skel;
+-	struct test_ksyms_weak_lskel__data *data;
+-	int err;
+-
+-	skel = test_ksyms_weak_lskel__open_and_load();
+-	if (!ASSERT_OK_PTR(skel, "test_ksyms_weak_lskel__open_and_load"))
+-		return;
+-
+-	err = test_ksyms_weak_lskel__attach(skel);
+-	if (!ASSERT_OK(err, "test_ksyms_weak_lskel__attach"))
+-		goto cleanup;
+-
+-	/* trigger tracepoint */
+-	usleep(1);
+-
+-	data = skel->data;
+-	ASSERT_EQ(data->out__existing_typed, 0, "existing typed ksym");
+-	ASSERT_NEQ(data->out__existing_typeless, -1, "existing typeless ksym");
+-	ASSERT_EQ(data->out__non_existent_typeless, 0, "nonexistent typeless ksym");
+-	ASSERT_EQ(data->out__non_existent_typed, 0, "nonexistent typed ksym");
+-
+-cleanup:
+-	test_ksyms_weak_lskel__destroy(skel);
+-}
+-
+ static void test_write_check(bool test_handler1)
+ {
+ 	struct test_ksyms_btf_write_check *skel;
+@@ -180,9 +152,6 @@ void test_ksyms_btf(void)
+ 	if (test__start_subtest("weak_ksyms"))
+ 		test_weak_syms();
+ 
+-	if (test__start_subtest("weak_ksyms_lskel"))
+-		test_weak_syms_lskel();
+-
+ 	if (test__start_subtest("write_check1"))
+ 		test_write_check(true);
+ 

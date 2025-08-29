@@ -78,3 +78,13 @@ ifneq ("$(ZSTREAM)", "yes")
     RHEL_RELEASE:=$(RHEL_RELEASE).$(EARLY_YRELEASE)
   endif
 endif
+
+#
+# Automotive
+# ----------
+#
+# Represents the major and minor release used by automotive.
+# Primarily this is used to to identify the build target when
+# building the kernel-automotive packages.
+AUTOMOTIVE_MAJOR = 2
+AUTOMOTIVE_MINOR = 99
