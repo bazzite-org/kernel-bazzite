@@ -52841,3 +52841,30 @@ index ab183c278f73..5ec7684f93ed 100644
 -- 
 2.51.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Fri, 5 Sep 2025 12:54:46 +0200
+Subject: disable custom brightness curve for now
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index f4ee147ae1c4..68793d16ade2 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -4760,6 +4760,8 @@ static void convert_custom_brightness(const struct amdgpu_dm_backlight_caps *cap
+ 	u8 prev_signal = 0, prev_lum = 0;
+ 	int i = 0;
+ 
++	return;
++
+ 	if (amdgpu_dc_debug_mask & DC_DISABLE_CUSTOM_BRIGHTNESS_CURVE)
+ 		return;
+ 
+-- 
+2.51.0
+
