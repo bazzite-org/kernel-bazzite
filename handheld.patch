@@ -52939,3 +52939,70 @@ index 1a4a26e6ffd2..4cd37fe96c6e 100644
 -- 
 2.51.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Wed, 10 Sep 2025 17:43:17 +0200
+Subject: drm: panel-orientation-quirks: add SuiPlay0X1
+
+Very similar to the AYANEO 2S, the Mysten SuiPlay0X1 is a handheld
+gaming device with a 1200x1920 display that is mounted in a
+right-side-up orientation. Add a quirk for it.
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 81e23fb3cb8c..3fa1aa50af02 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -502,6 +502,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		 DMI_MATCH(DMI_PRODUCT_VERSION, "Blade3-10A-001"),
+ 		},
+ 		.driver_data = (void *)&lcd1600x2560_rightside_up,
++	}, {	/* Mysten SuiPlay0X1 */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Mysten Labs, Inc."),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "SuiPlay0X1"),
++		},
++		.driver_data = (void *)&lcd1200x1920_rightside_up,
+ 	}, {	/* Nanote UMPC-01 */
+ 		.matches = {
+ 		 DMI_MATCH(DMI_SYS_VENDOR, "RWC CO.,LTD"),
+-- 
+2.51.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Wed, 10 Sep 2025 17:45:42 +0200
+Subject: add suiplay
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/platform/x86/ayaneo-ec.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/platform/x86/ayaneo-ec.c b/drivers/platform/x86/ayaneo-ec.c
+index dd62f1f38132..52a129b74d58 100644
+--- a/drivers/platform/x86/ayaneo-ec.c
++++ b/drivers/platform/x86/ayaneo-ec.c
+@@ -163,6 +163,13 @@ static const struct dmi_system_id dmi_table[] = {
+ 		},
+ 		.driver_data = (void *)&ayaneo3,
+ 	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Mysten Labs, Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "SuiPlay0X1"),
++		},
++		.driver_data = (void *)&quirk_fan,
++	},
+ 	{},
+ };
+ 
+-- 
+2.51.0
+
