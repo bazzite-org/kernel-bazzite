@@ -53179,21 +53179,23 @@ index 9f3a90280bfc..064974dc0091 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Sun, 28 Sep 2025 22:01:21 +0200
+Date: Sun, 28 Sep 2025 22:23:11 +0200
 Subject: drm/amdgpu: defer overdrive taint until used
 
 Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
 ---
  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c                 | 1 -
- drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c    | 4 ++++
- drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c     | 4 ++++
- drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c   | 4 ++++
- drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c         | 4 ++++
- drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c | 4 ++++
- drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c    | 4 ++++
- drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c    | 4 ++++
- drivers/gpu/drm/amd/pm/swsmu/smu14/smu_v14_0_2_ppt.c    | 4 ++++
- 9 files changed, 32 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c    | 6 ++++++
+ drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c     | 6 ++++++
+ drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c   | 6 ++++++
+ drivers/gpu/drm/amd/pm/powerplay/inc/hwmgr.h            | 1 +
+ drivers/gpu/drm/amd/pm/swsmu/inc/amdgpu_smu.h           | 1 +
+ drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c         | 7 +++++++
+ drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c | 7 +++++++
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c    | 7 +++++++
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c    | 7 +++++++
+ drivers/gpu/drm/amd/pm/swsmu/smu14/smu_v14_0_2_ppt.c    | 7 +++++++
+ 11 files changed, 55 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
 index aa4bde9cc084..0b7a522b019e 100644
@@ -53208,121 +53210,166 @@ index aa4bde9cc084..0b7a522b019e 100644
  			"reporting any bugs unrelated to overdrive.\n");
  	}
 diff --git a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
-index 9a821563bc8e..17f3a7ae6df1 100644
+index 9a821563bc8e..e7ef9e5aff39 100644
 --- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
 +++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
-@@ -1551,6 +1551,10 @@ static int smu10_set_fine_grain_clk_vol(struct pp_hwmgr *hwmgr,
+@@ -1551,6 +1551,12 @@ static int smu10_set_fine_grain_clk_vol(struct pp_hwmgr *hwmgr,
  		return -EINVAL;
  	}
  
-+	WARN_TAINT_ONCE(
-+		1, TAINT_CPU_OUT_OF_SPEC,
-+		"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++	if (!hwmgr->od_tainted) {
++		pr_err("OverDrive setting changed. Tainting kernel.\n");
++		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++		hwmgr->od_tainted = true;
++	}
 +
  	if (type == PP_OD_EDIT_SCLK_VDDC_TABLE) {
  		if (size != 2) {
  			pr_err("Input parameter number not correct\n");
 diff --git a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c
-index 8da882c51856..d59f6134200b 100644
+index 8da882c51856..50aea23f49c1 100644
 --- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c
 +++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_hwmgr.c
-@@ -5510,6 +5510,10 @@ static int smu7_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
+@@ -5510,6 +5510,12 @@ static int smu7_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
  		return -EINVAL;
  	}
  
-+	WARN_TAINT_ONCE(
-+		1, TAINT_CPU_OUT_OF_SPEC,
-+		"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++	if (!hwmgr->od_tainted) {
++		pr_err("OverDrive setting changed. Tainting kernel.\n");
++		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++		hwmgr->od_tainted = true;
++	}
 +
  	if (PP_OD_EDIT_SCLK_VDDC_TABLE == type) {
  		podn_dpm_table_in_backend = &data->odn_dpm_table.odn_core_clock_dpm_levels;
  		podn_vdd_dep_in_backend = &data->odn_dpm_table.vdd_dependency_on_sclk;
 diff --git a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c
-index 9ace863792d4..859211554d89 100644
+index 9ace863792d4..b38e49125332 100644
 --- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c
 +++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega10_hwmgr.c
-@@ -5609,6 +5609,10 @@ static int vega10_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
+@@ -5609,6 +5609,12 @@ static int vega10_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
  		return -EINVAL;
  	}
  
-+	WARN_TAINT_ONCE(
-+		1, TAINT_CPU_OUT_OF_SPEC,
-+		"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++	if (!hwmgr->od_tainted) {
++		pr_err("OverDrive setting changed. Tainting kernel.\n");
++		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++		hwmgr->od_tainted = true;
++	}
 +
  	if (PP_OD_EDIT_SCLK_VDDC_TABLE == type) {
  		dpm_table = &data->dpm_table.gfx_table;
  		podn_vdd_dep_table = &data->odn_dpm_table.vdd_dep_on_sclk;
+diff --git a/drivers/gpu/drm/amd/pm/powerplay/inc/hwmgr.h b/drivers/gpu/drm/amd/pm/powerplay/inc/hwmgr.h
+index c661185753b4..a6d129582d83 100644
+--- a/drivers/gpu/drm/amd/pm/powerplay/inc/hwmgr.h
++++ b/drivers/gpu/drm/amd/pm/powerplay/inc/hwmgr.h
+@@ -800,6 +800,7 @@ struct pp_hwmgr {
+ 	uint32_t pstate_sclk;
+ 	uint32_t pstate_mclk;
+ 	bool od_enabled;
++	bool od_tainted;
+ 	uint32_t power_limit;
+ 	uint32_t default_power_limit;
+ 	uint32_t workload_mask;
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/inc/amdgpu_smu.h b/drivers/gpu/drm/amd/pm/swsmu/inc/amdgpu_smu.h
+index 9aacc7bc1c69..8a84f47722aa 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/inc/amdgpu_smu.h
++++ b/drivers/gpu/drm/amd/pm/swsmu/inc/amdgpu_smu.h
+@@ -539,6 +539,7 @@ struct smu_context {
+ 	uint32_t pstate_mclk;
+ 
+ 	bool od_enabled;
++	bool od_tainted;
+ 	uint32_t current_power_limit;
+ 	uint32_t default_power_limit;
+ 	uint32_t max_power_limit;
 diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c
-index 7fad5dfb39c4..42a6d6182f10 100644
+index 7fad5dfb39c4..7f036309f435 100644
 --- a/drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c
 +++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c
-@@ -2643,6 +2643,10 @@ static int navi10_od_edit_dpm_table(struct smu_context *smu, enum PP_OD_DPM_TABL
+@@ -2643,6 +2643,13 @@ static int navi10_od_edit_dpm_table(struct smu_context *smu, enum PP_OD_DPM_TABL
  		return -ENOENT;
  	}
  
-+	WARN_TAINT_ONCE(
-+		1, TAINT_CPU_OUT_OF_SPEC,
-+		"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++	if (!smu->od_tainted) {
++		dev_err(smu->adev->dev,
++			"OverDrive setting changed. Tainting kernel.\n");
++		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++		smu->od_tainted = true;
++	}
 +
  	od_settings = smu->od_settings;
  
  	switch (type) {
 diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-index 115e3fa456bc..0dcebaea3f6b 100644
+index 115e3fa456bc..33026dc23b35 100644
 --- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
 +++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -2297,6 +2297,10 @@ static int sienna_cichlid_od_edit_dpm_table(struct smu_context *smu,
+@@ -2297,6 +2297,13 @@ static int sienna_cichlid_od_edit_dpm_table(struct smu_context *smu,
  		return -EINVAL;
  	}
  
-+	WARN_TAINT_ONCE(
-+		1, TAINT_CPU_OUT_OF_SPEC,
-+		"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++	if (!smu->od_tainted) {
++		dev_err(smu->adev->dev,
++			"OverDrive setting changed. Tainting kernel.\n");
++		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++		smu->od_tainted = true;
++	}
 +
  	switch (type) {
  	case PP_OD_EDIT_SCLK_VDDC_TABLE:
  		if (!sienna_cichlid_is_od_feature_supported(od_settings,
 diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
-index 5a9711e8cf68..69efb9b0d547 100644
+index 5a9711e8cf68..5d4c158d3b40 100644
 --- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
 +++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
-@@ -3129,6 +3129,10 @@ static int smu_v13_0_0_set_power_limit(struct smu_context *smu,
+@@ -3129,6 +3129,13 @@ static int smu_v13_0_0_set_power_limit(struct smu_context *smu,
  		}
  		return smu_v13_0_set_power_limit(smu, limit_type, limit);
  	} else if (smu->od_enabled) {
-+		WARN_TAINT_ONCE(
-+			1, TAINT_CPU_OUT_OF_SPEC,
-+			"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++		if (!smu->od_tainted) {
++			dev_err(smu->adev->dev,
++				"OverDrive setting changed. Tainting kernel.\n");
++			add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++			smu->od_tainted = true;
++		}
 +
  		ret = smu_v13_0_set_power_limit(smu, limit_type, msg_limit);
  		if (ret)
  			return ret;
 diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
-index c8f4f6fb4083..dbb41fc286e8 100644
+index c8f4f6fb4083..b09e289b78c1 100644
 --- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
 +++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
-@@ -2718,6 +2718,10 @@ static int smu_v13_0_7_set_power_limit(struct smu_context *smu,
+@@ -2718,6 +2718,13 @@ static int smu_v13_0_7_set_power_limit(struct smu_context *smu,
  		}
  		return smu_v13_0_set_power_limit(smu, limit_type, limit);
  	} else if (smu->od_enabled) {
-+		WARN_TAINT_ONCE(
-+			1, TAINT_CPU_OUT_OF_SPEC,
-+			"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++		if (!smu->od_tainted) {
++			dev_err(smu->adev->dev,
++				"OverDrive setting changed. Tainting kernel.\n");
++			add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++			smu->od_tainted = true;
++		}
 +
  		ret = smu_v13_0_set_power_limit(smu, limit_type, msg_limit);
  		if (ret)
  			return ret;
 diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu14/smu_v14_0_2_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu14/smu_v14_0_2_ppt.c
-index 7c8d19cfa324..f824a93a4522 100644
+index 7c8d19cfa324..9bda9cf2b656 100644
 --- a/drivers/gpu/drm/amd/pm/swsmu/smu14/smu_v14_0_2_ppt.c
 +++ b/drivers/gpu/drm/amd/pm/swsmu/smu14/smu_v14_0_2_ppt.c
-@@ -2832,6 +2832,10 @@ static int smu_v14_0_2_set_power_limit(struct smu_context *smu,
+@@ -2832,6 +2832,13 @@ static int smu_v14_0_2_set_power_limit(struct smu_context *smu,
  		}
  		return smu_v14_0_set_power_limit(smu, limit_type, limit);
  	} else if (smu->od_enabled) {
-+		WARN_TAINT_ONCE(
-+			1, TAINT_CPU_OUT_OF_SPEC,
-+			"AMDGPU: OverDrive setting configured. Tainting kernel.\n");
++		if (!smu->od_tainted) {
++			dev_err(smu->adev->dev,
++				"OverDrive setting changed. Tainting kernel.\n");
++			add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
++			smu->od_tainted = true;
++		}
 +
  		ret = smu_v14_0_set_power_limit(smu, limit_type, msg_limit);
  		if (ret)
