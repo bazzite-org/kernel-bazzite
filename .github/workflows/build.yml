@@ -78,7 +78,18 @@ jobs:
           fi
 
       - name: Maximize build space
-        uses: ublue-os/remove-unwanted-software@cc0becac701cf642c8f0a6613bbdaf5dc36b259e # v9
+        run: |
+          df -h
+          #  remove swapfile (3gb)
+          sudo swapoff /swapfile && sudo rm -f /swapfile
+          # Remove toolchains, browsers
+          shopt -s nullglob
+          printf '%s\0' /opt/PyPy /opt/az /opt/node/ /opt/pipx /opt/go /opt/Ruby \
+              /usr/lib/llvm-* /usr/local/julia* /usr/local/lib/android /usr/share/dotnet \
+              /usr/share/swift /usr/local/.ghcup /usr/lib/firefox /opt/google/chrome \
+              /opt/microsoft/msedge /usr/share/miniconda /opt/hostedtoolcache \
+              | sudo xargs -0 -n1 -P8 rm -rf
+          df -h
 
       - name: Compile Kernel
         run: |
