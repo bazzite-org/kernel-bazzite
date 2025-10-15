@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build_kernel:
-    environment: prod
+    environment: dev
     strategy:
       fail-fast: false
       matrix:
