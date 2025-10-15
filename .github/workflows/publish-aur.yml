@@ -32,7 +32,7 @@ permissions:
 jobs:
   deploy_aur:
     runs-on: ubuntu-latest
-    environment: prod
+    environment: dev
 
     steps:
       - uses: actions/checkout@v4
