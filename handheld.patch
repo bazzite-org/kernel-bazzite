@@ -53486,3 +53486,79 @@ index 236d9e4e6008..e31cc1a2ed70 100644
 -- 
 2.51.0
 
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Wed, 15 Oct 2025 22:28:37 +0200
+Subject: add new ally units
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ drivers/acpi/x86/s2idle.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+index 86adad4a7f25..dd2a8845f23c 100644
+--- a/drivers/acpi/x86/s2idle.c
++++ b/drivers/acpi/x86/s2idle.c
+@@ -137,6 +137,18 @@ static const struct dmi_system_id s2idle_delay_quirks[] = {
+ 		},
+ 		.driver_data = (void *)&rog_ally_quirks
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "RC73Y"), // non-x (YA)
++		},
++		.driver_data = (void *)&rog_ally_quirks
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "RC73X"), // x (XA)
++		},
++		.driver_data = (void *)&rog_ally_quirks
++	},
+ 	/* Legion Go S */
+ 	{
+ 		.matches = {
+-- 
+2.51.0
+
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Wed, 15 Oct 2025 22:31:32 +0200
+Subject: add legion go 2 mics
+
+Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
+---
+ sound/soc/amd/yc/acp6x-mach.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/sound/soc/amd/yc/acp6x-mach.c b/sound/soc/amd/yc/acp6x-mach.c
+index f210a253da9f..924d081437da 100644
+--- a/sound/soc/amd/yc/acp6x-mach.c
++++ b/sound/soc/amd/yc/acp6x-mach.c
+@@ -346,6 +346,20 @@ static const struct dmi_system_id yc_acp_quirk_table[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "83Q2"),
+ 		}
+ 	},
++	{
++		.driver_data = &acp6x_card,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "83N0"),
++		}
++	},
++	{
++		.driver_data = &acp6x_card,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "83N1"),
++		}
++	},
+ 	{
+ 		.driver_data = &acp6x_card,
+ 		.matches = {
+-- 
+2.51.0
+
