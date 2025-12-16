@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - bazzite-*
-    tags:
-      - "*-ba*"
-      - "*-rc*"
+    # tags:
+    #   - "*-ba*"
+    #   - "*-rc*"
 
 permissions:
   id-token: write
