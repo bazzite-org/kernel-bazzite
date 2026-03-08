@@ -15,6 +15,17 @@ RUN dnf install -y fedpkg fedora-packager rpmdevtools ncurses-devel pesign \
     python3-jsonschema libxml2-devel swig opencsd-devel automake \
     libtool libtirpc libtirpc-devel && dnf clean all
 
+RUN printf '[updates-archive]\n\
+name=Fedora $releasever - $basearch - Updates Archive\n\
+baseurl=https://fedoraproject-updates-archive.fedoraproject.org/fedora/$releasever/$basearch/\n\
+enabled=1\n\
+metadata_expire=6h\n\
+repo_gpgcheck=0\n\
+type=rpm\n\
+gpgcheck=1\n\
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch\n' > /etc/yum.repos.d/fedora-updates-archive.repo
+RUN dnf install -y --allow-downgrade rust-1.92.0 rust-src-1.92.0
+
 ARG UID=1000
 ARG GID=1000
 
