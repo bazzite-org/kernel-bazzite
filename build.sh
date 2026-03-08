@@ -99,7 +99,7 @@ ofn="nvidia-kmod-${ARCH}-${NVIDIA_RELEASE}-${NVIDIA_RELEASE_REL}.tar.gz"
 if [ ! -f "$ofn" ]; then
     echo "Downloading open source NVIDIA driver for release $NVIDIA_RELEASE"
     curl -L -o nvidia-kmod-${ARCH}-${NVIDIA_RELEASE}-${NVIDIA_RELEASE_REL}.tar.gz\
-        https://github.com/bazzite-org/open-gpu-kernel-modules/archive/refs/tags/${NVIDIA_RELEASE}-${NVIDIA_RELEASE_REL}.tar.gz 
+        https://github.com/NVIDIA/open-gpu-kernel-modules/archive/refs/tags/${NVIDIA_RELEASE}.tar.gz 
 fi
 
 #
