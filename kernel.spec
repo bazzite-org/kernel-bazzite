@@ -2088,7 +2088,7 @@ cp -a %{SOURCE4} drivers/custom/broadcom-wl/lib/wlc_hybrid.o_shipped
 
 %if %{with_nvidia}
 tar -xzf %{SOURCE5}
-mv open-gpu-kernel-modules-%{nvidia_version}-%{nvidia_version_rel} \
+mv open-gpu-kernel-modules-%{nvidia_version} \
   drivers/custom/nvidia
 mkdir -p drivers/custom/nvidia-lts
 tar -xJf %{SOURCE6} -C drivers/custom/nvidia-lts
