@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: ["x86_64"] # "aarch64", 
-        fedora_version: [43]
+        fedora_version: [44]
     runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
 
     steps:
@@ -144,7 +144,7 @@ jobs:
           compression-level: 7
 
       - name: Convert to Arch
-        if: matrix.arch == 'x86_64' && matrix.fedora_version == 43 #arch_fedora
+        if: matrix.arch == 'x86_64' && matrix.fedora_version == 44 #arch_fedora
         run: |
           # Grab kernel ver from the log
           KERNEL_VER=$(ls -a build/SRPMS/ | grep "kernel-*" | head -n 1 | sed 's/^kernel-//' | sed 's/.src.rpm//')
@@ -159,7 +159,7 @@ jobs:
 
       - name: Upload Kernel arch package to action
         uses: actions/upload-artifact@v4
-        if: matrix.arch == 'x86_64' && matrix.fedora_version == 43 #arch_fedora
+        if: matrix.arch == 'x86_64' && matrix.fedora_version == 44 #arch_fedora
         with:
           name: linux-f${{ matrix.fedora_version }}-arch
           path: |
@@ -243,4 +243,4 @@ jobs:
     secrets: inherit
     with:
       relver: ${{ github.ref_name }}
-      fedora_version: 43 #arch_fedora
+      fedora_version: 44 #arch_fedora
