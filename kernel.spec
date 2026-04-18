@@ -1146,6 +1146,7 @@ Patch1: patch-1-redhat.patch
 Patch2: patch-2-handheld.patch
 Patch3: patch-3-akmods.patch
 Patch4: patch-4-amdgpu-vrr-whitelist.patch
+Patch5: patch-5-z13-kjp-quirk.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -2078,6 +2079,7 @@ ApplyOptionalPatch patch-1-redhat.patch
 ApplyOptionalPatch patch-2-handheld.patch
 ApplyOptionalPatch patch-3-akmods.patch
 ApplyOptionalPatch patch-4-amdgpu-vrr-whitelist.patch
+ApplyOptionalPatch patch-5-z13-kjp-quirk.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
